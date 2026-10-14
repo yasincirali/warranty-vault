@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "note": "Single source for the rights engine. App, server and the Phase 0 web tool read this same file. A region whose legal rule is not verified from an official source must keep verified=false; the app then shows only the manufacturer warranty for it.",
+  "regions": {
+    "EU": {
+      "name": "EU baseline (Directive 2019/771)",
+      "legalMonths": 24,
+      "presumptionMonths": 12,
+      "distanceWithdrawalDays": 14,
+      "repairExtensionMonths": 12,
+      "repairExtensionFrom": "2026-07-31",
+      "repairExtensionVerified": false,
+      "verified": true,
+      "sources": [
+        "https://commission.europa.eu/law/law-topic/consumer-protection-law/consumer-contract-law/consumer-sales-and-guarantees/article-8a-consumer-sales-and-guarantees-directive_en"
+      ]
+    },
+    "DE": {
+      "base": "EU",
+      "name": "Germany (BGB §437, §438, §477)",
+      "presumptionMonths": 12,
+      "verified": true,
+      "sources": [
+        "https://advant-beiten.com/en/blogs/cma/aenderungen-im-deutschen-kaufrecht-anpassungsbedarf-fuer-agb"
+      ]
+    },
+    "GB": {
+      "name": "United Kingdom (Consumer Rights Act 2015)",
+      "legalMonths": 72,
+      "presumptionMonths": 6,
+      "shortTermRejectDays": 30,
+      "distanceWithdrawalDays": 14,
+      "verified": false,
+      "verifiedParts": ["shortTermRejectDays", "presumptionMonths"],
+      "sources": [
+        "https://tradingstandards.gov.wales/en/consumer-advice/detail/indispute/122503/is-the-trader-right"
+      ]
+    },
+    "TR": {
+      "name": "Türkiye (6502 sayılı Kanun)",
+      "legalMonths": 24,
+      "presumptionMonths": 6,
+      "distanceWithdrawalDays": 14,
+      "verified": false,
+      "sources": []
+    },
+    "AU": {
+      "name": "Australia (Australian Consumer Law)",
+      "legalMonths": null,
+      "reasonableDuration": true,
+      "verified": true,
+      "sources": [
+        "https://nt.gov.au/law/rights/consumer-guarantees-under-australian-law"
+      ]
+    },
+    "US": {
+      "name": "United States (state law, Magnuson-Moss)",
+      "legalMonths": null,
+      "verified": false,
+      "sources": []
+    }
+  }
+}

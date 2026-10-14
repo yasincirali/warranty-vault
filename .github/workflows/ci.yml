@@ -1,0 +1,43 @@
+name: CI
+
+# Analyze + test only. There is deliberately no release workflow yet: this
+# app must never ship through sandikapp's pipeline, and its own store
+# pipeline comes with its own bundle ID, signing and secrets.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  flutter:
+    name: Flutter analyze + test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.2
+          cache: true
+      - run: flutter pub get
+      - name: l10n is committed and current
+        run: flutter gen-l10n && git diff --exit-code lib/l10n/generated
+      - run: flutter analyze lib/ test/
+      - run: flutter test
+
+  deno:
+    name: Edge functions type-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: deno check supabase/functions/*/index.ts
