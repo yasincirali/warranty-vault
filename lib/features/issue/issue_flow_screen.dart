@@ -61,7 +61,7 @@ class _IssueFlowScreenState extends ConsumerState<IssueFlowScreen> {
         surfaceTintColor: Colors.transparent,
         leading: Padding(
           padding: const EdgeInsets.only(left: VSpace.md),
-          child: VIconButton(icon: Icons.close, label: l.close, onPressed: () => Navigator.of(context).pop()),
+          child: Center(child: VIconButton(icon: Icons.close, label: l.close, onPressed: () => Navigator.of(context).pop())),
         ),
         title: Text(view.item.name, style: context.t.small.copyWith(color: context.c.textSecondary)),
       ),
@@ -86,9 +86,11 @@ class _IssueFlowScreenState extends ConsumerState<IssueFlowScreen> {
             ]),
           ),
           const SizedBox(height: VSpace.md),
+          // 2-pt ink frame, not a tinted fill (review round 3): "this is the answer".
           VCard(
             color: context.c.adviceSurface,
             borderColor: context.c.adviceBorder,
+            borderWidth: 2,
             padding: const EdgeInsets.all(VSpace.lg),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(l.recommended, style: context.t.section.copyWith(color: context.c.adviceTitle)),
@@ -106,6 +108,13 @@ class _IssueFlowScreenState extends ConsumerState<IssueFlowScreen> {
                     padding: const EdgeInsets.only(bottom: VSpace.xs),
                     child: Text('${n + 1}. $s', style: context.t.small),
                   ),
+                // Review round 1: "what if they say no?" answered up front.
+                Container(
+                  margin: const EdgeInsets.only(top: VSpace.sm),
+                  padding: const EdgeInsets.only(top: VSpace.sm + 2),
+                  decoration: BoxDecoration(border: Border(top: BorderSide(color: context.c.divider))),
+                  child: Text(l.adviceIfRefused, style: context.t.small.copyWith(color: context.c.textSecondary)),
+                ),
               ],
             ]),
           ),

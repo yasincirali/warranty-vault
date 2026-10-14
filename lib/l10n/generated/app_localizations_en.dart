@@ -29,11 +29,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addReceipt => 'Add receipt or invoice';
 
   @override
-  String get emptyTitle => 'Nothing here yet';
+  String get emptyTitle =>
+      'Add your first invoice and we\'ll track your rights.';
 
   @override
   String get emptyBody =>
-      'Photograph a receipt or forward an invoice email. We read it and tell you what you\'re covered for.';
+      'We warn you before a period ends, and when something breaks we tell you what to do on one screen.';
 
   @override
   String endsIn(String kind, int days) {
@@ -225,7 +226,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepAddEvidence => 'Add a photo or video of the problem';
 
   @override
-  String get stepWeDraft => 'We draft the message, you send it';
+  String get stepWeDraft =>
+      'We write it in the seller\'s language; you read it in yours and send it';
 
   @override
   String get continueButton => 'Continue';
@@ -277,4 +279,102 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get disclaimer => 'For information only, not legal advice.';
+
+  @override
+  String get left => 'left';
+
+  @override
+  String ruleSemantics(int p) {
+    return '$p% of the period has passed';
+  }
+
+  @override
+  String ruleProofMonth(int n) {
+    return 'Month $n · proof moves to you';
+  }
+
+  @override
+  String rulesOf(String country) {
+    return 'Rules: $country';
+  }
+
+  @override
+  String get regionDE => 'Germany';
+
+  @override
+  String get regionEU => 'EU';
+
+  @override
+  String get regionGB => 'United Kingdom';
+
+  @override
+  String get regionTR => 'Türkiye';
+
+  @override
+  String get regionUS => 'United States';
+
+  @override
+  String get regionAU => 'Australia';
+
+  @override
+  String get showAtCounter => 'Show at the counter';
+
+  @override
+  String get counterTitle => 'Proof of purchase';
+
+  @override
+  String counterRight(String kind, String date) {
+    return '$kind until $date.';
+  }
+
+  @override
+  String get counterAsk => 'I\'m asking for a free repair or replacement.';
+
+  @override
+  String get counterNoInvoice => 'No invoice photo yet';
+
+  @override
+  String get adviceIfRefused =>
+      'If the seller refuses, we point you to the official consumer body and draft the complaint.';
+
+  @override
+  String get notVerifiedWhy =>
+      'We haven\'t checked this country\'s rule against an official source yet, so we don\'t show a period.';
+
+  @override
+  String get wayPhoto => 'Photograph a receipt';
+
+  @override
+  String get wayPhotoWhy =>
+      'Paper receipts fade within months; the photo stays.';
+
+  @override
+  String get wayPdf => 'Choose a PDF invoice';
+
+  @override
+  String get wayPdfWhy => 'Invoices from online shops.';
+
+  @override
+  String get wayEmail => 'Forward by email';
+
+  @override
+  String get wayEmailWhy => 'Every invoice you forward is added for you.';
+
+  @override
+  String get previewTitle => 'What you\'ll see';
+
+  @override
+  String get previewBody =>
+      'A time rule for every item: how much has passed, how much is left, and when the burden of proof moves to you.';
+
+  @override
+  String daysLeft(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'days left',
+      one: 'day left',
+    );
+    return '$_temp0';
+  }
 }

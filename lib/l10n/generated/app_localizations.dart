@@ -131,13 +131,13 @@ abstract class AppLocalizations {
   /// No description provided for @emptyTitle.
   ///
   /// In en, this message translates to:
-  /// **'Nothing here yet'**
+  /// **'Add your first invoice and we\'ll track your rights.'**
   String get emptyTitle;
 
   /// No description provided for @emptyBody.
   ///
   /// In en, this message translates to:
-  /// **'Photograph a receipt or forward an invoice email. We read it and tell you what you\'re covered for.'**
+  /// **'We warn you before a period ends, and when something breaks we tell you what to do on one screen.'**
   String get emptyBody;
 
   /// No description provided for @endsIn.
@@ -407,7 +407,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepWeDraft.
   ///
   /// In en, this message translates to:
-  /// **'We draft the message, you send it'**
+  /// **'We write it in the seller\'s language; you read it in yours and send it'**
   String get stepWeDraft;
 
   /// No description provided for @continueButton.
@@ -505,6 +505,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'For information only, not legal advice.'**
   String get disclaimer;
+
+  /// No description provided for @left.
+  ///
+  /// In en, this message translates to:
+  /// **'left'**
+  String get left;
+
+  /// No description provided for @ruleSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{p}% of the period has passed'**
+  String ruleSemantics(int p);
+
+  /// No description provided for @ruleProofMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month {n} · proof moves to you'**
+  String ruleProofMonth(int n);
+
+  /// No description provided for @rulesOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Rules: {country}'**
+  String rulesOf(String country);
+
+  /// No description provided for @regionDE.
+  ///
+  /// In en, this message translates to:
+  /// **'Germany'**
+  String get regionDE;
+
+  /// No description provided for @regionEU.
+  ///
+  /// In en, this message translates to:
+  /// **'EU'**
+  String get regionEU;
+
+  /// No description provided for @regionGB.
+  ///
+  /// In en, this message translates to:
+  /// **'United Kingdom'**
+  String get regionGB;
+
+  /// No description provided for @regionTR.
+  ///
+  /// In en, this message translates to:
+  /// **'Türkiye'**
+  String get regionTR;
+
+  /// No description provided for @regionUS.
+  ///
+  /// In en, this message translates to:
+  /// **'United States'**
+  String get regionUS;
+
+  /// No description provided for @regionAU.
+  ///
+  /// In en, this message translates to:
+  /// **'Australia'**
+  String get regionAU;
+
+  /// No description provided for @showAtCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'Show at the counter'**
+  String get showAtCounter;
+
+  /// No description provided for @counterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Proof of purchase'**
+  String get counterTitle;
+
+  /// No description provided for @counterRight.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind} until {date}.'**
+  String counterRight(String kind, String date);
+
+  /// No description provided for @counterAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m asking for a free repair or replacement.'**
+  String get counterAsk;
+
+  /// No description provided for @counterNoInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'No invoice photo yet'**
+  String get counterNoInvoice;
+
+  /// No description provided for @adviceIfRefused.
+  ///
+  /// In en, this message translates to:
+  /// **'If the seller refuses, we point you to the official consumer body and draft the complaint.'**
+  String get adviceIfRefused;
+
+  /// No description provided for @notVerifiedWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'We haven\'t checked this country\'s rule against an official source yet, so we don\'t show a period.'**
+  String get notVerifiedWhy;
+
+  /// No description provided for @wayPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Photograph a receipt'**
+  String get wayPhoto;
+
+  /// No description provided for @wayPhotoWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Paper receipts fade within months; the photo stays.'**
+  String get wayPhotoWhy;
+
+  /// No description provided for @wayPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a PDF invoice'**
+  String get wayPdf;
+
+  /// No description provided for @wayPdfWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoices from online shops.'**
+  String get wayPdfWhy;
+
+  /// No description provided for @wayEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward by email'**
+  String get wayEmail;
+
+  /// No description provided for @wayEmailWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Every invoice you forward is added for you.'**
+  String get wayEmailWhy;
+
+  /// No description provided for @previewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What you\'ll see'**
+  String get previewTitle;
+
+  /// No description provided for @previewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A time rule for every item: how much has passed, how much is left, and when the burden of proof moves to you.'**
+  String get previewBody;
+
+  /// No description provided for @daysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{day left} other{days left}}'**
+  String daysLeft(int n);
 }
 
 class _AppLocalizationsDelegate

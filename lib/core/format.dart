@@ -38,3 +38,15 @@ String remainingLabel(AppLocalizations l, DateTime today, DateTime end) {
   if (rest == 0) return l.durYears(years);
   return '${l.durYears(years)} ${l.durMonths(rest)}';
 }
+
+/// Country names for the regions in rules.json; unknown codes show as-is
+/// rather than guessing a name.
+String regionName(AppLocalizations l, String code) => switch (code) {
+      'DE' => l.regionDE,
+      'EU' => l.regionEU,
+      'GB' => l.regionGB,
+      'TR' => l.regionTR,
+      'US' => l.regionUS,
+      'AU' => l.regionAU,
+      _ => code,
+    };

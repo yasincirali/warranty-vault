@@ -5,18 +5,19 @@ import '../theme/tokens.dart';
 
 /// White card with a hairline border; the only container style in the app.
 class VCard extends StatelessWidget {
-  const VCard({super.key, required this.child, this.padding, this.color, this.borderColor});
+  const VCard({super.key, required this.child, this.padding, this.color, this.borderColor, this.borderWidth = 1});
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final Color? color;
   final Color? borderColor;
+  final double borderWidth;
 
   @override
   Widget build(BuildContext context) => Container(
         padding: padding,
         decoration: BoxDecoration(
           color: color ?? context.c.surface,
-          border: Border.all(color: borderColor ?? context.c.border),
+          border: Border.all(color: borderColor ?? context.c.border, width: borderWidth),
           borderRadius: BorderRadius.circular(VRadius.lg),
         ),
         child: child,

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/format.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/ui/time_rule.dart';
 import '../../../core/ui/widgets.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../rights/rights_engine.dart';
@@ -49,7 +50,7 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
               if (all.isEmpty)
-                SliverFillRemaining(hasScrollBody: false, child: _Empty(l: l)),
+                SliverToBoxAdapter(child: _Empty(l: l)),
               if (urgent.isNotEmpty)
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.xl, VSpace.xl, 0),
@@ -79,7 +80,7 @@ class HomeScreen extends ConsumerWidget {
                     mainAxisSpacing: VSpace.md - 2,
                     crossAxisSpacing: VSpace.md - 2,
                     // Grows with Dynamic Type instead of clipping the text.
-                    mainAxisExtent: 96 + VSpace.xl + MediaQuery.textScalerOf(context).scale(64),
+                    mainAxisExtent: 84 + VSpace.xl + 12 + MediaQuery.textScalerOf(context).scale(64),
                   ),
                   delegate: SliverChildBuilderDelegate(
                     (context, i) => _ItemTile(view: all[i], today: today),
@@ -174,19 +175,41 @@ class _ItemTile extends StatelessWidget {
       child: InkWell(
         onTap: () => _openItem(context, view.item.id),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Container(
-            height: 96,
-            color: context.c.tile,
-            alignment: Alignment.center,
-            child: ExcludeSemantics(
-              child: Icon(ItemThumb.iconFor(view.item.category), size: 44, color: context.c.text),
+          Stack(children: [
+            Container(
+              height: 84,
+              color: context.c.tile,
+              alignment: Alignment.center,
+              child: ExcludeSemantics(
+                child: Icon(ItemThumb.iconFor(view.item.category), size: 40, color: context.c.text),
+              ),
             ),
-          ),
+            // Review round 2: whose rules apply, visible before opening.
+            Positioned(
+              top: VSpace.sm,
+              right: VSpace.sm,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: context.c.surface,
+                  border: Border.all(color: context.c.border),
+                  borderRadius: BorderRadius.circular(VRadius.sm - 2),
+                ),
+                child: Text(view.item.purchase.region,
+                    semanticsLabel: regionName(l, view.item.purchase.region),
+                    style: context.t.small.copyWith(fontSize: 11.5, fontWeight: FontWeight.w600, color: context.c.textSecondary)),
+              ),
+            ),
+          ]),
           Padding(
             padding: const EdgeInsets.fromLTRB(VSpace.md, VSpace.sm + 2, VSpace.md, VSpace.md),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(view.item.name, style: context.t.label, maxLines: 1, overflow: TextOverflow.ellipsis),
               Text(status, style: context.t.small.copyWith(color: color), maxLines: 2),
+              if (p != null) ...[
+                const SizedBox(height: VSpace.sm),
+                TimeRule(protection: p, today: today, urgent: view.next != null, compact: true),
+              ],
             ]),
           ),
         ]),
@@ -195,19 +218,115 @@ class _ItemTile extends StatelessWidget {
   }
 }
 
+/// First run (review round 4): not an empty grid but the ways in, why the
+/// photo matters, and a preview of the one graphic the user will get.
 class _Empty extends StatelessWidget {
   const _Empty({required this.l});
   final AppLocalizations l;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(VSpace.xxl),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text(l.emptyTitle, style: context.t.title, textAlign: TextAlign.center),
-          const SizedBox(height: VSpace.sm),
-          Text(l.emptyBody,
-              style: context.t.body.copyWith(color: context.c.textSecondary),
-              textAlign: TextAlign.center),
-        ]),
+  Widget build(BuildContext context) {
+    void capture() => Navigator.of(context).push(MaterialPageRoute(
+          fullscreenDialog: true,
+          builder: (_) => const CaptureConfirmScreen(),
+        ));
+    // TODO(capture): PDF picker; email forwarding row once inbound mail exists.
+    final ways = [
+      (Icons.document_scanner_outlined, l.wayPhoto, l.wayPhotoWhy),
+      (Icons.description_outlined, l.wayPdf, l.wayPdfWhy),
+    ];
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.xxl, VSpace.xl, 0),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(l.emptyTitle, style: context.t.title),
+        const SizedBox(height: VSpace.sm),
+        Text(l.emptyBody, style: context.t.body.copyWith(color: context.c.textSecondary)),
+        const SizedBox(height: VSpace.xl),
+        VCard(
+          padding: const EdgeInsets.symmetric(horizontal: VSpace.lg),
+          child: Column(children: [
+            for (final (i, w) in ways.indexed)
+              InkWell(
+                onTap: capture,
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 64),
+                  padding: const EdgeInsets.symmetric(vertical: VSpace.md),
+                  decoration: BoxDecoration(
+                    border: i == ways.length - 1 ? null : Border(bottom: BorderSide(color: context.c.divider)),
+                  ),
+                  child: Row(children: [
+                    ExcludeSemantics(
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(color: context.c.tile, borderRadius: BorderRadius.circular(VRadius.sm)),
+                        child: Icon(w.$1, size: 20, color: context.c.text),
+                      ),
+                    ),
+                    const SizedBox(width: VSpace.md),
+                    Expanded(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(w.$2, style: context.t.label),
+                        Text(w.$3, style: context.t.small.copyWith(color: context.c.textSecondary)),
+                      ]),
+                    ),
+                    Icon(Icons.chevron_right, color: context.c.muted, size: 20),
+                  ]),
+                ),
+              ),
+          ]),
+        ),
+        const SizedBox(height: VSpace.lg),
+        Container(
+          padding: const EdgeInsets.all(VSpace.lg),
+          decoration: BoxDecoration(
+            border: Border.all(color: context.c.border),
+            borderRadius: BorderRadius.circular(VRadius.lg),
+          ),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(l.previewTitle, style: context.t.section.copyWith(color: context.c.textSecondary)),
+            const SizedBox(height: VSpace.md),
+            const _PreviewRule(),
+            const SizedBox(height: VSpace.md),
+            Text(l.previewBody, style: context.t.small.copyWith(color: context.c.textSecondary)),
+          ]),
+        ),
+      ]),
+    );
+  }
+}
+
+/// A static sample of the time rule; decorative, so hidden from screen readers.
+class _PreviewRule extends StatelessWidget {
+  const _PreviewRule();
+
+  @override
+  Widget build(BuildContext context) => ExcludeSemantics(
+        child: LayoutBuilder(
+          builder: (context, box) => SizedBox(
+            height: 16,
+            child: Stack(alignment: Alignment.centerLeft, children: [
+              Container(height: 6, decoration: BoxDecoration(color: context.c.track, borderRadius: BorderRadius.circular(3))),
+              Container(
+                width: box.maxWidth * .4,
+                height: 6,
+                decoration: BoxDecoration(color: context.c.text.withValues(alpha: .22), borderRadius: BorderRadius.circular(3)),
+              ),
+              Positioned(left: box.maxWidth * .5 - 1, child: Container(width: 2, height: 14, color: context.c.text)),
+              Positioned(
+                left: box.maxWidth * .4 - 8,
+                child: Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: context.c.surface,
+                    shape: BoxShape.circle,
+                    border: Border.all(width: 3, color: context.c.textSecondary),
+                  ),
+                ),
+              ),
+            ]),
+          ),
+        ),
       );
 }

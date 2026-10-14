@@ -31,7 +31,7 @@ class CaptureConfirmScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         leading: Padding(
           padding: const EdgeInsets.only(left: VSpace.md),
-          child: VIconButton(icon: Icons.close, label: l.close, onPressed: () => Navigator.of(context).pop()),
+          child: Center(child: VIconButton(icon: Icons.close, label: l.close, onPressed: () => Navigator.of(context).pop())),
         ),
       ),
       body: draft.when(

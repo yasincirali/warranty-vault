@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/format.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/ui/time_rule.dart';
 import '../../../core/ui/widgets.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../rights/rights_engine.dart';
+import '../../counter/counter_screen.dart';
 import '../../issue/issue_flow_screen.dart';
 import '../domain/item.dart';
 import '../providers.dart';
@@ -51,6 +53,9 @@ class ItemDetailScreen extends ConsumerWidget {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Semantics(header: true, child: Text(item.name, style: context.t.title)),
                 Text(meta, style: context.t.small.copyWith(color: context.c.textSecondary)),
+                // Review round 2: people move and buy abroad; say whose rules apply.
+                const SizedBox(height: VSpace.xs + 2),
+                _Chip(l.rulesOf(regionName(l, item.purchase.region))),
               ]),
             ),
           ]),
@@ -59,7 +64,7 @@ class ItemDetailScreen extends ConsumerWidget {
           const SizedBox(height: VSpace.md),
           VCard(
             padding: const EdgeInsets.symmetric(horizontal: VSpace.lg),
-            child: Column(children: [
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               for (var i = 0; i < view.protections.length; i++)
                 _ProtectionRow(
                   p: view.protections[i],
@@ -70,11 +75,23 @@ class ItemDetailScreen extends ConsumerWidget {
             ]),
           ),
           const SizedBox(height: VSpace.md),
-          Row(children: [
-            Expanded(child: _Shortcut(icon: Icons.description_outlined, label: l.invoice, enabled: item.invoicePath != null)),
-            const SizedBox(width: VSpace.sm),
-            Expanded(child: _Shortcut(icon: Icons.qr_code_2_outlined, label: l.serial, enabled: item.serial != null)),
-          ]),
+          // One strong action instead of two small shortcuts (review round 1):
+          // the moment that matters is showing proof to someone else.
+          OutlinedButton.icon(
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+              fullscreenDialog: true,
+              builder: (_) => CounterScreen(itemId: itemId),
+            )),
+            icon: const Icon(Icons.storefront_outlined, size: 18),
+            label: Text(l.showAtCounter),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(VSize.button),
+              foregroundColor: context.c.text,
+              backgroundColor: context.c.surface,
+              side: BorderSide(color: context.c.border),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(VRadius.md)),
+            ),
+          ),
           const SizedBox(height: VSpace.lg),
           Text(l.disclaimer, style: context.t.small.copyWith(color: context.c.textSecondary)),
         ],
@@ -119,9 +136,19 @@ class _AnswerCard extends StatelessWidget {
         ProtectionKind.legal => l.answerLegal,
       };
     }
-    final big = active
-        ? (p.end == null ? l.noFixedEnd : remainingLabel(l, today, p.end!))
-        : null;
+    final urgent = view.next != null;
+    // Under 60 days the number alone is the answer ("28" + "days left");
+    // longer periods keep their units ("1 yıl 7 ay" + "kaldı").
+    final days = active && p.end != null ? dateOnly(p.end!).difference(dateOnly(today)).inDays : null;
+    final shortCount = days != null && days < 60;
+    final big = !active
+        ? null
+        : p.end == null
+            ? l.noFixedEnd
+            : shortCount
+                ? '$days'
+                : remainingLabel(l, today, p.end!);
+    final unit = days == null ? null : (shortCount ? l.daysLeft(days) : l.left);
 
     return VCard(
       padding: const EdgeInsets.all(VSpace.lg + 2),
@@ -129,10 +156,20 @@ class _AnswerCard extends StatelessWidget {
         Text(l.todayStatus, style: context.t.section.copyWith(color: context.c.textSecondary)),
         if (big != null) ...[
           const SizedBox(height: VSpace.sm - 2),
-          Text(big,
-              style: context.t.bigNumber.copyWith(
-                  color: view.next != null ? context.c.deadline : context.c.text)),
+          // Number big, unit small (review round 3); Wrap so 3× text never clips.
+          Wrap(crossAxisAlignment: WrapCrossAlignment.end, spacing: VSpace.sm, children: [
+            Text(big, style: context.t.bigNumber.copyWith(color: urgent ? context.c.deadline : context.c.text)),
+            if (unit != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(unit, style: context.t.bigUnit.copyWith(color: urgent ? context.c.deadline : context.c.text)),
+              ),
+          ]),
           Text(kindLabel(l, p!.kind), style: context.t.label),
+          if (p.end != null) ...[
+            const SizedBox(height: VSpace.lg),
+            TimeRule(protection: p, today: today, urgent: urgent),
+          ],
         ],
         const SizedBox(height: VSpace.sm),
         Text(body, style: context.t.body),
@@ -180,6 +217,7 @@ class _ProtectionRow extends StatelessWidget {
       child: Wrap(
         alignment: WrapAlignment.spaceBetween,
         crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: VSpace.md,
         runSpacing: VSpace.xs,
         children: [
           Padding(
@@ -189,29 +227,30 @@ class _ProtectionRow extends StatelessWidget {
           ),
           Text(right,
               style: context.t.small.copyWith(color: color, fontWeight: urgent ? FontWeight.w600 : null)),
+          // Review round 2: an unverified rule says why there is no date,
+          // instead of leaving an empty cell the user reads as "no right".
+          if (p.status == ProtectionStatus.unverified)
+            Padding(
+              padding: const EdgeInsets.only(bottom: VSpace.md),
+              child: Text(l.notVerifiedWhy, style: context.t.small.copyWith(color: context.c.textSecondary)),
+            ),
         ],
       ),
     );
   }
 }
 
-class _Shortcut extends StatelessWidget {
-  const _Shortcut({required this.icon, required this.label, required this.enabled});
-  final IconData icon;
-  final String label;
-  final bool enabled;
+class _Chip extends StatelessWidget {
+  const _Chip(this.text);
+  final String text;
 
   @override
-  Widget build(BuildContext context) => OutlinedButton.icon(
-        onPressed: enabled ? () {} : null,
-        icon: Icon(icon, size: 18),
-        label: Text(label),
-        style: OutlinedButton.styleFrom(
-          minimumSize: const Size.fromHeight(VSize.button),
-          foregroundColor: context.c.text,
-          backgroundColor: context.c.surface,
-          side: BorderSide(color: context.c.border),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(VRadius.md)),
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: VSpace.sm + 1, vertical: VSpace.xs),
+        decoration: BoxDecoration(
+          border: Border.all(color: context.c.border),
+          borderRadius: BorderRadius.circular(VRadius.sm - 1),
         ),
+        child: Text(text, style: context.t.small.copyWith(fontSize: 12.5, fontWeight: FontWeight.w600, color: context.c.textSecondary)),
       );
 }

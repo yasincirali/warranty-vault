@@ -3,29 +3,77 @@
   "appTitle": "My things",
   "searchItems": "Search items",
   "attentionHeader": "Needs attention · {count}",
-  "@attentionHeader": {"placeholders": {"count": {"type": "int"}}},
+  "@attentionHeader": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "allHeader": "All · {count}",
-  "@allHeader": {"placeholders": {"count": {"type": "int"}}},
+  "@allHeader": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "addReceipt": "Add receipt or invoice",
-  "emptyTitle": "Nothing here yet",
-  "emptyBody": "Photograph a receipt or forward an invoice email. We read it and tell you what you're covered for.",
+  "emptyTitle": "Add your first invoice and we'll track your rights.",
+  "emptyBody": "We warn you before a period ends, and when something breaks we tell you what to do on one screen.",
   "endsIn": "{kind} ends in {days, plural, =0{today} =1{1 day} other{{days} days}}",
-  "@endsIn": {"placeholders": {"kind": {"type": "String"}, "days": {"type": "int"}}},
+  "@endsIn": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "kindReturn": "Return window",
   "kindReject": "30-day right to reject",
   "kindManufacturer": "Manufacturer warranty",
   "kindExtended": "Extended warranty",
   "kindLegal": "Legal right",
   "statusLine": "{kind} · {remaining}",
-  "@statusLine": {"placeholders": {"kind": {"type": "String"}, "remaining": {"type": "String"}}},
+  "@statusLine": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "String"
+      }
+    }
+  },
   "protectionEnded": "Protection ended",
   "noFixedEnd": "No fixed end",
   "durYears": "{n, plural, =1{1 yr} other{{n} yrs}}",
-  "@durYears": {"placeholders": {"n": {"type": "int"}}},
+  "@durYears": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "durMonths": "{n, plural, =1{1 mo} other{{n} mo}}",
-  "@durMonths": {"placeholders": {"n": {"type": "int"}}},
+  "@durMonths": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "durDays": "{n, plural, =0{today} =1{1 day} other{{n} days}}",
-  "@durDays": {"placeholders": {"n": {"type": "int"}}},
+  "@durDays": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "todayStatus": "Where you stand today",
   "answerReturn": "You can return it without giving a reason.",
   "answerReject": "If it's faulty you can reject it and get your money back.",
@@ -35,9 +83,21 @@
   "answerNone": "This item's protection has ended.",
   "answerUnverified": "We haven't verified the legal rules for this country yet, so we only show the manufacturer warranty.",
   "endsOn": "Until {date}",
-  "@endsOn": {"placeholders": {"date": {"type": "String"}}},
+  "@endsOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "endedOn": "Ended · {date}",
-  "@endedOn": {"placeholders": {"date": {"type": "String"}}},
+  "@endedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "notVerified": "Not verified yet",
   "whereFrom": "Where does this period come from?",
   "invoice": "Invoice",
@@ -50,11 +110,29 @@
   "issueLost": "Lost or stolen",
   "recommended": "Recommended next step",
   "adviceReturn": "Return it to {store}. You're within the return window, no reason needed.",
-  "@adviceReturn": {"placeholders": {"store": {"type": "String"}}},
+  "@adviceReturn": {
+    "placeholders": {
+      "store": {
+        "type": "String"
+      }
+    }
+  },
   "adviceReject": "Reject it at {store} for a full refund. You're within the first 30 days.",
-  "@adviceReject": {"placeholders": {"store": {"type": "String"}}},
+  "@adviceReject": {
+    "placeholders": {
+      "store": {
+        "type": "String"
+      }
+    }
+  },
   "adviceSellerRepair": "Ask the seller ({store}) for a repair or replacement. Your legal right is running, so it should be free.",
-  "@adviceSellerRepair": {"placeholders": {"store": {"type": "String"}}},
+  "@adviceSellerRepair": {
+    "placeholders": {
+      "store": {
+        "type": "String"
+      }
+    }
+  },
   "proofSeller": "The seller has to prove the fault wasn't there from the start.",
   "proofBuyer": "At this stage you may need to show the fault was there from the start, so photos and video matter.",
   "adviceManufacturer": "Contact the manufacturer's service. Your warranty is still valid.",
@@ -63,7 +141,7 @@
   "adviceNotCovered": "This item isn't covered anymore. A paid repair or the manufacturer's goodwill are the remaining options.",
   "stepDocsReady": "Invoice and serial number are ready",
   "stepAddEvidence": "Add a photo or video of the problem",
-  "stepWeDraft": "We draft the message, you send it",
+  "stepWeDraft": "We write it in the seller's language; you read it in yours and send it",
   "continueButton": "Continue",
   "isItRight": "Is this right?",
   "readFromInvoice": "We read this from your invoice. Tap anything that's wrong.",
@@ -74,11 +152,81 @@
   "fieldSerial": "Serial no.",
   "checkThis": "We're not sure, please check",
   "countryNote": "Bought in {country}: your rights follow that country's rules.",
-  "@countryNote": {"placeholders": {"country": {"type": "String"}}},
+  "@countryNote": {
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
+  },
   "save": "Save",
   "retake": "Retake",
   "close": "Close",
   "back": "Back",
   "edit": "Edit",
-  "disclaimer": "For information only, not legal advice."
+  "disclaimer": "For information only, not legal advice.",
+  "left": "left",
+  "ruleSemantics": "{p}% of the period has passed",
+  "@ruleSemantics": {
+    "placeholders": {
+      "p": {
+        "type": "int"
+      }
+    }
+  },
+  "ruleProofMonth": "Month {n} · proof moves to you",
+  "@ruleProofMonth": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "rulesOf": "Rules: {country}",
+  "@rulesOf": {
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
+  },
+  "regionDE": "Germany",
+  "regionEU": "EU",
+  "regionGB": "United Kingdom",
+  "regionTR": "Türkiye",
+  "regionUS": "United States",
+  "regionAU": "Australia",
+  "showAtCounter": "Show at the counter",
+  "counterTitle": "Proof of purchase",
+  "counterRight": "{kind} until {date}.",
+  "@counterRight": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "counterAsk": "I'm asking for a free repair or replacement.",
+  "counterNoInvoice": "No invoice photo yet",
+  "adviceIfRefused": "If the seller refuses, we point you to the official consumer body and draft the complaint.",
+  "notVerifiedWhy": "We haven't checked this country's rule against an official source yet, so we don't show a period.",
+  "wayPhoto": "Photograph a receipt",
+  "wayPhotoWhy": "Paper receipts fade within months; the photo stays.",
+  "wayPdf": "Choose a PDF invoice",
+  "wayPdfWhy": "Invoices from online shops.",
+  "wayEmail": "Forward by email",
+  "wayEmailWhy": "Every invoice you forward is added for you.",
+  "previewTitle": "What you'll see",
+  "previewBody": "A time rule for every item: how much has passed, how much is left, and when the burden of proof moves to you.",
+  "daysLeft": "{n, plural, =1{day left} other{days left}}",
+  "@daysLeft": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  }
 }

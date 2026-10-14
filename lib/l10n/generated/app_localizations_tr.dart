@@ -29,11 +29,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get addReceipt => 'Fiş ya da fatura ekle';
 
   @override
-  String get emptyTitle => 'Henüz bir şey yok';
+  String get emptyTitle => 'İlk faturanı ekle, haklarını biz takip edelim.';
 
   @override
   String get emptyBody =>
-      'Fişin fotoğrafını çek ya da fatura e-postasını ilet. Okuyup neyle korunduğunu söyleriz.';
+      'Bir süre bitmeden haber veririz. Bir şey bozulduğunda ne yapacağını tek ekranda söyleriz.';
 
   @override
   String endsIn(String kind, int days) {
@@ -219,7 +219,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get stepAddEvidence => 'Sorunun fotoğrafını ya da videosunu ekle';
 
   @override
-  String get stepWeDraft => 'Mesajı biz hazırlarız, sen gönderirsin';
+  String get stepWeDraft =>
+      'Mesajı satıcının dilinde biz yazarız; Türkçesini görüp sen gönderirsin';
 
   @override
   String get continueButton => 'Devam et';
@@ -270,4 +271,95 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get disclaimer => 'Bilgi amaçlıdır, hukuki tavsiye değildir.';
+
+  @override
+  String get left => 'kaldı';
+
+  @override
+  String ruleSemantics(int p) {
+    return 'Sürenin yüzde $p kadarı geçti';
+  }
+
+  @override
+  String ruleProofMonth(int n) {
+    return '$n. ay · ispat sana geçer';
+  }
+
+  @override
+  String rulesOf(String country) {
+    return '$country kuralları';
+  }
+
+  @override
+  String get regionDE => 'Almanya';
+
+  @override
+  String get regionEU => 'AB';
+
+  @override
+  String get regionGB => 'Birleşik Krallık';
+
+  @override
+  String get regionTR => 'Türkiye';
+
+  @override
+  String get regionUS => 'ABD';
+
+  @override
+  String get regionAU => 'Avustralya';
+
+  @override
+  String get showAtCounter => 'Kasada göster';
+
+  @override
+  String get counterTitle => 'Satın alma kanıtı';
+
+  @override
+  String counterRight(String kind, String date) {
+    return '$kind: $date tarihine kadar.';
+  }
+
+  @override
+  String get counterAsk => 'Ücretsiz tamir ya da değişim istiyorum.';
+
+  @override
+  String get counterNoInvoice => 'Henüz fatura fotoğrafı yok';
+
+  @override
+  String get adviceIfRefused =>
+      'Satıcı reddederse başvuracağın resmi kurumu gösterir, şikâyet metnini biz hazırlarız.';
+
+  @override
+  String get notVerifiedWhy =>
+      'Bu ülkenin kuralını henüz resmi kaynaktan doğrulamadık, bu yüzden süre göstermiyoruz.';
+
+  @override
+  String get wayPhoto => 'Fişin fotoğrafını çek';
+
+  @override
+  String get wayPhotoWhy => 'Kâğıt fiş birkaç ayda silinir; fotoğrafı kalır.';
+
+  @override
+  String get wayPdf => 'PDF fatura seç';
+
+  @override
+  String get wayPdfWhy => 'Online alışverişlerin faturaları.';
+
+  @override
+  String get wayEmail => 'E-postayla ilet';
+
+  @override
+  String get wayEmailWhy => 'İlettiğin her fatura kendiliğinden eklenir.';
+
+  @override
+  String get previewTitle => 'Ne göreceksin';
+
+  @override
+  String get previewBody =>
+      'Her eşyanın süre çizgisi: ne kadar geçti, ne kadar kaldı, ispat yükü ne zaman sana geçiyor.';
+
+  @override
+  String daysLeft(int n) {
+    return 'gün kaldı';
+  }
 }

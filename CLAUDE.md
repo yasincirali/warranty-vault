@@ -56,9 +56,13 @@ Bir kuralı `verified: true` yapmak için `sources` alanına resmi kaynak yazıl
 (AB 2024/825) `repairExtensionVerified` açılana kadar hesaba girmez.
 Ekranda "hukuki tavsiye değildir" notu kalır.
 
-**Tasarım (C2).** Her öğe bir işe hizmet eder; süs yok. Renk yalnızca anlam
-taşır: accent = birincil eylem, deadline = 30 gün içinde biten koruma, muted =
-bitmiş. Durum hiçbir yerde yalnızca renkle verilmez (cümle/ikon da var). Renk
+**Tasarım (C2 + 4 inceleme turu, 2026-10-14; kanvas Tur1–Tur4).** Her öğe bir
+işe hizmet eder; süs yok. Renk yalnızca anlam taşır: vurgu mürekkep siyahı
+(birincil eylem), **ekrandaki tek renk** süre turuncusu (30 gün içinde biten
+koruma), muted = bitmiş. Zemin kâğıt rengi. Tek grafik dil `TimeRule` (süre
+çizgisi: geçen, bugün, ispat yükünün geçtiği ay); yeni bir grafik türü
+eklemeden önce bunu kullan. Hareket `VMotion.of(context, …)` üzerinden, hareketi
+azalt açıkken sıfır. Durum hiçbir yerde yalnızca renkle verilmez (cümle/ikon da var). Renk
 `context.c.*`, tipografi `context.t.*`, boşluk `VSpace`, köşe `VRadius`; ham
 `Colors.*` (transparent hariç), `Color(0x…)`, `fontSize:` ekranda yazılmaz.
 
