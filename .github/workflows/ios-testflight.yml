@@ -1,6 +1,6 @@
 name: iOS — TestFlight
 
-# Garanti Kasası (com.sandik.warrantyvault). Her main push'ta: Flutter iOS
+# Rafım (com.sandik.warrantyvault). Her main push'ta: Flutter iOS
 # release build + fastlane match (readonly) + gym + pilot. Harçlıklarım'ın
 # (piggy-crew) iş akışından taşındı, o da sandık `ios-testflight.yml`'den
 # türetilmişti; GoogleService, Supabase define'ları ve uzantı adımları yok

@@ -2,7 +2,7 @@ require "shellwords"
 
 default_platform(:ios)
 
-# Garanti Kasası (warranty-vault). Harçlıklarım'ın (piggy-crew) Fastfile'ından
+# Rafım (warranty-vault). Harçlıklarım'ın (piggy-crew) Fastfile'ından
 # birebir taşındı; o da sandık'ınkinden türetilmişti (yasin 2026-10-14: "sandık
 # pipeline'ını örnek al"). Uzantı hedefi, kapalı-train tespiti ve harici grup
 # dağıtımı BİLİNÇLİ olarak yok: tek hedef, ilk sürüm. Gerekince sandık'tan
