@@ -16,9 +16,14 @@ Yalnız yasin'in yapabileceği adımlar. Sıra önemlidir.
    (Recourse/Coverline) verilince değişir; bundle id değişmez. Bundle id yukarıdaki,
    SKU `warrantyvault`, birincil dil Türkçe, kategori **Utilities** (ikincil
    Productivity). TestFlight › Test Information'ı doldur.
-4. **GitHub secrets** (yeni depoya, sandık'takilerle AYNI değerler): `APPLE_ID`,
-   `APPLE_TEAM_ID`, `ITC_TEAM_ID`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_CONTENT`,
-   `MATCH_GIT_URL`, `MATCH_GIT_BASIC_AUTH`, `MATCH_PASSWORD`.
+4. **GitHub secrets**: piggy-crew'e bu akşam girdiğin 9 değerin **aynısı**
+   (yeni MATCH_PASSWORD, App Manager Team Key ile `ASC_*`, fine-grained PAT'li
+   `MATCH_GIT_BASIC_AUTH`): `APPLE_ID`, `APPLE_TEAM_ID`, `ITC_TEAM_ID`, `ASC_KEY_ID`,
+   `ASC_ISSUER_ID`, `ASC_KEY_CONTENT`, `MATCH_GIT_URL`, `MATCH_GIT_BASIC_AUTH`,
+   `MATCH_PASSWORD`. Matchfile Harçlıklarım'ın `harcliklarim` bölmesini kullanır;
+   sandık'ın parolası gerekmez, yeni sertifika üretilmez. PAT yalnız sertifika
+   reposuna erişiyorsa yeterli. MATCH_PASSWORD'ü kaydetmediysen söyle: o zaman
+   bu depo için ayrı bölme + yeni parola kurarım (bir sertifika daha harcar).
 5. **Actions › "iOS — Setup Match (one-time)"** çalıştır: yeni bundle id'nin profilini
    sandık'ın match deposuna yazar (sertifika ortak, yalnız profil eklenir).
 6. `main`'e ilk push/birleşme → "iOS — TestFlight" build'i yükler. TestFlight'ta
