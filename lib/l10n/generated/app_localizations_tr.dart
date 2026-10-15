@@ -477,6 +477,9 @@ class AppLocalizationsTr extends AppLocalizations {
       'Fotoğraf şart değil ama rafta onu fotoğrafından tanırsın.';
 
   @override
+  String get loading => 'Yükleniyor';
+
+  @override
   String get lifting => 'Arka plandan ayırıyorum…';
 
   @override
@@ -521,4 +524,44 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get nameHint => 'ör. Kahve makinesi';
+
+  @override
+  String get settingsTitle => 'Ayarlar';
+
+  @override
+  String get settingsLanguage => 'Dil';
+
+  @override
+  String get languageSystem => 'Telefonun dili';
+
+  @override
+  String get langTr => 'Türkçe';
+
+  @override
+  String get langEn => 'English';
+
+  @override
+  String get settingsRegion => 'Ülke';
+
+  @override
+  String get regionSystem => 'Telefonun ülkesi';
+
+  @override
+  String get settingsRegionHint =>
+      'Yeni eklediğin ürünlerin hakları bu ülkenin kurallarıyla hesaplanır. Her üründe ayrıca değiştirebilirsin.';
+
+  @override
+  String get settingsAbout => 'Hakkında';
+
+  @override
+  String get aboutLocal =>
+      'Dolabın ve fotoğrafların bu telefonda saklanır. Hesap açman gerekmez.';
+
+  @override
+  String amountPreview(String amount) {
+    return 'Kaydedilecek: $amount';
+  }
+
+  @override
+  String get amountUnreadable => 'Tutar okunamadı; rakamla yaz.';
 }

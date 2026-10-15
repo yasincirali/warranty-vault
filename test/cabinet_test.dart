@@ -8,6 +8,7 @@ import 'package:warranty_vault/features/cabinet/cabinet_view.dart';
 import 'package:warranty_vault/features/capture/add_item_screen.dart';
 import 'package:warranty_vault/features/items/data/demo_vault.dart';
 import 'package:warranty_vault/features/items/data/vault_store.dart';
+import 'package:warranty_vault/rights/rights_engine.dart';
 import 'package:warranty_vault/features/items/providers.dart';
 import 'package:warranty_vault/rights/rule_set.dart';
 
@@ -156,6 +157,59 @@ void main() {
     expect(moka.shelfId, isNotNull);
     expect(_onShelf('Moka pot'), findsOneWidget);
     expect(t.takeException(), isNull);
+  });
+
+  testWidgets('a new product falls in from above after the add screen has gone, onto its shelf', (t) async {
+    final store = await _open(t);
+    await t.tap(find.text('Add a product'));
+    await t.pumpAndSettle();
+    await t.enterText(find.widgetWithText(TextField, 'Product'), 'Kettle');
+    await t.pump();
+    await t.tap(find.text('Put it on the shelf'));
+
+    final kettle = find.descendant(of: find.byType(CabinetView), matching: find.text('Kettle'));
+    double? firstTop;
+    for (var i = 0; i < 120 && firstTop == null; i++) {
+      await t.pump(const Duration(milliseconds: 16));
+      if (kettle.evaluate().isNotEmpty) {
+        // Not while the add screen still covers the cabinet.
+        expect(find.text('New product'), findsNothing);
+        firstTop = t.getTopLeft(kettle).dy;
+      }
+    }
+    expect(firstTop, isNotNull);
+    await t.pumpAndSettle();
+
+    final id = store.current.items.firstWhere((i) => i.name == 'Kettle').id;
+    expect(t.getTopLeft(kettle).dy, greaterThan(firstTop! + 40), reason: 'it fell, it did not appear in place');
+    // It came to rest standing on its own shelf's plank.
+    expect(_shelfOf(store, id), isNotNull);
+    expect(t.takeException(), isNull);
+  });
+
+  testWidgets('the amount is read back as it will be saved', (t) async {
+    await _open(t);
+    await t.tap(find.text('Add a product'));
+    await t.pumpAndSettle();
+    await t.enterText(find.widgetWithText(TextField, 'Amount'), '1.299,90');
+    await t.pumpAndSettle();
+    expect(find.textContaining('1,299.90'), findsOneWidget);
+    await t.enterText(find.widgetWithText(TextField, 'Amount'), 'abc');
+    await t.pumpAndSettle();
+    expect(find.text("Couldn't read the amount; use digits."), findsOneWidget);
+  });
+
+  testWidgets('the sales channel switches with one tap on the sliding control', (t) async {
+    final store = await _open(t);
+    await t.tap(find.text('Add a product'));
+    await t.pumpAndSettle();
+    await t.enterText(find.widgetWithText(TextField, 'Product'), 'Lamp');
+    await t.scrollUntilVisible(find.text('Online'), 200, scrollable: find.byType(Scrollable).last);
+    await t.tap(find.text('Online'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Put it on the shelf'));
+    await t.pumpAndSettle();
+    expect(store.current.items.firstWhere((i) => i.name == 'Lamp').purchase.channel, SalesChannel.online);
   });
 
   testWidgets('the save button waits for a name', (t) async {

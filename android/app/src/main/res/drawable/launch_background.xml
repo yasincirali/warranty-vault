@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Modify this file to customize your launch splash screen -->
+<!-- Açılış: marka zemini + ortada işaret. Flutter ilk karede aynı işareti aynı yerde
+     çizip animasyona başlar (BrandIntro), geçiş görünmez. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@android:color/white" />
-
-    <!-- You can insert your own image assets here -->
-    <!-- <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@mipmap/launch_image" />
-    </item> -->
+    <item android:drawable="@color/marka_zemin" />
+    <item>
+        <bitmap android:gravity="center" android:src="@drawable/acilis_isareti" />
+    </item>
 </layer-list>

@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app.dart';
 import 'core/config/env.dart';
 import 'features/items/data/vault_store.dart';
 import 'features/items/providers.dart';
+import 'features/settings/settings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,8 +22,14 @@ Future<void> main() async {
   }
   final support = await getApplicationSupportDirectory();
   final store = LocalVaultStore(Directory('${support.path}/vault'));
-  runApp(ProviderScope(
-    overrides: [vaultStoreProvider.overrideWithValue(store)],
-    child: const WarrantyVaultApp(),
-  ));
+  final prefs = await SharedPreferences.getInstance();
+  runApp(
+    ProviderScope(
+      overrides: [
+        vaultStoreProvider.overrideWithValue(store),
+        settingsStoreProvider.overrideWithValue(PrefsSettingsStore(prefs)),
+      ],
+      child: const WarrantyVaultApp(),
+    ),
+  );
 }

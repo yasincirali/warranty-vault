@@ -31,9 +31,38 @@ ThemeData buildTheme(Brightness brightness) {
         textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
       ),
     ),
-    pageTransitionsTheme: const PageTransitionsTheme(builders: {
-      TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-      TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
-    }),
+    // Fields are white cards on the paper background, like everything else
+    // the user owns in the app. Focus turns the hairline into a 2-pt ink
+    // edge and the label ink: one clear "you are here" (the lift shadow is
+    // added by VFieldLift). Material animates both border and label.
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: c.surface,
+      // A pointer hovering (iPad, web preview) must not grey the field out:
+      // grey reads as disabled here.
+      hoverColor: Colors.transparent,
+      contentPadding: const EdgeInsets.symmetric(horizontal: VSpace.lg, vertical: VSpace.lg),
+      labelStyle: TextStyle(color: c.textSecondary),
+      floatingLabelStyle: TextStyle(color: c.text, fontWeight: FontWeight.w600),
+      hintStyle: TextStyle(color: c.muted),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(VRadius.md),
+        borderSide: BorderSide(color: c.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(VRadius.md),
+        borderSide: BorderSide(color: c.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(VRadius.md),
+        borderSide: BorderSide(color: c.accent, width: 2),
+      ),
+    ),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
+      },
+    ),
   );
 }

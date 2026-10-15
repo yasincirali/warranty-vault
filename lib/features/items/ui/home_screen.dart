@@ -7,6 +7,7 @@ import '../../../core/ui/widgets.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../cabinet/cabinet_view.dart';
 import '../../capture/add_item_screen.dart';
+import '../../settings/settings_screen.dart';
 import '../domain/item.dart';
 import '../providers.dart';
 import 'item_detail_screen.dart';
@@ -28,7 +29,9 @@ class HomeScreen extends ConsumerWidget {
     final today = ref.watch(clockProvider)();
 
     if (vault == null || views == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator.adaptive()));
+      // BrandIntro covers this moment; an empty page keeps a second loader
+      // from flashing underneath it.
+      return const Scaffold(body: SizedBox.shrink());
     }
     final byId = {for (final v in views) v.item.id: v};
     final active = [for (final v in views) if (v.item.active) v];
@@ -54,10 +57,21 @@ class HomeScreen extends ConsumerWidget {
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.lg, VSpace.xl, 0),
             sliver: SliverToBoxAdapter(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Semantics(header: true, child: Text(l.appTitle, style: context.t.display)),
-                if (active.isNotEmpty)
-                  Text(l.cabinetCount(active.length), style: context.t.small.copyWith(color: context.c.textSecondary)),
+              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Semantics(header: true, child: Text(l.appTitle, style: context.t.display)),
+                    if (active.isNotEmpty)
+                      Text(l.cabinetCount(active.length),
+                          style: context.t.small.copyWith(color: context.c.textSecondary)),
+                  ]),
+                ),
+                VIconButton(
+                  icon: Icons.settings_outlined,
+                  label: l.settingsTitle,
+                  onPressed: () => Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
+                ),
               ]),
             ),
           ),

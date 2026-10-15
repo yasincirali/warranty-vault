@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../features/items/domain/item.dart';
 import '../theme/tokens.dart';
@@ -14,14 +15,14 @@ class VCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: padding,
-        decoration: BoxDecoration(
-          color: color ?? context.c.surface,
-          border: Border.all(color: borderColor ?? context.c.border, width: borderWidth),
-          borderRadius: BorderRadius.circular(VRadius.lg),
-        ),
-        child: child,
-      );
+    padding: padding,
+    decoration: BoxDecoration(
+      color: color ?? context.c.surface,
+      border: Border.all(color: borderColor ?? context.c.border, width: borderWidth),
+      borderRadius: BorderRadius.circular(VRadius.lg),
+    ),
+    child: child,
+  );
 }
 
 class SectionTitle extends StatelessWidget {
@@ -30,12 +31,12 @@ class SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Semantics(
-        header: true,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: VSpace.sm),
-          child: Text(text, style: context.t.section.copyWith(color: context.c.textSecondary)),
-        ),
-      );
+    header: true,
+    child: Padding(
+      padding: const EdgeInsets.only(bottom: VSpace.sm),
+      child: Text(text, style: context.t.section.copyWith(color: context.c.textSecondary)),
+    ),
+  );
 }
 
 /// Placeholder until the user's product photo exists. Neutral on purpose:
@@ -47,27 +48,27 @@ class ItemThumb extends StatelessWidget {
   final double iconSize;
 
   static IconData iconFor(ItemCategory c) => switch (c) {
-        ItemCategory.laptop => Icons.laptop_mac_outlined,
-        ItemCategory.phone => Icons.smartphone_outlined,
-        ItemCategory.headphones => Icons.headphones_outlined,
-        ItemCategory.tv => Icons.tv_outlined,
-        ItemCategory.appliance => Icons.local_laundry_service_outlined,
-        ItemCategory.vacuum => Icons.cleaning_services_outlined,
-        ItemCategory.other => Icons.inventory_2_outlined,
-      };
+    ItemCategory.laptop => Icons.laptop_mac_outlined,
+    ItemCategory.phone => Icons.smartphone_outlined,
+    ItemCategory.headphones => Icons.headphones_outlined,
+    ItemCategory.tv => Icons.tv_outlined,
+    ItemCategory.appliance => Icons.local_laundry_service_outlined,
+    ItemCategory.vacuum => Icons.cleaning_services_outlined,
+    ItemCategory.other => Icons.inventory_2_outlined,
+  };
 
   @override
   Widget build(BuildContext context) => ExcludeSemantics(
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            color: context.c.tile,
-            borderRadius: BorderRadius.circular(size > 60 ? VRadius.md : VRadius.sm),
-          ),
-          child: Icon(iconFor(category), size: iconSize, color: context.c.text),
-        ),
-      );
+    child: Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: context.c.tile,
+        borderRadius: BorderRadius.circular(size > 60 ? VRadius.md : VRadius.sm),
+      ),
+      child: Icon(iconFor(category), size: iconSize, color: context.c.text),
+    ),
+  );
 }
 
 /// 44-pt circular icon button with a mandatory accessibility label.
@@ -79,14 +80,167 @@ class VIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => IconButton(
-        tooltip: label,
-        onPressed: onPressed,
-        icon: Icon(icon, size: 20),
-        style: IconButton.styleFrom(
-          minimumSize: const Size(VSize.minTap, VSize.minTap),
-          backgroundColor: context.c.surface,
-          foregroundColor: context.c.text,
-          side: BorderSide(color: context.c.border),
+    tooltip: label,
+    onPressed: onPressed,
+    icon: Icon(icon, size: 20),
+    style: IconButton.styleFrom(
+      minimumSize: const Size(VSize.minTap, VSize.minTap),
+      backgroundColor: context.c.surface,
+      foregroundColor: context.c.text,
+      side: BorderSide(color: context.c.border),
+    ),
+  );
+}
+
+/// Lifts a field off the page while it (or anything inside it) has focus,
+/// with the same shadow a product gets when it is picked up from its shelf.
+/// The theme draws the 2-pt ink edge; this adds the depth.
+class VFieldLift extends StatefulWidget {
+  const VFieldLift({super.key, required this.child});
+  final Widget child;
+
+  @override
+  State<VFieldLift> createState() => _VFieldLiftState();
+}
+
+class _VFieldLiftState extends State<VFieldLift> {
+  bool _focused = false;
+
+  @override
+  Widget build(BuildContext context) => Focus(
+    canRequestFocus: false,
+    skipTraversal: true,
+    onFocusChange: (f) => setState(() => _focused = f),
+    child: AnimatedContainer(
+      duration: VMotion.of(context, VMotion.quick),
+      curve: Curves.easeOutCubic,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(VRadius.md),
+        // Same blur and offset in both states, only the colour moves, so
+        // the shadow grows in instead of jumping.
+        boxShadow: [
+          BoxShadow(
+            color: _focused ? context.c.lift : context.c.lift.withValues(alpha: 0),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: widget.child,
+    ),
+  );
+}
+
+/// A small ink check that pops in when a field holds a usable value.
+/// State, not decoration: it answers "is this one done?" at a glance.
+class VDoneTick extends StatelessWidget {
+  const VDoneTick({super.key, required this.visible});
+  final bool visible;
+
+  @override
+  Widget build(BuildContext context) {
+    final d = VMotion.of(context, VMotion.quick);
+    return ExcludeSemantics(
+      child: AnimatedScale(
+        scale: visible ? 1 : .6,
+        duration: d,
+        curve: Curves.easeOutBack,
+        child: AnimatedOpacity(
+          opacity: visible ? 1 : 0,
+          duration: d,
+          curve: Curves.easeOutCubic,
+          child: Icon(Icons.check_circle_rounded, size: 22, color: context.c.accent),
         ),
-      );
+      ),
+    );
+  }
+}
+
+/// Two or three choices with a thumb that slides to the chosen one (the
+/// iOS segmented control). Replaces Material's SegmentedButton, whose
+/// selection jumps; here the eye follows the thumb, so the change is seen.
+/// Labels may wrap at large text sizes; the control grows with them.
+class VSegment<T> extends StatelessWidget {
+  const VSegment({super.key, required this.options, required this.selected, required this.onChanged});
+  final List<(T, String)> options;
+  final T selected;
+  final ValueChanged<T> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final n = options.length;
+    final at = options.indexWhere((o) => o.$1 == selected);
+    final d = VMotion.of(context, VMotion.slide);
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(color: context.c.tile, borderRadius: BorderRadius.circular(VRadius.md)),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: AnimatedAlign(
+              duration: d,
+              // Moving on screen: ease in and out, so it neither lurches off
+              // nor slams into place.
+              curve: Curves.easeInOutCubic,
+              alignment: Alignment(n == 1 ? 0 : -1 + 2 * at / (n - 1), 0),
+              child: FractionallySizedBox(
+                widthFactor: 1 / n,
+                heightFactor: 1,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: context.c.surface,
+                    borderRadius: BorderRadius.circular(VRadius.md - 3),
+                    border: Border.all(color: context.c.border),
+                    boxShadow: [BoxShadow(color: context.c.lift, blurRadius: 6, offset: const Offset(0, 2))],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Equal heights when one label wraps at large text sizes.
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final (i, (value, label)) in options.indexed)
+                  Expanded(
+                    child: Semantics(
+                      button: true,
+                      selected: i == at,
+                      inMutuallyExclusiveGroup: true,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          if (i == at) return;
+                          HapticFeedback.selectionClick();
+                          onChanged(value);
+                        },
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(minHeight: VSize.minTap),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: VSpace.sm, vertical: VSpace.sm),
+                            child: Center(
+                              child: AnimatedDefaultTextStyle(
+                                duration: d,
+                                curve: Curves.easeInOutCubic,
+                                style: context.t.label.copyWith(
+                                  color: i == at ? context.c.text : context.c.textSecondary,
+                                  fontWeight: i == at ? FontWeight.w600 : FontWeight.w500,
+                                ),
+                                textAlign: TextAlign.center,
+                                child: Text(label),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
