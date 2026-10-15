@@ -11,6 +11,7 @@ import '../../counter/counter_screen.dart';
 import '../../issue/issue_flow_screen.dart';
 import '../domain/item.dart';
 import '../providers.dart';
+import 'item_photo.dart';
 
 /// Answer first: the top card says where the user stands today in one
 /// number and one sentence. The list below is the evidence for it.
@@ -47,7 +48,7 @@ class ItemDetailScreen extends ConsumerWidget {
         padding: const EdgeInsets.fromLTRB(VSpace.xl, 0, VSpace.xl, VSpace.xxl),
         children: [
           Row(children: [
-            ItemThumb(item.category, size: 72, iconSize: 40),
+            ItemPhoto(item: item, size: 96, iconSize: 44),
             const SizedBox(width: VSpace.lg - 2),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

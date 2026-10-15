@@ -228,5 +228,108 @@
         "type": "int"
       }
     }
-  }
+  },
+  "cabinetCount": "{count, plural, =1{1 thing on your shelves} other{{count} things on your shelves}}",
+  "@cabinetCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cabinetHint": "Drag to another shelf. Flick sideways to throw out.",
+  "addItem": "Add a product",
+  "shelfLabelHint": "+ Label",
+  "shelfName": "Shelf {n}",
+  "@shelfName": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "shelfLabelA11y": "Shelf {n} label: {label}. Double tap to edit.",
+  "@shelfLabelA11y": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "shelfNoLabelA11y": "Shelf {n} has no label. Double tap to add one.",
+  "@shelfNoLabelA11y": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "itemA11y": "{name}. {status}. {shelf}.",
+  "@itemA11y": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "shelf": {
+        "type": "String"
+      }
+    }
+  },
+  "moveUp": "Move to the shelf above",
+  "moveDown": "Move to the shelf below",
+  "throwOut": "Throw out",
+  "thrownOut": "{name} is out of the cabinet",
+  "@thrownOut": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "undo": "Undo",
+  "disposedHeader": "Thrown out · {count}",
+  "@disposedHeader": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "putBack": "Put back",
+  "wayCamera": "Photograph the product",
+  "wayCameraWhy": "We lift it off the background and stand it on a shelf.",
+  "wayGallery": "Choose from your photos",
+  "wayGalleryWhy": "A product photo you already have works too.",
+  "waySample": "Load a sample cabinet",
+  "waySampleWhy": "Try the shelves with six sample products first.",
+  "emptyCabinetTitle": "Put the things you bought on your shelves.",
+  "emptyCabinetBody": "Each one keeps its receipt and its rights. We warn you before a period ends.",
+  "sampleDesk": "Desk",
+  "sampleLiving": "Living room",
+  "sampleKitchen": "Kitchen",
+  "addTitle": "New product",
+  "photoCamera": "Camera",
+  "photoGallery": "Photos",
+  "photoOptional": "A photo is optional, but it is how you will spot it on the shelf.",
+  "lifting": "Lifting it off the background…",
+  "photoCutout": "Cut out",
+  "photoOriginal": "Original",
+  "photoChange": "Change photo",
+  "photoFailed": "That photo couldn't be read. Try another one.",
+  "photoNoCutout": "The background wasn't clear enough to lift, so the photo stays as it is.",
+  "fieldChannel": "Where did you buy it?",
+  "channelStore": "In a store",
+  "channelOnline": "Online",
+  "fieldRegion": "Country of purchase",
+  "warrantyNone": "None",
+  "fieldShelf": "Shelf",
+  "shelfAuto": "First shelf with room",
+  "putOnShelf": "Put it on the shelf",
+  "nameHint": "e.g. Coffee machine"
 }

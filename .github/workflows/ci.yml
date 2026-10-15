@@ -1,8 +1,9 @@
 name: CI
 
-# Analyze + test only. There is deliberately no release workflow yet: this
-# app must never ship through sandikapp's pipeline, and its own store
-# pipeline comes with its own bundle ID, signing and secrets.
+# Analyze + test only. This app must never ship through sandikapp's
+# pipeline; its own store pipeline lives next to this file
+# (ios-testflight.yml + setup-match.yml) with its own bundle ID
+# (com.sandik.warrantyvault), signing profile and this repo's secrets.
 
 on:
   pull_request:

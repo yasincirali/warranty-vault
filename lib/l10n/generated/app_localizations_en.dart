@@ -377,4 +377,164 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String cabinetCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count things on your shelves',
+      one: '1 thing on your shelves',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cabinetHint =>
+      'Drag to another shelf. Flick sideways to throw out.';
+
+  @override
+  String get addItem => 'Add a product';
+
+  @override
+  String get shelfLabelHint => '+ Label';
+
+  @override
+  String shelfName(int n) {
+    return 'Shelf $n';
+  }
+
+  @override
+  String shelfLabelA11y(int n, String label) {
+    return 'Shelf $n label: $label. Double tap to edit.';
+  }
+
+  @override
+  String shelfNoLabelA11y(int n) {
+    return 'Shelf $n has no label. Double tap to add one.';
+  }
+
+  @override
+  String itemA11y(String name, String status, String shelf) {
+    return '$name. $status. $shelf.';
+  }
+
+  @override
+  String get moveUp => 'Move to the shelf above';
+
+  @override
+  String get moveDown => 'Move to the shelf below';
+
+  @override
+  String get throwOut => 'Throw out';
+
+  @override
+  String thrownOut(String name) {
+    return '$name is out of the cabinet';
+  }
+
+  @override
+  String get undo => 'Undo';
+
+  @override
+  String disposedHeader(int count) {
+    return 'Thrown out · $count';
+  }
+
+  @override
+  String get putBack => 'Put back';
+
+  @override
+  String get wayCamera => 'Photograph the product';
+
+  @override
+  String get wayCameraWhy =>
+      'We lift it off the background and stand it on a shelf.';
+
+  @override
+  String get wayGallery => 'Choose from your photos';
+
+  @override
+  String get wayGalleryWhy => 'A product photo you already have works too.';
+
+  @override
+  String get waySample => 'Load a sample cabinet';
+
+  @override
+  String get waySampleWhy => 'Try the shelves with six sample products first.';
+
+  @override
+  String get emptyCabinetTitle => 'Put the things you bought on your shelves.';
+
+  @override
+  String get emptyCabinetBody =>
+      'Each one keeps its receipt and its rights. We warn you before a period ends.';
+
+  @override
+  String get sampleDesk => 'Desk';
+
+  @override
+  String get sampleLiving => 'Living room';
+
+  @override
+  String get sampleKitchen => 'Kitchen';
+
+  @override
+  String get addTitle => 'New product';
+
+  @override
+  String get photoCamera => 'Camera';
+
+  @override
+  String get photoGallery => 'Photos';
+
+  @override
+  String get photoOptional =>
+      'A photo is optional, but it is how you will spot it on the shelf.';
+
+  @override
+  String get lifting => 'Lifting it off the background…';
+
+  @override
+  String get photoCutout => 'Cut out';
+
+  @override
+  String get photoOriginal => 'Original';
+
+  @override
+  String get photoChange => 'Change photo';
+
+  @override
+  String get photoFailed => 'That photo couldn\'t be read. Try another one.';
+
+  @override
+  String get photoNoCutout =>
+      'The background wasn\'t clear enough to lift, so the photo stays as it is.';
+
+  @override
+  String get fieldChannel => 'Where did you buy it?';
+
+  @override
+  String get channelStore => 'In a store';
+
+  @override
+  String get channelOnline => 'Online';
+
+  @override
+  String get fieldRegion => 'Country of purchase';
+
+  @override
+  String get warrantyNone => 'None';
+
+  @override
+  String get fieldShelf => 'Shelf';
+
+  @override
+  String get shelfAuto => 'First shelf with room';
+
+  @override
+  String get putOnShelf => 'Put it on the shelf';
+
+  @override
+  String get nameHint => 'e.g. Coffee machine';
 }

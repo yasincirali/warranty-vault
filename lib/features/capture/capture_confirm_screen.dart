@@ -80,7 +80,7 @@ class CaptureConfirmScreen extends ConsumerWidget {
             child: FilledButton(
               onPressed: draft.hasValue
                   ? () async {
-                      await ref.read(itemRepositoryProvider).add(draft.requireValue.toItem());
+                      await ref.read(vaultProvider.notifier).add(draft.requireValue.toItem());
                       ref.invalidate(itemViewsProvider);
                       if (context.mounted) Navigator.of(context).pop();
                     }

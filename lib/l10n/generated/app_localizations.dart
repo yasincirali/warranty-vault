@@ -661,6 +661,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{n, plural, =1{day left} other{days left}}'**
   String daysLeft(int n);
+
+  /// No description provided for @cabinetCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 thing on your shelves} other{{count} things on your shelves}}'**
+  String cabinetCount(int count);
+
+  /// No description provided for @cabinetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to another shelf. Flick sideways to throw out.'**
+  String get cabinetHint;
+
+  /// No description provided for @addItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a product'**
+  String get addItem;
+
+  /// No description provided for @shelfLabelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Label'**
+  String get shelfLabelHint;
+
+  /// No description provided for @shelfName.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelf {n}'**
+  String shelfName(int n);
+
+  /// No description provided for @shelfLabelA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelf {n} label: {label}. Double tap to edit.'**
+  String shelfLabelA11y(int n, String label);
+
+  /// No description provided for @shelfNoLabelA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelf {n} has no label. Double tap to add one.'**
+  String shelfNoLabelA11y(int n);
+
+  /// No description provided for @itemA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}. {status}. {shelf}.'**
+  String itemA11y(String name, String status, String shelf);
+
+  /// No description provided for @moveUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to the shelf above'**
+  String get moveUp;
+
+  /// No description provided for @moveDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to the shelf below'**
+  String get moveDown;
+
+  /// No description provided for @throwOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Throw out'**
+  String get throwOut;
+
+  /// No description provided for @thrownOut.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is out of the cabinet'**
+  String thrownOut(String name);
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
+
+  /// No description provided for @disposedHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Thrown out · {count}'**
+  String disposedHeader(int count);
+
+  /// No description provided for @putBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Put back'**
+  String get putBack;
+
+  /// No description provided for @wayCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Photograph the product'**
+  String get wayCamera;
+
+  /// No description provided for @wayCameraWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'We lift it off the background and stand it on a shelf.'**
+  String get wayCameraWhy;
+
+  /// No description provided for @wayGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from your photos'**
+  String get wayGallery;
+
+  /// No description provided for @wayGalleryWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'A product photo you already have works too.'**
+  String get wayGalleryWhy;
+
+  /// No description provided for @waySample.
+  ///
+  /// In en, this message translates to:
+  /// **'Load a sample cabinet'**
+  String get waySample;
+
+  /// No description provided for @waySampleWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Try the shelves with six sample products first.'**
+  String get waySampleWhy;
+
+  /// No description provided for @emptyCabinetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Put the things you bought on your shelves.'**
+  String get emptyCabinetTitle;
+
+  /// No description provided for @emptyCabinetBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Each one keeps its receipt and its rights. We warn you before a period ends.'**
+  String get emptyCabinetBody;
+
+  /// No description provided for @sampleDesk.
+  ///
+  /// In en, this message translates to:
+  /// **'Desk'**
+  String get sampleDesk;
+
+  /// No description provided for @sampleLiving.
+  ///
+  /// In en, this message translates to:
+  /// **'Living room'**
+  String get sampleLiving;
+
+  /// No description provided for @sampleKitchen.
+  ///
+  /// In en, this message translates to:
+  /// **'Kitchen'**
+  String get sampleKitchen;
+
+  /// No description provided for @addTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New product'**
+  String get addTitle;
+
+  /// No description provided for @photoCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get photoCamera;
+
+  /// No description provided for @photoGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get photoGallery;
+
+  /// No description provided for @photoOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'A photo is optional, but it is how you will spot it on the shelf.'**
+  String get photoOptional;
+
+  /// No description provided for @lifting.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifting it off the background…'**
+  String get lifting;
+
+  /// No description provided for @photoCutout.
+  ///
+  /// In en, this message translates to:
+  /// **'Cut out'**
+  String get photoCutout;
+
+  /// No description provided for @photoOriginal.
+  ///
+  /// In en, this message translates to:
+  /// **'Original'**
+  String get photoOriginal;
+
+  /// No description provided for @photoChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get photoChange;
+
+  /// No description provided for @photoFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'That photo couldn\'t be read. Try another one.'**
+  String get photoFailed;
+
+  /// No description provided for @photoNoCutout.
+  ///
+  /// In en, this message translates to:
+  /// **'The background wasn\'t clear enough to lift, so the photo stays as it is.'**
+  String get photoNoCutout;
+
+  /// No description provided for @fieldChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'Where did you buy it?'**
+  String get fieldChannel;
+
+  /// No description provided for @channelStore.
+  ///
+  /// In en, this message translates to:
+  /// **'In a store'**
+  String get channelStore;
+
+  /// No description provided for @channelOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get channelOnline;
+
+  /// No description provided for @fieldRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'Country of purchase'**
+  String get fieldRegion;
+
+  /// No description provided for @warrantyNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get warrantyNone;
+
+  /// No description provided for @fieldShelf.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelf'**
+  String get fieldShelf;
+
+  /// No description provided for @shelfAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'First shelf with room'**
+  String get shelfAuto;
+
+  /// No description provided for @putOnShelf.
+  ///
+  /// In en, this message translates to:
+  /// **'Put it on the shelf'**
+  String get putOnShelf;
+
+  /// No description provided for @nameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Coffee machine'**
+  String get nameHint;
 }
 
 class _AppLocalizationsDelegate

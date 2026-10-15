@@ -1,0 +1,10 @@
+# sandık ile AYNI sertifika deposu (MATCH_GIT_URL) kullanılır: Apple
+# Distribution sertifikası takım geneli tektir, yalnız provisioning profili
+# bundle id'ye özeldir. Ayrı depo açmak ikinci bir sertifika üretirdi.
+git_url(ENV["MATCH_GIT_URL"])
+storage_mode("git")
+type("appstore")
+app_identifier(["com.sandik.warrantyvault"])
+username(ENV["APPLE_ID"])
+git_basic_authorization(ENV["MATCH_GIT_BASIC_AUTH"])
+readonly(ENV["MATCH_READONLY"] == "true")

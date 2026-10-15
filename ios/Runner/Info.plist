@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Warranty Vault</string>
+	<string>Garanti Kasası</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -53,6 +53,14 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<!-- Fotoğraf: eşya ve fiş görseli kullanıcının kendi seçimiyle alınır. -->
+	<key>NSCameraUsageDescription</key>
+	<string>Eşyanın ve fişinin fotoğrafını çekmek için.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Eşyanın ya da fişinin fotoğrafını galeriden seçmek için.</string>
+	<!-- Yalnız HTTPS; özel şifreleme yok → ihracat uyumu sorusu TestFlight'ta çıkmaz. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

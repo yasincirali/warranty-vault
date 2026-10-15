@@ -3,105 +3,128 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/format.dart';
 import '../../../core/theme/tokens.dart';
-import '../../../core/ui/time_rule.dart';
 import '../../../core/ui/widgets.dart';
 import '../../../l10n/generated/app_localizations.dart';
-import '../../../rights/rights_engine.dart';
-import '../../capture/capture_confirm_screen.dart';
+import '../../cabinet/cabinet_view.dart';
+import '../../capture/add_item_screen.dart';
 import '../domain/item.dart';
 import '../providers.dart';
 import 'item_detail_screen.dart';
+import 'item_photo.dart';
 
 /// One screen, two questions answered in order:
 /// 1. "Is anything about to run out?" → İlgilen (only when there is something)
-/// 2. "What do I own?" → the grid
-/// The most frequent action (adding a receipt) sits in the thumb zone.
+/// 2. "What do I own?" → the cabinet (Tur 5): the user's own products,
+///    photographed and standing on shelves they name themselves.
+/// The most frequent action (adding a product) sits in the thumb zone.
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
-    final views = ref.watch(itemViewsProvider);
+    final vault = ref.watch(vaultProvider).value;
+    final views = ref.watch(itemViewsProvider).value;
     final today = ref.watch(clockProvider)();
+
+    if (vault == null || views == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator.adaptive()));
+    }
+    final byId = {for (final v in views) v.item.id: v};
+    final active = [for (final v in views) if (v.item.active) v];
+    final urgent = active.where((v) => v.next != null).toList()
+      ..sort((a, b) => a.next!.daysLeft(today)!.compareTo(b.next!.daysLeft(today)!));
+    final disposed = vault.disposed;
+
+    void discard(String id) {
+      final name = byId[id]?.item.name ?? '';
+      ref.read(vaultProvider.notifier).discard(id);
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(
+          content: Text(l.thrownOut(name)),
+          action: SnackBarAction(label: l.undo, onPressed: () => ref.read(vaultProvider.notifier).restore(id)),
+        ));
+    }
 
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: views.when(
-          loading: () => const Center(child: CircularProgressIndicator.adaptive()),
-          error: (e, _) => Center(child: Text(l.emptyTitle)),
-          data: (all) {
-            final urgent = all.where((v) => v.next != null).toList()
-              ..sort((a, b) => a.next!.daysLeft(today)!.compareTo(b.next!.daysLeft(today)!));
-            return CustomScrollView(slivers: [
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.lg, VSpace.xl, 0),
-                sliver: SliverToBoxAdapter(
-                  child: Row(children: [
-                    Expanded(
-                      child: Semantics(
-                        header: true,
-                        child: Text(l.appTitle, style: context.t.display),
-                      ),
-                    ),
-                    VIconButton(icon: Icons.search, label: l.searchItems, onPressed: () {}),
-                  ]),
-                ),
-              ),
-              if (all.isEmpty)
-                SliverToBoxAdapter(child: _Empty(l: l)),
-              if (urgent.isNotEmpty)
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.xl, VSpace.xl, 0),
-                  sliver: SliverToBoxAdapter(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      SectionTitle(l.attentionHeader(urgent.length)),
-                      VCard(
-                        padding: const EdgeInsets.symmetric(horizontal: VSpace.lg - 2),
-                        child: Column(children: [
-                          for (var i = 0; i < urgent.length; i++)
-                            _AttentionRow(view: urgent[i], today: today, last: i == urgent.length - 1),
-                        ]),
-                      ),
+        child: CustomScrollView(slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.lg, VSpace.xl, 0),
+            sliver: SliverToBoxAdapter(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Semantics(header: true, child: Text(l.appTitle, style: context.t.display)),
+                if (active.isNotEmpty)
+                  Text(l.cabinetCount(active.length), style: context.t.small.copyWith(color: context.c.textSecondary)),
+              ]),
+            ),
+          ),
+          if (active.isEmpty && disposed.isEmpty)
+            SliverToBoxAdapter(child: _Empty(l: l)),
+          if (urgent.isNotEmpty)
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.xl, VSpace.xl, 0),
+              sliver: SliverToBoxAdapter(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  SectionTitle(l.attentionHeader(urgent.length)),
+                  VCard(
+                    padding: const EdgeInsets.symmetric(horizontal: VSpace.lg - 2),
+                    child: Column(children: [
+                      for (var i = 0; i < urgent.length; i++)
+                        _AttentionRow(view: urgent[i], today: today, last: i == urgent.length - 1),
                     ]),
                   ),
-                ),
-              if (all.isNotEmpty)
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.xl, VSpace.xl, VSpace.sm),
-                  sliver: SliverToBoxAdapter(child: SectionTitle(l.allHeader(all.length))),
-                ),
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: VSpace.xl),
-                sliver: SliverGrid(
-                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 220,
-                    mainAxisSpacing: VSpace.md - 2,
-                    crossAxisSpacing: VSpace.md - 2,
-                    // Grows with Dynamic Type instead of clipping the text.
-                    mainAxisExtent: 84 + VSpace.xl + 12 + MediaQuery.textScalerOf(context).scale(64),
-                  ),
-                  delegate: SliverChildBuilderDelegate(
-                    (context, i) => _ItemTile(view: all[i], today: today),
-                    childCount: all.length,
-                  ),
-                ),
+                ]),
               ),
-              const SliverToBoxAdapter(child: SizedBox(height: 120)),
-            ]);
-          },
-        ),
+            ),
+          if (active.isNotEmpty || disposed.isNotEmpty) ...[
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.xl, VSpace.xl, VSpace.xs),
+              sliver: SliverToBoxAdapter(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  SectionTitle(l.allHeader(active.length)),
+                  // The two gestures, said once in plain words; there is no
+                  // tutorial to dismiss.
+                  Text(l.cabinetHint, style: context.t.small.copyWith(color: context.c.textSecondary)),
+                ]),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: LayoutBuilder(
+                // iPad: the cabinet keeps phone proportions instead of
+                // stretching four products across 1000 pt.
+                builder: (context, box) {
+                  final w = box.maxWidth > 560 ? 560.0 : box.maxWidth;
+                  return Center(
+                    child: CabinetView(
+                      vault: vault,
+                      views: byId,
+                      today: today,
+                      width: w,
+                      onOpen: (id) => _openItem(context, id),
+                      onDiscard: discard,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+          if (disposed.isNotEmpty)
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.lg, VSpace.xl, 0),
+              sliver: SliverToBoxAdapter(child: _DisposedRow(items: disposed)),
+            ),
+          const SliverToBoxAdapter(child: SizedBox(height: 120)),
+        ]),
       ),
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.md, VSpace.xl, VSpace.md),
         child: FilledButton.icon(
-          onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-            fullscreenDialog: true,
-            builder: (_) => const CaptureConfirmScreen(),
-          )),
-          icon: const Icon(Icons.document_scanner_outlined),
-          label: Text(l.addReceipt),
+          onPressed: () => _add(context),
+          icon: const Icon(Icons.add_a_photo_outlined),
+          label: Text(l.addItem),
         ),
       ),
     );
@@ -110,6 +133,11 @@ class HomeScreen extends ConsumerWidget {
 
 void _openItem(BuildContext context, String id) => Navigator.of(context)
     .push(MaterialPageRoute(builder: (_) => ItemDetailScreen(itemId: id)));
+
+void _add(BuildContext context, [PhotoSource? source]) => Navigator.of(context).push(MaterialPageRoute(
+      fullscreenDialog: true,
+      builder: (_) => AddItemScreen(initialSource: source),
+    ));
 
 class _AttentionRow extends StatelessWidget {
   const _AttentionRow({required this.view, required this.today, required this.last});
@@ -130,7 +158,7 @@ class _AttentionRow extends StatelessWidget {
           border: last ? null : Border(bottom: BorderSide(color: context.c.divider)),
         ),
         child: Row(children: [
-          ItemThumb(view.item.category),
+          ItemPhoto(item: view.item),
           const SizedBox(width: VSpace.md),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -147,107 +175,89 @@ class _AttentionRow extends StatelessWidget {
   }
 }
 
-class _ItemTile extends StatelessWidget {
-  const _ItemTile({required this.view, required this.today});
-  final ItemView view;
-  final DateTime today;
+/// Thrown-out things are not deleted: one row opens the list, each can go
+/// back on its shelf.
+class _DisposedRow extends ConsumerWidget {
+  const _DisposedRow({required this.items});
+  final List<Item> items;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
-    final p = view.primary;
-    final active = p != null && p.status == ProtectionStatus.active;
-    final status = !active
-        ? l.protectionEnded
-        : l.statusLine(kindLabel(l, p.kind),
-            p.end == null ? l.noFixedEnd : remainingLabel(l, today, p.end!));
-    final color = !active
-        ? context.c.muted
-        : (view.next != null ? context.c.deadline : context.c.text);
-
-    return Material(
-      color: context.c.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(VRadius.lg),
-        side: BorderSide(color: context.c.border),
+    return InkWell(
+      borderRadius: BorderRadius.circular(VRadius.sm),
+      onTap: () => showModalBottomSheet<void>(
+        context: context,
+        showDragHandle: true,
+        builder: (sheet) => Consumer(
+          builder: (sheet, ref, _) {
+            final gone = ref.watch(vaultProvider).value?.disposed ?? const <Item>[];
+            return SafeArea(
+              child: ListView(shrinkWrap: true, padding: const EdgeInsets.fromLTRB(VSpace.xl, 0, VSpace.xl, VSpace.lg), children: [
+                SectionTitle(l.disposedHeader(gone.length)),
+                for (final item in gone)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: VSpace.xs),
+                    child: Row(children: [
+                      ItemPhoto(item: item),
+                      const SizedBox(width: VSpace.md),
+                      Expanded(child: Text(item.name, style: context.t.label)),
+                      TextButton(
+                        onPressed: () => ref.read(vaultProvider.notifier).restore(item.id),
+                        child: Text(l.putBack),
+                      ),
+                    ]),
+                  ),
+              ]),
+            );
+          },
+        ),
       ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => _openItem(context, view.item.id),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Stack(children: [
-            Container(
-              height: 84,
-              color: context.c.tile,
-              alignment: Alignment.center,
-              child: ExcludeSemantics(
-                child: Icon(ItemThumb.iconFor(view.item.category), size: 40, color: context.c.text),
-              ),
-            ),
-            // Review round 2: whose rules apply, visible before opening.
-            Positioned(
-              top: VSpace.sm,
-              right: VSpace.sm,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: context.c.surface,
-                  border: Border.all(color: context.c.border),
-                  borderRadius: BorderRadius.circular(VRadius.sm - 2),
-                ),
-                child: Text(view.item.purchase.region,
-                    semanticsLabel: regionName(l, view.item.purchase.region),
-                    style: context.t.small.copyWith(fontSize: 11.5, fontWeight: FontWeight.w600, color: context.c.textSecondary)),
-              ),
-            ),
-          ]),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(VSpace.md, VSpace.sm + 2, VSpace.md, VSpace.md),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(view.item.name, style: context.t.label, maxLines: 1, overflow: TextOverflow.ellipsis),
-              Text(status, style: context.t.small.copyWith(color: color), maxLines: 2),
-              if (p != null) ...[
-                const SizedBox(height: VSpace.sm),
-                TimeRule(protection: p, today: today, urgent: view.next != null, compact: true),
-              ],
-            ]),
-          ),
+      child: Container(
+        constraints: const BoxConstraints(minHeight: VSize.minTap),
+        alignment: Alignment.centerLeft,
+        child: Row(children: [
+          Icon(Icons.delete_outline, size: 20, color: context.c.textSecondary),
+          const SizedBox(width: VSpace.sm),
+          Expanded(child: Text(l.disposedHeader(items.length), style: context.t.label.copyWith(color: context.c.textSecondary))),
+          Icon(Icons.chevron_right, color: context.c.muted, size: 20),
         ]),
       ),
     );
   }
 }
 
-/// First run (review round 4): not an empty grid but the ways in, why the
-/// photo matters, and a preview of the one graphic the user will get.
-class _Empty extends StatelessWidget {
+/// First run: the ways in, in the order people use them, plus a sample
+/// cabinet so a tester can try the shelves before photographing anything.
+class _Empty extends ConsumerWidget {
   const _Empty({required this.l});
   final AppLocalizations l;
 
   @override
-  Widget build(BuildContext context) {
-    void capture() => Navigator.of(context).push(MaterialPageRoute(
-          fullscreenDialog: true,
-          builder: (_) => const CaptureConfirmScreen(),
-        ));
-    // TODO(capture): PDF picker; email forwarding row once inbound mail exists.
+  Widget build(BuildContext context, WidgetRef ref) {
     final ways = [
-      (Icons.document_scanner_outlined, l.wayPhoto, l.wayPhotoWhy),
-      (Icons.description_outlined, l.wayPdf, l.wayPdfWhy),
+      (Icons.photo_camera_outlined, l.wayCamera, l.wayCameraWhy, () => _add(context, PhotoSource.camera)),
+      (Icons.photo_library_outlined, l.wayGallery, l.wayGalleryWhy, () => _add(context, PhotoSource.gallery)),
+      (
+        Icons.shelves,
+        l.waySample,
+        l.waySampleWhy,
+        () => ref.read(vaultProvider.notifier).loadSample(desk: l.sampleDesk, living: l.sampleLiving, kitchen: l.sampleKitchen),
+      ),
     ];
     return Padding(
       padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.xxl, VSpace.xl, 0),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Text(l.emptyTitle, style: context.t.title),
+        Text(l.emptyCabinetTitle, style: context.t.title),
         const SizedBox(height: VSpace.sm),
-        Text(l.emptyBody, style: context.t.body.copyWith(color: context.c.textSecondary)),
+        Text(l.emptyCabinetBody, style: context.t.body.copyWith(color: context.c.textSecondary)),
         const SizedBox(height: VSpace.xl),
         VCard(
           padding: const EdgeInsets.symmetric(horizontal: VSpace.lg),
           child: Column(children: [
             for (final (i, w) in ways.indexed)
               InkWell(
-                onTap: capture,
+                onTap: w.$4,
                 child: Container(
                   constraints: const BoxConstraints(minHeight: 64),
                   padding: const EdgeInsets.symmetric(vertical: VSpace.md),
@@ -276,57 +286,7 @@ class _Empty extends StatelessWidget {
               ),
           ]),
         ),
-        const SizedBox(height: VSpace.lg),
-        Container(
-          padding: const EdgeInsets.all(VSpace.lg),
-          decoration: BoxDecoration(
-            border: Border.all(color: context.c.border),
-            borderRadius: BorderRadius.circular(VRadius.lg),
-          ),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(l.previewTitle, style: context.t.section.copyWith(color: context.c.textSecondary)),
-            const SizedBox(height: VSpace.md),
-            const _PreviewRule(),
-            const SizedBox(height: VSpace.md),
-            Text(l.previewBody, style: context.t.small.copyWith(color: context.c.textSecondary)),
-          ]),
-        ),
       ]),
     );
   }
-}
-
-/// A static sample of the time rule; decorative, so hidden from screen readers.
-class _PreviewRule extends StatelessWidget {
-  const _PreviewRule();
-
-  @override
-  Widget build(BuildContext context) => ExcludeSemantics(
-        child: LayoutBuilder(
-          builder: (context, box) => SizedBox(
-            height: 16,
-            child: Stack(alignment: Alignment.centerLeft, children: [
-              Container(height: 6, decoration: BoxDecoration(color: context.c.track, borderRadius: BorderRadius.circular(3))),
-              Container(
-                width: box.maxWidth * .4,
-                height: 6,
-                decoration: BoxDecoration(color: context.c.text.withValues(alpha: .22), borderRadius: BorderRadius.circular(3)),
-              ),
-              Positioned(left: box.maxWidth * .5 - 1, child: Container(width: 2, height: 14, color: context.c.text)),
-              Positioned(
-                left: box.maxWidth * .4 - 8,
-                child: Container(
-                  width: 16,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: context.c.surface,
-                    shape: BoxShape.circle,
-                    border: Border.all(width: 3, color: context.c.textSecondary),
-                  ),
-                ),
-              ),
-            ]),
-          ),
-        ),
-      );
 }

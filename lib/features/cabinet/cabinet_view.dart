@@ -1,0 +1,637 @@
+import 'dart:math' as math;
+
+import 'package:flutter/gestures.dart';
+import 'package:flutter/semantics.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../core/format.dart';
+import '../../core/theme/tokens.dart';
+import '../../core/ui/widgets.dart';
+import '../../l10n/generated/app_localizations.dart';
+import '../../rights/rights_engine.dart';
+import '../items/data/vault_store.dart';
+import '../items/domain/item.dart';
+import '../items/domain/vault.dart';
+import '../items/providers.dart';
+import 'shelf_physics.dart';
+
+/// The home of the app: the user's things standing on shelves.
+///
+/// Every gesture is a decision, not decoration (yasin, Tur 5):
+/// - drag a product to another shelf → it now belongs to that shelf/label;
+/// - flick it sideways out of the cabinet → thrown out (undo offered);
+/// - tap → its rights and receipt;
+/// - tap a shelf's Dymo label → name the shelf.
+/// VoiceOver/TalkBack get the same decisions as custom actions on each
+/// product, so nothing depends on being able to drag.
+class CabinetView extends ConsumerStatefulWidget {
+  const CabinetView({
+    super.key,
+    required this.vault,
+    required this.views,
+    required this.today,
+    required this.width,
+    required this.onOpen,
+    required this.onDiscard,
+  });
+
+  final Vault vault;
+  final Map<String, ItemView> views;
+  final DateTime today;
+  final double width;
+  final void Function(String id) onOpen;
+  final void Function(String id) onDiscard;
+
+  @override
+  ConsumerState<CabinetView> createState() => _CabinetViewState();
+}
+
+class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProviderStateMixin {
+  late ShelfPhysics _world;
+  late final Ticker _ticker = createTicker(_tick);
+  final _frame = ValueNotifier<int>(0);
+  final _canvasKey = GlobalKey();
+  Duration _last = Duration.zero;
+  Vault? _synced;
+  double _syncedWidth = 0;
+
+  // The one product under the finger.
+  String? _grabbed;
+  int? _pointer;
+  Offset _downAt = Offset.zero;
+  Duration _downTime = Duration.zero;
+  Offset _lastGlobal = Offset.zero;
+  Offset _grabOffset = Offset.zero;
+  bool _lifted = false;
+  final _trail = <(Duration, Offset)>[];
+
+  bool get _reduceMotion => MediaQuery.of(context).disableAnimations;
+
+  @override
+  void initState() {
+    super.initState();
+    _world = ShelfPhysics(CabinetGeometry(width: widget.width, shelves: math.max(1, widget.vault.shelves.length)));
+  }
+
+  @override
+  void dispose() {
+    _ticker.dispose();
+    _frame.dispose();
+    super.dispose();
+  }
+
+  void _wake() {
+    if (!_ticker.isActive) {
+      _last = Duration.zero;
+      _ticker.start();
+    }
+  }
+
+  /// Brings the bodies in line with the saved vault. Called from build when
+  /// the vault or the width changed.
+  void _sync() {
+    final v = widget.vault;
+    final first = _synced == null;
+    final geo = CabinetGeometry(width: widget.width, shelves: math.max(1, v.shelves.length));
+    _world.geo = geo;
+    final keep = <String>{};
+    for (final (s, shelf) in v.shelves.indexed) {
+      for (final (k, item) in v.on(shelf.id).indexed) {
+        keep.add(item.id);
+        final size = geo.sizeFor(item.photoPath == null ? null : item.photoAspect ?? 1);
+        var b = _world.bodies[item.id];
+        if (b == null) {
+          b = Body(id: item.id, x: 0, y: 0, w: size.w, h: size.h);
+          _world.bodies[item.id] = b;
+          // New things fall onto their shelf; on first open they are
+          // already standing there.
+          _world.place(b, s, k, drop: !first && !_reduceMotion);
+        } else {
+          b
+            ..w = size.w
+            ..h = size.h;
+          final widthChanged = _syncedWidth != widget.width;
+          if (!b.held && !b.flying && (geo.bandAt(b.y) != s || widthChanged)) {
+            _world.place(b, s, k, drop: !_reduceMotion && !widthChanged);
+          }
+        }
+      }
+    }
+    _world.bodies.removeWhere((id, b) => !keep.contains(id) && !b.flying);
+    _synced = v;
+    _syncedWidth = widget.width;
+    _wake();
+  }
+
+  void _tick(Duration elapsed) {
+    final dt = _last == Duration.zero ? 1 / 60 : ((elapsed - _last).inMicroseconds / 1e6).clamp(0.0, 1 / 30);
+    _last = elapsed;
+    if (_grabbed != null && _lifted) {
+      _autoScroll();
+      _aim();
+    }
+    final gone = _world.step(dt, tilt: !_reduceMotion);
+    for (final id in gone) {
+      widget.onDiscard(id);
+    }
+    _frame.value++;
+    if (_world.resting && _grabbed == null) _ticker.stop();
+  }
+
+  RenderBox? get _canvas => _canvasKey.currentContext?.findRenderObject() as RenderBox?;
+
+  void _aim() {
+    final b = _world.bodies[_grabbed];
+    final box = _canvas;
+    if (b == null || box == null) return;
+    final p = box.globalToLocal(_lastGlobal) - _grabOffset;
+    b.targetX = p.dx.clamp(-b.w, widget.width + b.w);
+    b.targetY = p.dy.clamp(b.h / 2, _world.geo.height - b.h / 2);
+  }
+
+  /// Dragging near the top or bottom edge scrolls, so a product can be
+  /// carried to a shelf that is off screen.
+  void _autoScroll() {
+    final scrollable = Scrollable.maybeOf(context);
+    if (scrollable == null) return;
+    final pos = scrollable.position;
+    final vp = scrollable.context.findRenderObject() as RenderBox?;
+    if (vp == null || !vp.hasSize) return;
+    final top = vp.localToGlobal(Offset.zero).dy;
+    final bottom = top + vp.size.height;
+    const edge = 72.0;
+    double delta = 0;
+    if (_lastGlobal.dy < top + edge) delta = -14 * (1 - (_lastGlobal.dy - top) / edge);
+    if (_lastGlobal.dy > bottom - edge) delta = 14 * (1 - (bottom - _lastGlobal.dy) / edge);
+    if (delta == 0) return;
+    final to = (pos.pixels + delta).clamp(pos.minScrollExtent, pos.maxScrollExtent);
+    if (to != pos.pixels) pos.jumpTo(to);
+  }
+
+  void _down(String id, PointerDownEvent e) {
+    if (_grabbed != null) return;
+    final b = _world.bodies[id];
+    final box = _canvas;
+    if (b == null || box == null || b.flying) return;
+    _grabbed = id;
+    _pointer = e.pointer;
+    _downAt = e.position;
+    _downTime = e.timeStamp;
+    _lastGlobal = e.position;
+    _lifted = false;
+    _grabOffset = box.globalToLocal(e.position) - Offset(b.x, b.y);
+    _trail
+      ..clear()
+      ..add((e.timeStamp, e.position));
+  }
+
+  void _move(PointerMoveEvent e) {
+    if (e.pointer != _pointer) return;
+    _lastGlobal = e.position;
+    _trail.add((e.timeStamp, e.position));
+    while (_trail.length > 2 && e.timeStamp - _trail.first.$1 > const Duration(milliseconds: 90)) {
+      _trail.removeAt(0);
+    }
+    if (!_lifted && (e.position - _downAt).distance > 6) {
+      _lifted = true;
+      _world.bodies[_grabbed]?.held = true;
+      HapticFeedback.selectionClick();
+    }
+    if (_lifted) {
+      _aim();
+      _wake();
+    }
+  }
+
+  void _up(PointerUpEvent e) {
+    if (e.pointer != _pointer) return;
+    final id = _grabbed!;
+    _grabbed = null;
+    _pointer = null;
+    if (!_lifted) {
+      if (e.timeStamp - _downTime < const Duration(milliseconds: 450)) widget.onOpen(id);
+      return;
+    }
+    var v = Offset.zero;
+    if (_trail.length >= 2) {
+      final dt = (_trail.last.$1 - _trail.first.$1).inMicroseconds / 1e6;
+      if (dt > 0) v = (_trail.last.$2 - _trail.first.$2) / dt;
+    }
+    _settle(id, v);
+  }
+
+  void _cancel(PointerCancelEvent e) {
+    if (e.pointer != _pointer) return;
+    final id = _grabbed!;
+    _grabbed = null;
+    _pointer = null;
+    if (_lifted) _settle(id, Offset.zero);
+  }
+
+  void _settle(String id, Offset v) {
+    final thrown = _world.release(id, v.dx, v.dy, allowFling: true);
+    _wake();
+    if (thrown) {
+      HapticFeedback.mediumImpact();
+      if (_reduceMotion) {
+        _world.bodies.remove(id);
+        widget.onDiscard(id);
+      }
+      return;
+    }
+    final b = _world.bodies[id]!;
+    final to = _world.geo.bandAt(b.y);
+    if (to != widget.vault.shelfIndexOf(id)) {
+      HapticFeedback.lightImpact();
+      _moveTo(id, to, b.x);
+    }
+  }
+
+  void _moveTo(String id, int shelf, double x) {
+    final others = widget.vault.on(widget.vault.shelves[shelf].id).where((i) => i.id != id);
+    final at = others.where((i) => (_world.bodies[i.id]?.x ?? 0) < x).length;
+    ref.read(vaultProvider.notifier).move(id, shelf, at);
+  }
+
+  /// Screen-reader path for the same decisions.
+  void _step(String id, int delta) {
+    final from = widget.vault.shelfIndexOf(id);
+    final to = (from + delta).clamp(0, widget.vault.shelves.length - 1);
+    if (to == from) return;
+    ref.read(vaultProvider.notifier).move(id, to, shelfCapacity);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!identical(_synced, widget.vault) || _syncedWidth != widget.width) _sync();
+    final geo = _world.geo;
+    final l = AppLocalizations.of(context);
+    final store = ref.watch(vaultStoreProvider);
+
+    return SizedBox(
+      key: _canvasKey,
+      width: widget.width,
+      height: geo.height,
+      child: Stack(clipBehavior: Clip.hardEdge, children: [
+        for (var s = 0; s < geo.shelves; s++) ...[
+          Positioned(
+            left: 0,
+            right: 0,
+            top: geo.plankTop(s),
+            height: CabinetGeometry.plank,
+            child: const _Plank(),
+          ),
+          if (s < widget.vault.shelves.length)
+            Positioned(
+              left: CabinetGeometry.sidePad,
+              top: geo.bandTop(s),
+              child: _DymoLabel(
+                key: ValueKey('label-${widget.vault.shelves[s].id}'),
+                index: s,
+                shelf: widget.vault.shelves[s],
+                onChanged: (t) => ref.read(vaultProvider.notifier).relabel(widget.vault.shelves[s].id, t),
+              ),
+            ),
+        ],
+        Positioned.fill(
+          child: ValueListenableBuilder<int>(
+            valueListenable: _frame,
+            builder: (context, _, _) => Stack(clipBehavior: Clip.none, children: [
+              for (final b in _world.bodies.values) ..._bodyWidgets(context, l, b, store),
+            ]),
+          ),
+        ),
+      ]),
+    );
+  }
+
+  List<Widget> _bodyWidgets(BuildContext context, AppLocalizations l, Body b, VaultStore store) {
+    final view = widget.views[b.id];
+    if (view == null) return const [];
+    final shelfIndex = widget.vault.shelves.indexWhere((s) => s.id == view.item.shelfId);
+    final shelf = shelfIndex < 0 ? null : widget.vault.shelves[shelfIndex];
+    final shelfText = shelf == null
+        ? ''
+        : (shelf.label.isEmpty ? l.shelfName(shelfIndex + 1) : shelf.label);
+    final days = view.next?.daysLeft(widget.today);
+    final p = view.primary;
+    final status = p == null || p.status != ProtectionStatus.active
+        ? l.protectionEnded
+        : l.statusLine(kindLabel(l, p.kind), p.end == null ? l.noFixedEnd : remainingLabel(l, widget.today, p.end!));
+
+    final plankTop = _world.geo.plankTop(_world.geo.bandAt(b.y));
+    // Contact shadow: full when standing, fading as the product is lifted,
+    // so "picked up" reads without any extra chrome.
+    final lift = ((plankTop - b.bottom) / 80).clamp(0.0, 1.0);
+
+    return [
+      if (!b.flying)
+        Positioned(
+          left: b.x - b.w * .42,
+          top: plankTop - 5,
+          width: b.w * .84,
+          height: 10,
+          child: IgnorePointer(
+            child: DecoratedBox(
+              decoration: ShapeDecoration(
+                shape: const OvalBorder(),
+                shadows: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: .22 * (1 - lift)),
+                    blurRadius: 8 + 10 * lift,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      // Deadline tag hangs on the plank under the product: amber and a
+      // number, so it reads without colour too. Only for < 30 days.
+      if (days != null && !b.flying && !b.held && b.grounded)
+        Positioned(
+          left: (b.x - 34).clamp(2.0, widget.width - 70),
+          top: plankTop + 12,
+          width: 68,
+          child: ExcludeSemantics(child: _DeadlineTag(text: l.durDays(days))),
+        ),
+      Positioned(
+        left: b.left,
+        top: b.top,
+        width: b.w,
+        height: b.h,
+        child: Transform.rotate(
+          angle: b.angle,
+          child: Semantics(
+            button: true,
+            label: l.itemA11y(view.item.name, days != null ? l.endsIn(kindLabel(l, view.next!.kind), days) : status, shelfText),
+            onTap: () => widget.onOpen(b.id),
+            customSemanticsActions: {
+              CustomSemanticsAction(label: l.moveUp): () => _step(b.id, -1),
+              CustomSemanticsAction(label: l.moveDown): () => _step(b.id, 1),
+              CustomSemanticsAction(label: l.throwOut): () => widget.onDiscard(b.id),
+            },
+            child: _Grip(
+              key: ValueKey('item-${b.id}'),
+              onDown: (e) => _down(b.id, e),
+              onMove: _move,
+              onUp: _up,
+              onCancel: _cancel,
+              child: ExcludeSemantics(child: _Product(item: view.item, store: store, lifted: b.held)),
+            ),
+          ),
+        ),
+      ),
+    ];
+  }
+}
+
+/// Claims the pointer the moment a product is touched, so the page does not
+/// scroll under a drag. Touching anywhere else still scrolls.
+class _Grip extends StatelessWidget {
+  const _Grip({super.key, required this.child, required this.onDown, required this.onMove, required this.onUp, required this.onCancel});
+  final Widget child;
+  final void Function(PointerDownEvent) onDown;
+  final void Function(PointerMoveEvent) onMove;
+  final void Function(PointerUpEvent) onUp;
+  final void Function(PointerCancelEvent) onCancel;
+
+  @override
+  Widget build(BuildContext context) => RawGestureDetector(
+        gestures: {
+          EagerGestureRecognizer: GestureRecognizerFactoryWithHandlers<EagerGestureRecognizer>(
+            EagerGestureRecognizer.new,
+            (_) {},
+          ),
+        },
+        child: Listener(
+          behavior: HitTestBehavior.opaque,
+          onPointerDown: onDown,
+          onPointerMove: onMove,
+          onPointerUp: onUp,
+          onPointerCancel: onCancel,
+          child: child,
+        ),
+      );
+}
+
+class _Product extends StatelessWidget {
+  const _Product({required this.item, required this.store, required this.lifted});
+  final Item item;
+  final VaultStore store;
+  final bool lifted;
+
+  @override
+  Widget build(BuildContext context) {
+    final path = item.photoPath;
+    if (path != null) {
+      final image = Image(
+        image: store.photo(path),
+        fit: item.photoCutout ? BoxFit.contain : BoxFit.cover,
+        gaplessPlayback: true,
+        filterQuality: FilterQuality.medium,
+        errorBuilder: (_, _, _) => _Tile(item: item),
+      );
+      return item.photoCutout
+          ? image
+          : ClipRRect(borderRadius: BorderRadius.circular(VRadius.sm), child: image);
+    }
+    return _Tile(item: item);
+  }
+}
+
+/// A product without a photo: neutral tile, category icon, its name.
+class _Tile extends StatelessWidget {
+  const _Tile({required this.item});
+  final Item item;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        decoration: BoxDecoration(
+          color: context.c.surface,
+          border: Border.all(color: context.c.border),
+          borderRadius: BorderRadius.circular(VRadius.md),
+        ),
+        padding: const EdgeInsets.all(VSpace.xs + 2),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Icon(ItemThumb.iconFor(item.category), size: 26, color: context.c.text),
+          const SizedBox(height: 2),
+          Flexible(
+            child: Text(
+              item.name,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              // The tile is a fixed-size physical object; its caption is a
+              // hint, the full name is in the accessibility label and detail.
+              textScaler: TextScaler.noScaling,
+              style: context.t.small.copyWith(fontSize: 10.5, height: 1.15, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ]),
+      );
+}
+
+class _Plank extends StatelessWidget {
+  const _Plank();
+
+  @override
+  Widget build(BuildContext context) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        // Top of the board, then its front edge where tags hang.
+        Container(height: 8, color: context.c.border),
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: context.c.tile,
+              border: Border(bottom: BorderSide(color: context.c.border)),
+            ),
+          ),
+        ),
+      ]);
+}
+
+class _DeadlineTag extends StatelessWidget {
+  const _DeadlineTag({required this.text});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(
+            color: context.c.deadlineSurface,
+            border: Border.all(color: context.c.deadline),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(
+            text,
+            maxLines: 1,
+            textScaler: TextScaler.noScaling,
+            style: context.t.small.copyWith(fontSize: 11.5, fontWeight: FontWeight.w700, color: context.c.deadline),
+          ),
+        ),
+      );
+}
+
+/// Label-maker tape stuck to the back wall of a shelf. Empty shelves show a
+/// faint "+ Label" so the feature is discoverable without a tutorial.
+class _DymoLabel extends StatefulWidget {
+  const _DymoLabel({super.key, required this.index, required this.shelf, required this.onChanged});
+  final int index;
+  final Shelf shelf;
+  final void Function(String) onChanged;
+
+  @override
+  State<_DymoLabel> createState() => _DymoLabelState();
+}
+
+class _DymoLabelState extends State<_DymoLabel> {
+  bool _editing = false;
+  late final _text = TextEditingController(text: widget.shelf.label);
+  final _focus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _focus.addListener(() {
+      if (!_focus.hasFocus && _editing) _finish();
+    });
+  }
+
+  @override
+  void didUpdateWidget(_DymoLabel old) {
+    super.didUpdateWidget(old);
+    if (!_editing && old.shelf.label != widget.shelf.label) _text.text = widget.shelf.label;
+  }
+
+  @override
+  void dispose() {
+    _text.dispose();
+    _focus.dispose();
+    super.dispose();
+  }
+
+  void _finish() {
+    setState(() => _editing = false);
+    if (_text.text.trim() != widget.shelf.label) widget.onChanged(_text.text);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final empty = widget.shelf.label.isEmpty;
+    final tape = TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w700,
+      letterSpacing: 1.1,
+      color: empty && !_editing ? context.c.muted : context.c.background,
+    );
+    final decoration = BoxDecoration(
+      color: empty && !_editing ? null : context.c.text,
+      border: empty && !_editing ? Border.all(color: context.c.border) : null,
+      borderRadius: BorderRadius.circular(3),
+    );
+
+    if (_editing) {
+      return Container(
+        width: 200,
+        height: VSize.minTap - 12,
+        margin: const EdgeInsets.only(top: 4),
+        decoration: decoration,
+        alignment: Alignment.centerLeft,
+        child: TextField(
+          controller: _text,
+          focusNode: _focus,
+          autofocus: true,
+          maxLength: 24,
+          maxLines: 1,
+          cursorColor: context.c.background,
+          style: tape,
+          textCapitalization: TextCapitalization.sentences,
+          onSubmitted: (_) => _finish(),
+          decoration: const InputDecoration(
+            isDense: true,
+            filled: false,
+            counterText: '',
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          ),
+        ),
+      );
+    }
+
+    return Semantics(
+      button: true,
+      label: empty ? l.shelfNoLabelA11y(widget.index + 1) : l.shelfLabelA11y(widget.index + 1, widget.shelf.label),
+      excludeSemantics: true,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => setState(() => _editing = true),
+        // 44-pt target around a 24-pt tape.
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: VSize.minTap, minWidth: VSize.minTap * 1.6),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            widthFactor: 1,
+            heightFactor: 1,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: decoration,
+              child: Text(
+                empty ? l.shelfLabelHint : widget.shelf.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textScaler: MediaQuery.textScalerOf(context).clamp(maxScaleFactor: 1.6),
+                style: tape,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

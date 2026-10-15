@@ -362,4 +362,163 @@ class AppLocalizationsTr extends AppLocalizations {
   String daysLeft(int n) {
     return 'gün kaldı';
   }
+
+  @override
+  String cabinetCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count şey',
+      one: '1 şey',
+    );
+    return 'Raflarında $_temp0 var';
+  }
+
+  @override
+  String get cabinetHint =>
+      'Başka rafa sürükle. Yana fırlatırsan kasadan çıkar.';
+
+  @override
+  String get addItem => 'Ürün ekle';
+
+  @override
+  String get shelfLabelHint => '+ Etiket';
+
+  @override
+  String shelfName(int n) {
+    return '$n. raf';
+  }
+
+  @override
+  String shelfLabelA11y(int n, String label) {
+    return '$n. raf etiketi: $label. Düzenlemek için iki kez dokun.';
+  }
+
+  @override
+  String shelfNoLabelA11y(int n) {
+    return '$n. rafın etiketi yok. Eklemek için iki kez dokun.';
+  }
+
+  @override
+  String itemA11y(String name, String status, String shelf) {
+    return '$name. $status. $shelf.';
+  }
+
+  @override
+  String get moveUp => 'Üst rafa taşı';
+
+  @override
+  String get moveDown => 'Alt rafa taşı';
+
+  @override
+  String get throwOut => 'Kasadan çıkar';
+
+  @override
+  String thrownOut(String name) {
+    return '$name kasadan çıktı';
+  }
+
+  @override
+  String get undo => 'Geri al';
+
+  @override
+  String disposedHeader(int count) {
+    return 'Çıkardıkların · $count';
+  }
+
+  @override
+  String get putBack => 'Rafa geri koy';
+
+  @override
+  String get wayCamera => 'Ürünün fotoğrafını çek';
+
+  @override
+  String get wayCameraWhy => 'Arka planından ayırıp rafa koyarız.';
+
+  @override
+  String get wayGallery => 'Fotoğraflarından seç';
+
+  @override
+  String get wayGalleryWhy => 'Elindeki bir ürün fotoğrafı da olur.';
+
+  @override
+  String get waySample => 'Örnek kasayı yükle';
+
+  @override
+  String get waySampleWhy => 'Rafları önce altı örnek ürünle dene.';
+
+  @override
+  String get emptyCabinetTitle => 'Aldığın şeyleri raflarına diz.';
+
+  @override
+  String get emptyCabinetBody =>
+      'Her biri fişini ve haklarını yanında taşır. Bir süre bitmeden haber veririz.';
+
+  @override
+  String get sampleDesk => 'Çalışma masası';
+
+  @override
+  String get sampleLiving => 'Salon';
+
+  @override
+  String get sampleKitchen => 'Mutfak';
+
+  @override
+  String get addTitle => 'Yeni ürün';
+
+  @override
+  String get photoCamera => 'Kamera';
+
+  @override
+  String get photoGallery => 'Fotoğraflar';
+
+  @override
+  String get photoOptional =>
+      'Fotoğraf şart değil ama rafta onu fotoğrafından tanırsın.';
+
+  @override
+  String get lifting => 'Arka plandan ayırıyorum…';
+
+  @override
+  String get photoCutout => 'Dekupe';
+
+  @override
+  String get photoOriginal => 'Orijinal';
+
+  @override
+  String get photoChange => 'Fotoğrafı değiştir';
+
+  @override
+  String get photoFailed => 'Bu fotoğraf okunamadı. Başka birini dene.';
+
+  @override
+  String get photoNoCutout =>
+      'Arka plan ayırmaya yetecek kadar düz değil; fotoğraf olduğu gibi kalıyor.';
+
+  @override
+  String get fieldChannel => 'Nereden aldın?';
+
+  @override
+  String get channelStore => 'Mağazadan';
+
+  @override
+  String get channelOnline => 'İnternetten';
+
+  @override
+  String get fieldRegion => 'Alındığı ülke';
+
+  @override
+  String get warrantyNone => 'Yok';
+
+  @override
+  String get fieldShelf => 'Raf';
+
+  @override
+  String get shelfAuto => 'Boş yeri olan ilk raf';
+
+  @override
+  String get putOnShelf => 'Rafa koy';
+
+  @override
+  String get nameHint => 'ör. Kahve makinesi';
 }

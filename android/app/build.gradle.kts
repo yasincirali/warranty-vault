@@ -15,8 +15,10 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.warrantyvault.warranty_vault"
+        // Mağaza kimliği iOS bundle id ile aynı (com.sandik.warrantyvault).
+        // namespace ve Kotlin paketi bilinçli olarak eski adda: değiştirmek
+        // MainActivity'yi taşımayı gerektirir, applicationId'den bağımsızdır.
+        applicationId = "com.sandik.warrantyvault"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

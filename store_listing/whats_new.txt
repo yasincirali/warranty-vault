@@ -1,0 +1,1 @@
+İlk TestFlight sürümü: kasanı kendi eşya fotoğraflarınla kur, rafları etiketle, eşyaları raflar arasında taşı ya da dışarı fırlat. Geri bildirimini TestFlight'tan gönder.
