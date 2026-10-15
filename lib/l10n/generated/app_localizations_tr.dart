@@ -477,6 +477,9 @@ class AppLocalizationsTr extends AppLocalizations {
       'Fotoğraf şart değil ama rafta onu fotoğrafından tanırsın.';
 
   @override
+  String get loading => 'Yükleniyor';
+
+  @override
   String get lifting => 'Arka plandan ayırıyorum…';
 
   @override

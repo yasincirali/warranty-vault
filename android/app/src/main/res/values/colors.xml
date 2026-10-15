@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Açılış/ikon zemini; Flutter'da VBrand.splash ile aynı (yerlestir.py notu). -->
+    <color name="marka_zemin">#0F2E28</color>
+</resources>

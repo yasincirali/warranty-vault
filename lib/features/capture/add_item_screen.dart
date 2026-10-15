@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../core/format.dart';
 import '../../core/theme/tokens.dart';
+import '../../core/ui/brand_mark.dart';
 import '../../core/ui/widgets.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../rights/rights_engine.dart';
@@ -409,7 +410,7 @@ class _PhotoArea extends StatelessWidget {
             ? Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const CircularProgressIndicator.adaptive(),
+                  VLoader(label: l.loading),
                   const SizedBox(height: VSpace.md),
                   Text(l.lifting, style: context.t.small.copyWith(color: context.c.textSecondary)),
                 ],
@@ -638,7 +639,7 @@ class _ScanningState extends State<_Scanning> with SingleTickerProviderStateMixi
             children: [
               Opacity(opacity: .5, child: Image.memory(widget.bytes, fit: BoxFit.contain, gaplessPlayback: true)),
               if (still)
-                const Center(child: CircularProgressIndicator.adaptive())
+                Center(child: VLoader(label: widget.label))
               else
                 AnimatedBuilder(
                   animation: _c,

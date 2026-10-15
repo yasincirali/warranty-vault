@@ -127,6 +127,20 @@ abstract final class VRadius {
 }
 
 /// HIG: every tappable thing is at least 44 pt.
+/// The logo's own colours (store_listing/ikon/ikon.svg). They belong to the
+/// brand mark, not to the UI: the same in light and dark, used only by
+/// [BrandMark] and the launch screens. [splash] is also the iOS
+/// LaunchScreen.storyboard and Android `marka_zemin` colour, so the hand-over
+/// from the system splash to Flutter shows no seam; change them together.
+abstract final class VBrand {
+  static const splash = Color(0xFF0F2E28);
+  static const paper = Color(0xFFF3EBDD);
+  static const ink = Color(0xFF0E2A23);
+  static const amber = Color(0xFFE8A23A);
+  static const shield = Color(0xFF123A31);
+  static const shieldEdge = Color(0xFF3B7A66);
+}
+
 abstract final class VSize {
   static const minTap = 44.0;
   static const button = 52.0;
@@ -184,6 +198,13 @@ abstract final class VMotion {
 
   /// Gap between rows entering one after another.
   static const stagger = Duration(milliseconds: 40);
+
+  /// One loop of the brand mark: the receipt goes back into its tray, prints
+  /// out again and the shield stamps it. Long enough to read as one gesture.
+  static const brandCycle = Duration(milliseconds: 1400);
+
+  /// Reduce-motion stand-in for the loop: the mark only breathes (a fade).
+  static const brandPulse = Duration(milliseconds: 900);
 
   static Duration of(BuildContext context, Duration d) => MediaQuery.of(context).disableAnimations ? Duration.zero : d;
 }

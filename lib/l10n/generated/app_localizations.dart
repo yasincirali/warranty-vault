@@ -842,6 +842,12 @@ abstract class AppLocalizations {
   /// **'A photo is optional, but it is how you will spot it on the shelf.'**
   String get photoOptional;
 
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading'**
+  String get loading;
+
   /// No description provided for @lifting.
   ///
   /// In en, this message translates to:

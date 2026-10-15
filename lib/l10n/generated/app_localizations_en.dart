@@ -493,6 +493,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'A photo is optional, but it is how you will spot it on the shelf.';
 
   @override
+  String get loading => 'Loading';
+
+  @override
   String get lifting => 'Lifting it off the background…';
 
   @override

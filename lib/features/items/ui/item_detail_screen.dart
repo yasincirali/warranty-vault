@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/format.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/ui/brand_mark.dart';
 import '../../../core/ui/time_rule.dart';
 import '../../../core/ui/widgets.dart';
 import '../../../l10n/generated/app_localizations.dart';
@@ -26,7 +27,7 @@ class ItemDetailScreen extends ConsumerWidget {
     final today = ref.watch(clockProvider)();
 
     if (view == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator.adaptive()));
+      return Scaffold(body: Center(child: VLoader(label: l.loading)));
     }
     final item = view.item;
     final meta = [

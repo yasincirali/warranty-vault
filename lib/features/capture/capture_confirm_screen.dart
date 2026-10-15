@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/format.dart';
 import '../../core/theme/tokens.dart';
+import '../../core/ui/brand_mark.dart';
 import '../../core/ui/widgets.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../items/providers.dart';
@@ -35,7 +36,7 @@ class CaptureConfirmScreen extends ConsumerWidget {
         ),
       ),
       body: draft.when(
-        loading: () => const Center(child: CircularProgressIndicator.adaptive()),
+        loading: () => Center(child: VLoader(label: l.loading)),
         error: (_, _) => Center(child: Text(l.emptyTitle)),
         data: (d) => ListView(
           padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.sm, VSpace.xl, VSpace.xxl),

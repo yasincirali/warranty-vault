@@ -1,0 +1,11 @@
+<!-- Uygulama ikonu (logo E, "Fiş ve kalkan"). Kaynak bu dosya; PNG dosyaları render.js + yerlestir.py ile üretilir. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><defs><linearGradient id="gbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#18413A"/><stop offset="1" stop-color="#0C2621"/></linearGradient></defs><rect width="1024" height="1024" fill="url(#gbg)"/><g transform="translate(512 534) scale(1.22) translate(-512 -534)">
+<path d="M300 290 L317.0 264 L334.0 290 L351.0 264 L368.0 290 L385.0 264 L402.0 290 L419.0 264 L436.0 290 L453.0 264 L470.0 290 L487.0 264 L504.0 290 L521.0 264 L538.0 290 L555.0 264 L572.0 290 L589.0 264 L606.0 290 L623.0 264 L640.0 290 L640 742 L300 742 Z" fill="#F3EBDD"/>
+<rect x="350" y="380" width="230" height="34" rx="17" fill="#0E2A23"/>
+<rect x="350" y="450" width="170" height="34" rx="17" fill="#0E2A23"/>
+<rect x="350" y="520" width="130" height="34" rx="17" fill="#0E2A23"/>
+<rect x="350" y="610" width="110" height="34" rx="17" fill="#E8A23A"/>
+<path d="M650 512 L752 548 V626 C752 700 708 744 650 770 C592 744 548 700 548 626 V548 Z" fill="#123A31" stroke="#3B7A66" stroke-width="10" stroke-linejoin="round"/>
+<path d="M604 640 l34 34 l64 -74" fill="none" stroke="#E8A23A" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M232 742 H792 C800 742 804 750 800 760 C790 790 768 804 740 804 H284 C256 804 234 790 224 760 C220 750 224 742 232 742 Z" fill="#F3EBDD"/>
+</g></svg>
