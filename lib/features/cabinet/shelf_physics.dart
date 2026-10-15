@@ -66,6 +66,18 @@ class Body {
 
   bool held = false;
 
+  /// A new product falling from the top of the screen passes through the
+  /// shelves above its own: planks with an index below this are ignored,
+  /// and it pushes nothing aside until it lands. -1 = an ordinary body.
+  int ghostShelf = -1;
+
+  /// Vertical squash on impact (0 = none, 0.1 = 10% shorter), springing
+  /// back with one small overshoot so a landing has weight. Visual only.
+  double squash = 0, squashV = 0;
+
+  /// Fades in when "reduce motion" replaces the fall (0 → 1).
+  double appear = 1;
+
   /// Thrown out: no collisions, leaves the screen.
   bool flying = false;
   bool grounded = false;
@@ -88,6 +100,10 @@ class ShelfPhysics {
   CabinetGeometry geo;
   final bodies = <String, Body>{};
 
+  /// Ids of falling new products that landed during the last [step]
+  /// (for the impact haptic).
+  final landed = <String>[];
+
   static const gravity = 2600.0; // px/s²
   static const maxSpeed = 1400.0;
 
@@ -95,18 +111,27 @@ class ShelfPhysics {
   /// 1.1 px/ms, tuned in the HTML prototype so a lazy drag never discards.
   static const flingSpeed = 1100.0;
 
-  bool get resting => bodies.values.every((b) =>
-      !b.held &&
-      !b.flying &&
-      b.grounded &&
-      b.vx.abs() < 2 &&
-      b.vy.abs() < 2 &&
-      b.angle.abs() < .002 &&
-      b.spin.abs() < .02);
+  bool get resting => bodies.values.every(
+    (b) =>
+        !b.held &&
+        !b.flying &&
+        b.grounded &&
+        b.vx.abs() < 2 &&
+        b.vy.abs() < 2 &&
+        b.angle.abs() < .002 &&
+        b.spin.abs() < .02 &&
+        b.squash.abs() < .002 &&
+        b.squashV.abs() < .02 &&
+        b.appear >= 1,
+  );
 
   /// Advances the world; returns ids of thrown items that left the cabinet.
   List<String> step(double dt, {bool tilt = true}) {
     final gone = <String>[];
+    landed.clear();
+    for (final b in bodies.values) {
+      if (b.appear < 1) b.appear = math.min(1, b.appear + dt / .2);
+    }
     const sub = 4;
     final h = dt / sub;
     for (var s = 0; s < sub; s++) {
@@ -165,9 +190,14 @@ class ShelfPhysics {
       // Damped spring back to upright.
       b.spin += (-160 * b.angle - 12 * b.spin) * dt;
       b.angle += b.spin * dt;
+      // Under-damped (ζ ≈ 0.64): one small stretch past upright, then still.
+      b.squashV += (-300 * b.squash - 22 * b.squashV) * dt;
+      b.squash += b.squashV * dt;
     } else {
       b.angle = 0;
       b.spin = 0;
+      b.squash = 0;
+      b.squashV = 0;
     }
 
     // Side walls.
@@ -183,11 +213,17 @@ class ShelfPhysics {
     // Checking the crossing (not overlap) means no speed can tunnel through.
     b.grounded = false;
     for (var i = 0; i < geo.shelves; i++) {
+      if (i < b.ghostShelf) continue;
       final p = geo.plankTop(i);
       if (prevBottom <= p + .5 && b.bottom >= p) {
         b.y = p - b.h / 2;
         if (b.vy > 220) {
           b.spin += (b.vx.sign == 0 ? 1 : b.vx.sign) * b.vy * .004;
+          if (tilt) b.squash = math.max(b.squash, (b.vy / maxSpeed * .14).clamp(0.0, .14));
+        }
+        if (b.ghostShelf >= 0) {
+          b.ghostShelf = -1;
+          landed.add(b.id);
         }
         b.vy = b.vy > 120 ? -b.vy * .18 : 0;
         b.vx *= math.max(0, 1 - 10 * dt);
@@ -200,7 +236,7 @@ class ShelfPhysics {
   /// Items on the same shelf push each other sideways; the one being held
   /// pushes and is never pushed.
   void _separate() {
-    final list = bodies.values.where((b) => !b.flying).toList();
+    final list = bodies.values.where((b) => !b.flying && b.ghostShelf < 0).toList();
     for (var i = 0; i < list.length; i++) {
       for (var j = i + 1; j < list.length; j++) {
         final a = list[i], c = list[j];
@@ -263,5 +299,18 @@ class ShelfPhysics {
     b.grounded = !drop;
     b.flying = false;
     b.held = false;
+  }
+
+  /// A new product enters from above: it starts at [fromY] (usually just
+  /// above the visible screen), falls through the shelves above [shelf]
+  /// and lands in [slot].
+  void dropFrom(Body b, int shelf, int slot, double fromY) {
+    place(b, shelf, slot);
+    b
+      ..y = math.min(fromY, geo.bandTop(shelf) + b.h / 2)
+      ..grounded = false
+      ..ghostShelf = shelf
+      ..angle = -.05
+      ..spin = .9;
   }
 }

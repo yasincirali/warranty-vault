@@ -7,6 +7,7 @@ import '../../../core/ui/widgets.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../cabinet/cabinet_view.dart';
 import '../../capture/add_item_screen.dart';
+import '../../settings/settings_screen.dart';
 import '../domain/item.dart';
 import '../providers.dart';
 import 'item_detail_screen.dart';
@@ -54,10 +55,21 @@ class HomeScreen extends ConsumerWidget {
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.lg, VSpace.xl, 0),
             sliver: SliverToBoxAdapter(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Semantics(header: true, child: Text(l.appTitle, style: context.t.display)),
-                if (active.isNotEmpty)
-                  Text(l.cabinetCount(active.length), style: context.t.small.copyWith(color: context.c.textSecondary)),
+              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Semantics(header: true, child: Text(l.appTitle, style: context.t.display)),
+                    if (active.isNotEmpty)
+                      Text(l.cabinetCount(active.length),
+                          style: context.t.small.copyWith(color: context.c.textSecondary)),
+                  ]),
+                ),
+                VIconButton(
+                  icon: Icons.settings_outlined,
+                  label: l.settingsTitle,
+                  onPressed: () => Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
+                ),
               ]),
             ),
           ),

@@ -55,11 +55,7 @@ LiftResult liftSubject(Uint8List bytes) {
         ? img.copyResize(src, width: _maxSide, interpolation: img.Interpolation.average)
         : img.copyResize(src, height: _maxSide, interpolation: img.Interpolation.average);
   }
-  final original = LiftedPhoto(
-    png: img.encodePng(src, level: 6),
-    aspect: src.width / src.height,
-    cutout: false,
-  );
+  final original = LiftedPhoto(png: img.encodePng(src, level: 6), aspect: src.width / src.height, cutout: false);
   return LiftResult(original: original, cutout: _cut(src));
 }
 
@@ -127,12 +123,7 @@ LiftedPhoto? _cut(img.Image src) {
   while (queue.isNotEmpty) {
     final i = queue.removeFirst();
     final x = i % w, y = i ~/ w;
-    for (final j in [
-      if (x > 0) i - 1,
-      if (x < w - 1) i + 1,
-      if (y > 0) i - w,
-      if (y < h - 1) i + w,
-    ]) {
+    for (final j in [if (x > 0) i - 1, if (x < w - 1) i + 1, if (y > 0) i - w, if (y < h - 1) i + w]) {
       if (bg[j] == 0 && d2(i, j) < near && dMean(j) < far) {
         bg[j] = 1;
         removed++;
@@ -175,7 +166,8 @@ LiftedPhoto? _cut(img.Image src) {
         a = 0;
       } else {
         // One-pixel feather: a hard cut-out edge looks pasted on.
-        final touches = (sx > 0 && bg[i - 1] == 1) ||
+        final touches =
+            (sx > 0 && bg[i - 1] == 1) ||
             (sx < w - 1 && bg[i + 1] == 1) ||
             (sy > 0 && bg[i - w] == 1) ||
             (sy < h - 1 && bg[i + w] == 1);

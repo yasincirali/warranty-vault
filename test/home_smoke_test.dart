@@ -71,6 +71,9 @@ void main() {
       addTearDown(t.view.reset);
       await t.pumpWidget(app(textScale: scale, dark: true));
       await t.pumpAndSettle();
+      // At 3.1× the header (title + settings button) pushes the list below
+      // the lazily built area, so scroll to it instead of assuming it exists.
+      await t.scrollUntilVisible(find.text('MacBook Air 13"'), 200, scrollable: find.byType(Scrollable).first);
       final mac = find.text('MacBook Air 13"').first;
       await t.ensureVisible(mac);
       await t.pumpAndSettle();

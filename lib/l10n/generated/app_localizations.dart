@@ -931,6 +931,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'e.g. Coffee machine'**
   String get nameHint;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguage;
+
+  /// No description provided for @languageSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone language'**
+  String get languageSystem;
+
+  /// No description provided for @langTr.
+  ///
+  /// In en, this message translates to:
+  /// **'Türkçe'**
+  String get langTr;
+
+  /// No description provided for @langEn.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get langEn;
+
+  /// No description provided for @settingsRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get settingsRegion;
+
+  /// No description provided for @regionSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone\'s country'**
+  String get regionSystem;
+
+  /// No description provided for @settingsRegionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'New products are judged by this country\'s rules. You can still change it for each product.'**
+  String get settingsRegionHint;
+
+  /// No description provided for @settingsAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get settingsAbout;
+
+  /// No description provided for @aboutLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cabinet and photos are stored on this phone. No account needed.'**
+  String get aboutLocal;
+
+  /// No description provided for @amountPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Will be saved as {amount}'**
+  String amountPreview(String amount);
+
+  /// No description provided for @amountUnreadable.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t read the amount; use digits.'**
+  String get amountUnreadable;
 }
 
 class _AppLocalizationsDelegate

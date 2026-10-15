@@ -27,6 +27,7 @@ class VColors extends ThemeExtension<VColors> {
     required this.adviceSurface,
     required this.adviceBorder,
     required this.adviceTitle,
+    required this.lift,
   });
 
   final Color background;
@@ -47,6 +48,10 @@ class VColors extends ThemeExtension<VColors> {
   final Color adviceSurface;
   final Color adviceBorder;
   final Color adviceTitle;
+
+  /// Shadow of something picked up: a product off its shelf, a field in
+  /// focus. One shadow colour so "lifted" means one thing.
+  final Color lift;
 
   // Text colours were picked for ≥4.5:1 on their surface in each theme.
   //
@@ -74,6 +79,7 @@ class VColors extends ThemeExtension<VColors> {
     adviceSurface: Color(0xFFFFFFFF),
     adviceBorder: Color(0xFF16181D),
     adviceTitle: Color(0xFF16181D),
+    lift: Color(0x2916181D),
   );
 
   static const dark = VColors(
@@ -93,6 +99,7 @@ class VColors extends ThemeExtension<VColors> {
     adviceSurface: Color(0xFF1B1C20),
     adviceBorder: Color(0xFFF2F1EE),
     adviceTitle: Color(0xFFF2F1EE),
+    lift: Color(0x8C000000),
   );
 
   @override
@@ -130,24 +137,23 @@ class VText extends ThemeExtension<VText> {
   const VText(this.base);
   final Color base;
 
-  TextStyle get display =>
-      TextStyle(fontSize: 30, fontWeight: FontWeight.w700, letterSpacing: -.6, color: base);
-  TextStyle get title =>
-      TextStyle(fontSize: 22, fontWeight: FontWeight.w700, letterSpacing: -.2, color: base);
+  TextStyle get display => TextStyle(fontSize: 30, fontWeight: FontWeight.w700, letterSpacing: -.6, color: base);
+  TextStyle get title => TextStyle(fontSize: 22, fontWeight: FontWeight.w700, letterSpacing: -.2, color: base);
+
   /// The "28" of "28 days left": number big, unit small (round 3).
   TextStyle get bigNumber => TextStyle(
-      fontSize: 48,
-      fontWeight: FontWeight.w700,
-      letterSpacing: -2,
-      height: 1,
-      fontFeatures: const [FontFeature.tabularFigures()],
-      color: base);
+    fontSize: 48,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -2,
+    height: 1,
+    fontFeatures: const [FontFeature.tabularFigures()],
+    color: base,
+  );
   TextStyle get bigUnit => TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: base);
   TextStyle get body => TextStyle(fontSize: 15.5, height: 1.45, color: base);
   TextStyle get label => TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: base);
   TextStyle get small => TextStyle(fontSize: 14, height: 1.35, color: base);
-  TextStyle get section =>
-      TextStyle(fontSize: 13, fontWeight: FontWeight.w600, letterSpacing: .1, color: base);
+  TextStyle get section => TextStyle(fontSize: 13, fontWeight: FontWeight.w600, letterSpacing: .1, color: base);
 
   @override
   VText copyWith() => this;
@@ -167,6 +173,17 @@ abstract final class VMotion {
   /// The time rule filling up to today when an item opens.
   static const ruleFill = Duration(milliseconds: 400);
 
-  static Duration of(BuildContext context, Duration d) =>
-      MediaQuery.of(context).disableAnimations ? Duration.zero : d;
+  /// State changes in controls: focus ring, checkmark, a field's done tick.
+  static const quick = Duration(milliseconds: 180);
+
+  /// Something moving across the screen (a segment thumb).
+  static const slide = Duration(milliseconds: 220);
+
+  /// Things entering a screen (form rows, a picked photo).
+  static const enter = Duration(milliseconds: 260);
+
+  /// Gap between rows entering one after another.
+  static const stagger = Duration(milliseconds: 40);
+
+  static Duration of(BuildContext context, Duration d) => MediaQuery.of(context).disableAnimations ? Duration.zero : d;
 }

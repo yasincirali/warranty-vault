@@ -13,7 +13,8 @@ final receiptReaderProvider = Provider<ReceiptReader>((_) => DemoReceiptReader()
 // TODO(capture): camera + document edge detection; the draft below comes
 // from DemoReceiptReader until `fis-oku` is wired.
 final _draftProvider = FutureProvider.autoDispose<ReceiptDraft>(
-    (ref) => ref.watch(receiptReaderProvider).read(const []));
+  (ref) => ref.watch(receiptReaderProvider).read(const []),
+);
 
 /// "Doğru mu?": the reader's result is never saved without a look.
 /// Unsure fields carry an icon and a sentence, not just a colour.
@@ -31,7 +32,9 @@ class CaptureConfirmScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         leading: Padding(
           padding: const EdgeInsets.only(left: VSpace.md),
-          child: Center(child: VIconButton(icon: Icons.close, label: l.close, onPressed: () => Navigator.of(context).pop())),
+          child: Center(
+            child: VIconButton(icon: Icons.close, label: l.close, onPressed: () => Navigator.of(context).pop()),
+          ),
         ),
       ),
       body: draft.when(
@@ -46,18 +49,25 @@ class CaptureConfirmScreen extends ConsumerWidget {
             const SizedBox(height: VSpace.md),
             VCard(
               padding: const EdgeInsets.symmetric(horizontal: VSpace.lg),
-              child: Column(children: [
-                _FieldRow(label: l.fieldProduct, value: d.product.value, confidence: d.product.confidence),
-                _FieldRow(label: l.fieldStore, value: d.store.value, confidence: d.store.confidence),
-                _FieldRow(label: l.fieldDate, value: fmtDate(context, d.date.value), confidence: d.date.confidence),
-                _FieldRow(label: l.fieldAmount, value: fmtMoney(context, d.amount.value), confidence: d.amount.confidence),
-                if (d.serial != null)
+              child: Column(
+                children: [
+                  _FieldRow(label: l.fieldProduct, value: d.product.value, confidence: d.product.confidence),
+                  _FieldRow(label: l.fieldStore, value: d.store.value, confidence: d.store.confidence),
+                  _FieldRow(label: l.fieldDate, value: fmtDate(context, d.date.value), confidence: d.date.confidence),
                   _FieldRow(
+                    label: l.fieldAmount,
+                    value: fmtMoney(context, d.amount.value),
+                    confidence: d.amount.confidence,
+                  ),
+                  if (d.serial != null)
+                    _FieldRow(
                       label: l.fieldSerial,
                       value: d.serial!.value ?? '—',
                       confidence: d.serial!.confidence,
-                      last: true),
-              ]),
+                      last: true,
+                    ),
+                ],
+              ),
             ),
             const SizedBox(height: VSpace.md),
             Text(l.countryNote(d.region), style: context.t.small.copyWith(color: context.c.textSecondary)),
@@ -66,29 +76,31 @@ class CaptureConfirmScreen extends ConsumerWidget {
       ),
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.md, VSpace.xl, VSpace.md),
-        child: Row(children: [
-          Expanded(
-            child: OutlinedButton(
-              onPressed: () => ref.invalidate(_draftProvider),
-              style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(VSize.button)),
-              child: Text(l.retake),
+        child: Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () => ref.invalidate(_draftProvider),
+                style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(VSize.button)),
+                child: Text(l.retake),
+              ),
             ),
-          ),
-          const SizedBox(width: VSpace.sm),
-          Expanded(
-            flex: 2,
-            child: FilledButton(
-              onPressed: draft.hasValue
-                  ? () async {
-                      await ref.read(vaultProvider.notifier).add(draft.requireValue.toItem());
-                      ref.invalidate(itemViewsProvider);
-                      if (context.mounted) Navigator.of(context).pop();
-                    }
-                  : null,
-              child: Text(l.save),
+            const SizedBox(width: VSpace.sm),
+            Expanded(
+              flex: 2,
+              child: FilledButton(
+                onPressed: draft.hasValue
+                    ? () async {
+                        await ref.read(vaultProvider.notifier).add(draft.requireValue.toItem());
+                        ref.invalidate(itemViewsProvider);
+                        if (context.mounted) Navigator.of(context).pop();
+                      }
+                    : null,
+                child: Text(l.save),
+              ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }
@@ -118,17 +130,21 @@ class _FieldRow extends StatelessWidget {
           decoration: BoxDecoration(
             border: last ? null : Border(bottom: BorderSide(color: context.c.divider)),
           ),
-          child: Row(children: [
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(label, style: context.t.small.copyWith(color: context.c.textSecondary)),
-                Text(value, style: context.t.label),
-                if (unsure)
-                  Text(l.checkThis, style: context.t.small.copyWith(color: context.c.deadline)),
-              ]),
-            ),
-            if (unsure) Icon(Icons.help_outline, color: context.c.deadline, size: 20),
-          ]),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(label, style: context.t.small.copyWith(color: context.c.textSecondary)),
+                    Text(value, style: context.t.label),
+                    if (unsure) Text(l.checkThis, style: context.t.small.copyWith(color: context.c.deadline)),
+                  ],
+                ),
+              ),
+              if (unsure) Icon(Icons.help_outline, color: context.c.deadline, size: 20),
+            ],
+          ),
         ),
       ),
     );

@@ -537,4 +537,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nameHint => 'e.g. Coffee machine';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsLanguage => 'Language';
+
+  @override
+  String get languageSystem => 'Phone language';
+
+  @override
+  String get langTr => 'Türkçe';
+
+  @override
+  String get langEn => 'English';
+
+  @override
+  String get settingsRegion => 'Country';
+
+  @override
+  String get regionSystem => 'Phone\'s country';
+
+  @override
+  String get settingsRegionHint =>
+      'New products are judged by this country\'s rules. You can still change it for each product.';
+
+  @override
+  String get settingsAbout => 'About';
+
+  @override
+  String get aboutLocal =>
+      'Your cabinet and photos are stored on this phone. No account needed.';
+
+  @override
+  String amountPreview(String amount) {
+    return 'Will be saved as $amount';
+  }
+
+  @override
+  String get amountUnreadable => 'Couldn\'t read the amount; use digits.';
 }

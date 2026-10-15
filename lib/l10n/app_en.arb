@@ -331,5 +331,24 @@
   "fieldShelf": "Shelf",
   "shelfAuto": "First shelf with room",
   "putOnShelf": "Put it on the shelf",
-  "nameHint": "e.g. Coffee machine"
+  "nameHint": "e.g. Coffee machine",
+  "settingsTitle": "Settings",
+  "settingsLanguage": "Language",
+  "languageSystem": "Phone language",
+  "langTr": "Türkçe",
+  "langEn": "English",
+  "settingsRegion": "Country",
+  "regionSystem": "Phone's country",
+  "settingsRegionHint": "New products are judged by this country's rules. You can still change it for each product.",
+  "settingsAbout": "About",
+  "aboutLocal": "Your cabinet and photos are stored on this phone. No account needed.",
+  "amountPreview": "Will be saved as {amount}",
+  "amountUnreadable": "Couldn't read the amount; use digits.",
+  "@amountPreview": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  }
 }

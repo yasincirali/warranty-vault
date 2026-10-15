@@ -42,44 +42,50 @@ class TimeRule extends StatelessWidget {
       tween: Tween(begin: 0, end: f),
       duration: VMotion.of(context, VMotion.ruleFill),
       curve: Curves.easeOutCubic,
-      builder: (context, v, _) => LayoutBuilder(builder: (context, box) {
-        final w = box.maxWidth;
-        return SizedBox(
-          height: compact ? height : 16,
-          child: Stack(clipBehavior: Clip.none, alignment: Alignment.centerLeft, children: [
-            Container(
-              height: height,
-              decoration: BoxDecoration(color: context.c.track, borderRadius: BorderRadius.circular(height / 2)),
-            ),
-            Container(
-              width: w * v,
-              height: height,
-              decoration: BoxDecoration(
-                color: context.c.text.withValues(alpha: .22),
-                borderRadius: BorderRadius.circular(height / 2),
-              ),
-            ),
-            if (showMarker)
-              Positioned(
-                left: w * marker - 1,
-                child: Container(width: 2, height: 14, color: context.c.text),
-              ),
-            if (!compact && !ended)
-              Positioned(
-                left: w * v - 8,
-                child: Container(
-                  width: 16,
-                  height: 16,
+      builder: (context, v, _) => LayoutBuilder(
+        builder: (context, box) {
+          final w = box.maxWidth;
+          return SizedBox(
+            height: compact ? height : 16,
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.centerLeft,
+              children: [
+                Container(
+                  height: height,
+                  decoration: BoxDecoration(color: context.c.track, borderRadius: BorderRadius.circular(height / 2)),
+                ),
+                Container(
+                  width: w * v,
+                  height: height,
                   decoration: BoxDecoration(
-                    color: context.c.surface,
-                    shape: BoxShape.circle,
-                    border: Border.all(width: 3, color: urgent ? context.c.deadline : context.c.text),
+                    color: context.c.text.withValues(alpha: .22),
+                    borderRadius: BorderRadius.circular(height / 2),
                   ),
                 ),
-              ),
-          ]),
-        );
-      }),
+                if (showMarker)
+                  Positioned(
+                    left: w * marker - 1,
+                    child: Container(width: 2, height: 14, color: context.c.text),
+                  ),
+                if (!compact && !ended)
+                  Positioned(
+                    left: w * v - 8,
+                    child: Container(
+                      width: 16,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: context.c.surface,
+                        shape: BoxShape.circle,
+                        border: Border.all(width: 3, color: urgent ? context.c.deadline : context.c.text),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
     );
 
     final semantics = l.ruleSemantics((f * 100).round());
@@ -92,18 +98,30 @@ class TimeRule extends StatelessWidget {
     return Semantics(
       label: semantics,
       excludeSemantics: true,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        bar,
-        const SizedBox(height: VSpace.sm),
-        // Wrap, not Row: at large text sizes the three labels stack instead of clipping.
-        Wrap(alignment: WrapAlignment.spaceBetween, spacing: VSpace.sm, runSpacing: VSpace.xs, children: [
-          Text(fmtDate(context, p.start), style: small),
-          if (showMarker && months != null) Text(l.ruleProofMonth(months), style: small),
-          Text(fmtDate(context, p.end!),
-              style: small.copyWith(
-                  color: urgent ? context.c.deadline : null, fontWeight: urgent ? FontWeight.w600 : null)),
-        ]),
-      ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          bar,
+          const SizedBox(height: VSpace.sm),
+          // Wrap, not Row: at large text sizes the three labels stack instead of clipping.
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            spacing: VSpace.sm,
+            runSpacing: VSpace.xs,
+            children: [
+              Text(fmtDate(context, p.start), style: small),
+              if (showMarker && months != null) Text(l.ruleProofMonth(months), style: small),
+              Text(
+                fmtDate(context, p.end!),
+                style: small.copyWith(
+                  color: urgent ? context.c.deadline : null,
+                  fontWeight: urgent ? FontWeight.w600 : null,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

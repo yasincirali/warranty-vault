@@ -138,5 +138,17 @@
   "fieldShelf": "Raf",
   "shelfAuto": "Boş yeri olan ilk raf",
   "putOnShelf": "Rafa koy",
-  "nameHint": "ör. Kahve makinesi"
+  "nameHint": "ör. Kahve makinesi",
+  "settingsTitle": "Ayarlar",
+  "settingsLanguage": "Dil",
+  "languageSystem": "Telefonun dili",
+  "langTr": "Türkçe",
+  "langEn": "English",
+  "settingsRegion": "Ülke",
+  "regionSystem": "Telefonun ülkesi",
+  "settingsRegionHint": "Yeni eklediğin ürünlerin hakları bu ülkenin kurallarıyla hesaplanır. Her üründe ayrıca değiştirebilirsin.",
+  "settingsAbout": "Hakkında",
+  "aboutLocal": "Dolabın ve fotoğrafların bu telefonda saklanır. Hesap açman gerekmez.",
+  "amountPreview": "Kaydedilecek: {amount}",
+  "amountUnreadable": "Tutar okunamadı; rakamla yaz."
 }

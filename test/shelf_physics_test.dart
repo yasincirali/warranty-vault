@@ -90,4 +90,52 @@ void main() {
     expect(wide.h, greaterThanOrEqualTo(36));
     expect(g.sizeFor(null).w, g.sizeFor(null).h);
   });
+
+  test('a new product dropped from above the screen passes the upper shelves and lands on its own', () {
+    final w = _world(shelves: 4);
+    final top = Body(id: 'top', x: 0, y: 0, w: 60, h: 60);
+    w.bodies['top'] = top;
+    w.place(top, 0, 2);
+    final b = Body(id: 'new', x: 0, y: 0, w: 60, h: 80);
+    w.bodies['new'] = b;
+    w.dropFrom(b, 2, 2, -300);
+    expect(b.top, lessThan(0), reason: 'starts above the cabinet');
+    final landed = <String>[];
+    for (var i = 0; i < 180; i++) {
+      w.step(1 / 60);
+      landed.addAll(w.landed);
+    }
+    expect(b.bottom, closeTo(w.geo.plankTop(2), .6));
+    expect(landed, ['new'], reason: 'one landing, reported once (for the haptic)');
+    expect(top.bottom, closeTo(w.geo.plankTop(0), .6), reason: 'the product it fell past was not pushed');
+    expect(top.x, w.geo.slotX(2));
+    expect(w.resting, isTrue);
+    expect(b.squash.abs(), lessThan(.002));
+  });
+
+  test('a hard landing squashes the product, then it springs back to its own shape', () {
+    final w = _world();
+    final b = Body(id: 'a', x: 0, y: 0, w: 60, h: 80);
+    w.bodies['a'] = b;
+    w.dropFrom(b, 1, 0, -400);
+    var most = 0.0;
+    for (var i = 0; i < 120; i++) {
+      w.step(1 / 60);
+      if (b.squash > most) most = b.squash;
+    }
+    expect(most, greaterThan(.05));
+    expect(most, lessThanOrEqualTo(.14));
+    expect(b.squash.abs(), lessThan(.002));
+  });
+
+  test('without tilt (reduce motion) nothing squashes', () {
+    final w = _world();
+    final b = Body(id: 'a', x: 0, y: 0, w: 60, h: 80);
+    w.bodies['a'] = b;
+    w.dropFrom(b, 1, 0, -400);
+    for (var i = 0; i < 120; i++) {
+      w.step(1 / 60, tilt: false);
+      expect(b.squash, 0);
+    }
+  });
 }
