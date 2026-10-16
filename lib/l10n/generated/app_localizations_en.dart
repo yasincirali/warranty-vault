@@ -580,4 +580,199 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get amountUnreadable => 'Couldn\'t read the amount; use digits.';
+
+  @override
+  String get settingsExport => 'Export';
+
+  @override
+  String get exportPdf => 'PDF report';
+
+  @override
+  String get exportPdfWhy =>
+      'To print or keep: every product with its protections and dates.';
+
+  @override
+  String get exportExcel => 'Excel spreadsheet';
+
+  @override
+  String get exportExcelWhy =>
+      'To sort and filter: one row per product, dates as real dates.';
+
+  @override
+  String exportPreparing(String format) {
+    return 'Preparing $format';
+  }
+
+  @override
+  String get exportFailed => 'Couldn\'t create the file. Try again.';
+
+  @override
+  String get exportEmpty => 'Nothing to export yet. Add a product first.';
+
+  @override
+  String get exportHint =>
+      'The file is created on this phone; you choose where it goes.';
+
+  @override
+  String get exportTitle => 'Inventory';
+
+  @override
+  String get exportFileName => 'inventory';
+
+  @override
+  String exportAsOf(String date) {
+    return 'As of $date';
+  }
+
+  @override
+  String get exportItems => 'Products';
+
+  @override
+  String get exportTotal => 'Total paid';
+
+  @override
+  String get exportSoon => 'Ending within 30 days';
+
+  @override
+  String get exportNone => 'None';
+
+  @override
+  String get exportAttention => 'Needs attention';
+
+  @override
+  String get exportAttentionWhy =>
+      'These protections end within 30 days. Act before the date if something is wrong.';
+
+  @override
+  String get exportUnlabelled => 'Unlabelled shelf';
+
+  @override
+  String exportPage(int page, int pages) {
+    return 'Page $page of $pages';
+  }
+
+  @override
+  String get exportStatusActive => 'Active';
+
+  @override
+  String get exportStatusEnded => 'Ended';
+
+  @override
+  String exportDaysLeft(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n days left',
+      one: '1 day left',
+      zero: 'ends today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String exportProofUntil(String date) {
+    return 'Seller must prove until $date';
+  }
+
+  @override
+  String get exportNoProtection => 'No protection on record';
+
+  @override
+  String get exportLegend =>
+      'Bar: time since purchase. Ring: today. Tick: the day the burden of proof moves to you. Amber: ends within 30 days.';
+
+  @override
+  String get colShelf => 'Shelf';
+
+  @override
+  String get colProduct => 'Product';
+
+  @override
+  String get colCategory => 'Category';
+
+  @override
+  String get colStore => 'Store';
+
+  @override
+  String get colChannel => 'Bought';
+
+  @override
+  String get colCountry => 'Country';
+
+  @override
+  String get colPurchased => 'Purchase date';
+
+  @override
+  String get colPrice => 'Amount';
+
+  @override
+  String get colCurrency => 'Currency';
+
+  @override
+  String get colSerial => 'Serial number';
+
+  @override
+  String get colNext => 'Ends next';
+
+  @override
+  String get colNextEnd => 'Ends on';
+
+  @override
+  String get colDaysLeft => 'Days left';
+
+  @override
+  String get colProofEnd => 'Seller proves until';
+
+  @override
+  String colEnds(String kind) {
+    return '$kind ends';
+  }
+
+  @override
+  String get colProtection => 'Protection';
+
+  @override
+  String get colStart => 'Starts';
+
+  @override
+  String get colEnd => 'Ends';
+
+  @override
+  String get colStatus => 'Status';
+
+  @override
+  String get colSources => 'Source';
+
+  @override
+  String get colDisposed => 'Thrown out on';
+
+  @override
+  String get sheetDisposed => 'Thrown out';
+
+  @override
+  String get sheetProtections => 'Protections';
+
+  @override
+  String get catLaptop => 'Laptop';
+
+  @override
+  String get catPhone => 'Phone';
+
+  @override
+  String get catHeadphones => 'Headphones';
+
+  @override
+  String get catTv => 'TV';
+
+  @override
+  String get catAppliance => 'Appliance';
+
+  @override
+  String get catVacuum => 'Vacuum';
+
+  @override
+  String get catOther => 'Other';
+
+  @override
+  String get lifetime => 'Lifetime';
 }

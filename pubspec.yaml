@@ -43,6 +43,9 @@ dependencies:
   image: ^4.12.0
   path_provider: ^2.1.6
   shared_preferences: ^2.5.6
+  pdf: ^3.13.1
+  share_plus: ^13.3.1
+  archive: ^4.5.2
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +67,11 @@ flutter:
   assets:
     - assets/rules/
     - assets/demo/
+    # Inventory export (PDF): the pdf package needs TrueType outlines, the
+    # system fonts are not reachable from it. Inter, OFL (OFL-Inter.txt).
+    - assets/fonts/
+    # The logo on the PDF cover, from the icon's own source file.
+    - store_listing/ikon/isaret.svg
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

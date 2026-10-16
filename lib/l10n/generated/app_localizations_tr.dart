@@ -564,4 +564,198 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get amountUnreadable => 'Tutar okunamadı; rakamla yaz.';
+
+  @override
+  String get settingsExport => 'Dışa aktar';
+
+  @override
+  String get exportPdf => 'PDF raporu';
+
+  @override
+  String get exportPdfWhy =>
+      'Yazdırmak ya da saklamak için: her ürün, korumaları ve tarihleriyle.';
+
+  @override
+  String get exportExcel => 'Excel tablosu';
+
+  @override
+  String get exportExcelWhy =>
+      'Sıralamak ve süzmek için: her ürün bir satır, tarihler gerçek tarih.';
+
+  @override
+  String exportPreparing(String format) {
+    return '$format hazırlanıyor';
+  }
+
+  @override
+  String get exportFailed => 'Dosya oluşturulamadı. Tekrar dene.';
+
+  @override
+  String get exportEmpty => 'Dışa aktarılacak bir şey yok. Önce bir ürün ekle.';
+
+  @override
+  String get exportHint =>
+      'Dosya bu telefonda oluşur; nereye gideceğini sen seçersin.';
+
+  @override
+  String get exportTitle => 'Envanter';
+
+  @override
+  String get exportFileName => 'envanter';
+
+  @override
+  String exportAsOf(String date) {
+    return '$date itibarıyla';
+  }
+
+  @override
+  String get exportItems => 'Ürün';
+
+  @override
+  String get exportTotal => 'Toplam ödenen';
+
+  @override
+  String get exportSoon => '30 gün içinde biten';
+
+  @override
+  String get exportNone => 'Yok';
+
+  @override
+  String get exportAttention => 'İlgilen';
+
+  @override
+  String get exportAttentionWhy =>
+      'Bu korumalar 30 gün içinde bitiyor. Bir sorun varsa tarihten önce harekete geç.';
+
+  @override
+  String get exportUnlabelled => 'Etiketsiz raf';
+
+  @override
+  String exportPage(int page, int pages) {
+    return 'Sayfa $page / $pages';
+  }
+
+  @override
+  String get exportStatusActive => 'Sürüyor';
+
+  @override
+  String get exportStatusEnded => 'Bitti';
+
+  @override
+  String exportDaysLeft(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n gün kaldı',
+      zero: 'bugün bitiyor',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String exportProofUntil(String date) {
+    return '$date tarihine kadar ispat satıcıda';
+  }
+
+  @override
+  String get exportNoProtection => 'Kayıtlı koruma yok';
+
+  @override
+  String get exportLegend =>
+      'Çubuk: alıştan bu yana geçen süre. Halka: bugün. Dik çizgi: ispat yükünün sana geçtiği gün. Turuncu: 30 gün içinde bitiyor.';
+
+  @override
+  String get colShelf => 'Raf';
+
+  @override
+  String get colProduct => 'Ürün';
+
+  @override
+  String get colCategory => 'Kategori';
+
+  @override
+  String get colStore => 'Mağaza';
+
+  @override
+  String get colChannel => 'Alış yeri';
+
+  @override
+  String get colCountry => 'Ülke';
+
+  @override
+  String get colPurchased => 'Alış tarihi';
+
+  @override
+  String get colPrice => 'Tutar';
+
+  @override
+  String get colCurrency => 'Para birimi';
+
+  @override
+  String get colSerial => 'Seri no';
+
+  @override
+  String get colNext => 'Sıradaki biten';
+
+  @override
+  String get colNextEnd => 'Bitiş tarihi';
+
+  @override
+  String get colDaysLeft => 'Kalan gün';
+
+  @override
+  String get colProofEnd => 'İspat satıcıda (son gün)';
+
+  @override
+  String colEnds(String kind) {
+    return '$kind bitişi';
+  }
+
+  @override
+  String get colProtection => 'Koruma';
+
+  @override
+  String get colStart => 'Başlangıç';
+
+  @override
+  String get colEnd => 'Bitiş';
+
+  @override
+  String get colStatus => 'Durum';
+
+  @override
+  String get colSources => 'Kaynak';
+
+  @override
+  String get colDisposed => 'Çıkarıldığı tarih';
+
+  @override
+  String get sheetDisposed => 'Çıkardıkların';
+
+  @override
+  String get sheetProtections => 'Korumalar';
+
+  @override
+  String get catLaptop => 'Dizüstü bilgisayar';
+
+  @override
+  String get catPhone => 'Telefon';
+
+  @override
+  String get catHeadphones => 'Kulaklık';
+
+  @override
+  String get catTv => 'Televizyon';
+
+  @override
+  String get catAppliance => 'Beyaz eşya';
+
+  @override
+  String get catVacuum => 'Süpürge';
+
+  @override
+  String get catOther => 'Diğer';
+
+  @override
+  String get lifetime => 'Ömür boyu';
 }

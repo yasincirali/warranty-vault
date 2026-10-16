@@ -1009,6 +1009,348 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t read the amount; use digits.'**
   String get amountUnreadable;
+
+  /// No description provided for @settingsExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get settingsExport;
+
+  /// No description provided for @exportPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF report'**
+  String get exportPdf;
+
+  /// No description provided for @exportPdfWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'To print or keep: every product with its protections and dates.'**
+  String get exportPdfWhy;
+
+  /// No description provided for @exportExcel.
+  ///
+  /// In en, this message translates to:
+  /// **'Excel spreadsheet'**
+  String get exportExcel;
+
+  /// No description provided for @exportExcelWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'To sort and filter: one row per product, dates as real dates.'**
+  String get exportExcelWhy;
+
+  /// No description provided for @exportPreparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing {format}'**
+  String exportPreparing(String format);
+
+  /// No description provided for @exportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t create the file. Try again.'**
+  String get exportFailed;
+
+  /// No description provided for @exportEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to export yet. Add a product first.'**
+  String get exportEmpty;
+
+  /// No description provided for @exportHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The file is created on this phone; you choose where it goes.'**
+  String get exportHint;
+
+  /// No description provided for @exportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory'**
+  String get exportTitle;
+
+  /// No description provided for @exportFileName.
+  ///
+  /// In en, this message translates to:
+  /// **'inventory'**
+  String get exportFileName;
+
+  /// No description provided for @exportAsOf.
+  ///
+  /// In en, this message translates to:
+  /// **'As of {date}'**
+  String exportAsOf(String date);
+
+  /// No description provided for @exportItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Products'**
+  String get exportItems;
+
+  /// No description provided for @exportTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total paid'**
+  String get exportTotal;
+
+  /// No description provided for @exportSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Ending within 30 days'**
+  String get exportSoon;
+
+  /// No description provided for @exportNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get exportNone;
+
+  /// No description provided for @exportAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get exportAttention;
+
+  /// No description provided for @exportAttentionWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'These protections end within 30 days. Act before the date if something is wrong.'**
+  String get exportAttentionWhy;
+
+  /// No description provided for @exportUnlabelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlabelled shelf'**
+  String get exportUnlabelled;
+
+  /// No description provided for @exportPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page} of {pages}'**
+  String exportPage(int page, int pages);
+
+  /// No description provided for @exportStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get exportStatusActive;
+
+  /// No description provided for @exportStatusEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get exportStatusEnded;
+
+  /// No description provided for @exportDaysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =0{ends today} =1{1 day left} other{{n} days left}}'**
+  String exportDaysLeft(int n);
+
+  /// No description provided for @exportProofUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Seller must prove until {date}'**
+  String exportProofUntil(String date);
+
+  /// No description provided for @exportNoProtection.
+  ///
+  /// In en, this message translates to:
+  /// **'No protection on record'**
+  String get exportNoProtection;
+
+  /// No description provided for @exportLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Bar: time since purchase. Ring: today. Tick: the day the burden of proof moves to you. Amber: ends within 30 days.'**
+  String get exportLegend;
+
+  /// No description provided for @colShelf.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelf'**
+  String get colShelf;
+
+  /// No description provided for @colProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get colProduct;
+
+  /// No description provided for @colCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get colCategory;
+
+  /// No description provided for @colStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Store'**
+  String get colStore;
+
+  /// No description provided for @colChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bought'**
+  String get colChannel;
+
+  /// No description provided for @colCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get colCountry;
+
+  /// No description provided for @colPurchased.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase date'**
+  String get colPurchased;
+
+  /// No description provided for @colPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get colPrice;
+
+  /// No description provided for @colCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get colCurrency;
+
+  /// No description provided for @colSerial.
+  ///
+  /// In en, this message translates to:
+  /// **'Serial number'**
+  String get colSerial;
+
+  /// No description provided for @colNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends next'**
+  String get colNext;
+
+  /// No description provided for @colNextEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends on'**
+  String get colNextEnd;
+
+  /// No description provided for @colDaysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Days left'**
+  String get colDaysLeft;
+
+  /// No description provided for @colProofEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Seller proves until'**
+  String get colProofEnd;
+
+  /// No description provided for @colEnds.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind} ends'**
+  String colEnds(String kind);
+
+  /// No description provided for @colProtection.
+  ///
+  /// In en, this message translates to:
+  /// **'Protection'**
+  String get colProtection;
+
+  /// No description provided for @colStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts'**
+  String get colStart;
+
+  /// No description provided for @colEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends'**
+  String get colEnd;
+
+  /// No description provided for @colStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get colStatus;
+
+  /// No description provided for @colSources.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get colSources;
+
+  /// No description provided for @colDisposed.
+  ///
+  /// In en, this message translates to:
+  /// **'Thrown out on'**
+  String get colDisposed;
+
+  /// No description provided for @sheetDisposed.
+  ///
+  /// In en, this message translates to:
+  /// **'Thrown out'**
+  String get sheetDisposed;
+
+  /// No description provided for @sheetProtections.
+  ///
+  /// In en, this message translates to:
+  /// **'Protections'**
+  String get sheetProtections;
+
+  /// No description provided for @catLaptop.
+  ///
+  /// In en, this message translates to:
+  /// **'Laptop'**
+  String get catLaptop;
+
+  /// No description provided for @catPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get catPhone;
+
+  /// No description provided for @catHeadphones.
+  ///
+  /// In en, this message translates to:
+  /// **'Headphones'**
+  String get catHeadphones;
+
+  /// No description provided for @catTv.
+  ///
+  /// In en, this message translates to:
+  /// **'TV'**
+  String get catTv;
+
+  /// No description provided for @catAppliance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appliance'**
+  String get catAppliance;
+
+  /// No description provided for @catVacuum.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacuum'**
+  String get catVacuum;
+
+  /// No description provided for @catOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get catOther;
+
+  /// No description provided for @lifetime.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifetime'**
+  String get lifetime;
 }
 
 class _AppLocalizationsDelegate

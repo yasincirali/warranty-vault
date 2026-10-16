@@ -351,5 +351,107 @@
         "type": "String"
       }
     }
-  }
+  },
+  "settingsExport": "Export",
+  "exportPdf": "PDF report",
+  "exportPdfWhy": "To print or keep: every product with its protections and dates.",
+  "exportExcel": "Excel spreadsheet",
+  "exportExcelWhy": "To sort and filter: one row per product, dates as real dates.",
+  "exportPreparing": "Preparing {format}",
+  "@exportPreparing": {
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "Couldn't create the file. Try again.",
+  "exportEmpty": "Nothing to export yet. Add a product first.",
+  "exportHint": "The file is created on this phone; you choose where it goes.",
+  "exportTitle": "Inventory",
+  "exportFileName": "inventory",
+  "exportAsOf": "As of {date}",
+  "@exportAsOf": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "exportItems": "Products",
+  "exportTotal": "Total paid",
+  "exportSoon": "Ending within 30 days",
+  "exportNone": "None",
+  "exportAttention": "Needs attention",
+  "exportAttentionWhy": "These protections end within 30 days. Act before the date if something is wrong.",
+  "exportUnlabelled": "Unlabelled shelf",
+  "exportPage": "Page {page} of {pages}",
+  "@exportPage": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "pages": {
+        "type": "int"
+      }
+    }
+  },
+  "exportStatusActive": "Active",
+  "exportStatusEnded": "Ended",
+  "exportDaysLeft": "{n, plural, =0{ends today} =1{1 day left} other{{n} days left}}",
+  "@exportDaysLeft": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "exportProofUntil": "Seller must prove until {date}",
+  "@exportProofUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "exportNoProtection": "No protection on record",
+  "exportLegend": "Bar: time since purchase. Ring: today. Tick: the day the burden of proof moves to you. Amber: ends within 30 days.",
+  "colShelf": "Shelf",
+  "colProduct": "Product",
+  "colCategory": "Category",
+  "colStore": "Store",
+  "colChannel": "Bought",
+  "colCountry": "Country",
+  "colPurchased": "Purchase date",
+  "colPrice": "Amount",
+  "colCurrency": "Currency",
+  "colSerial": "Serial number",
+  "colNext": "Ends next",
+  "colNextEnd": "Ends on",
+  "colDaysLeft": "Days left",
+  "colProofEnd": "Seller proves until",
+  "colEnds": "{kind} ends",
+  "@colEnds": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "colProtection": "Protection",
+  "colStart": "Starts",
+  "colEnd": "Ends",
+  "colStatus": "Status",
+  "colSources": "Source",
+  "colDisposed": "Thrown out on",
+  "sheetDisposed": "Thrown out",
+  "sheetProtections": "Protections",
+  "catLaptop": "Laptop",
+  "catPhone": "Phone",
+  "catHeadphones": "Headphones",
+  "catTv": "TV",
+  "catAppliance": "Appliance",
+  "catVacuum": "Vacuum",
+  "catOther": "Other",
+  "lifetime": "Lifetime"
 }

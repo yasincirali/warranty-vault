@@ -8,12 +8,31 @@ import '../rights/rights_engine.dart';
 String _locale(BuildContext context) =>
     Localizations.localeOf(context).toLanguageTag();
 
-String fmtDate(BuildContext context, DateTime d) =>
-    DateFormat.yMMMd(_locale(context)).format(d);
+String fmtDate(BuildContext context, DateTime d) => fmtDateIn(_locale(context), d);
 
-String fmtMoney(BuildContext context, Money m) =>
-    NumberFormat.simpleCurrency(locale: _locale(context), name: m.currency)
-        .format(m.amount);
+String fmtMoney(BuildContext context, Money m) => fmtMoneyIn(_locale(context), m);
+
+/// The same formats without a widget tree, for files made outside a screen
+/// (the inventory export): one formatting rule for screen, PDF and sheet.
+String fmtDateIn(String locale, DateTime d) => DateFormat.yMMMd(locale).format(d);
+
+String fmtMoneyIn(String locale, Money m) =>
+    NumberFormat.simpleCurrency(locale: locale, name: m.currency).format(m.amount);
+
+String categoryLabel(AppLocalizations l, ItemCategory c) => switch (c) {
+      ItemCategory.laptop => l.catLaptop,
+      ItemCategory.phone => l.catPhone,
+      ItemCategory.headphones => l.catHeadphones,
+      ItemCategory.tv => l.catTv,
+      ItemCategory.appliance => l.catAppliance,
+      ItemCategory.vacuum => l.catVacuum,
+      ItemCategory.other => l.catOther,
+    };
+
+String channelLabel(AppLocalizations l, SalesChannel c) => switch (c) {
+      SalesChannel.store => l.channelStore,
+      SalesChannel.online => l.channelOnline,
+    };
 
 String kindLabel(AppLocalizations l, ProtectionKind k) => switch (k) {
       ProtectionKind.returnWindow => l.kindReturn,
