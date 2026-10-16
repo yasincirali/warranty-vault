@@ -53,7 +53,10 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: CustomScrollView(slivers: [
+        child: CustomScrollView(
+          // Scrolling ends any typing (a shelf label) and drops the keyboard.
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          slivers: [
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.lg, VSpace.xl, 0),
             sliver: SliverToBoxAdapter(

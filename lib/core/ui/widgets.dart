@@ -244,3 +244,12 @@ class VSegment<T> extends StatelessWidget {
     );
   }
 }
+
+/// Fields of one form share this tap region, so moving from one field to the
+/// next is not an "outside" tap and the keyboard doesn't drop and come back.
+const formFieldsGroup = #formFields;
+
+/// Touch phones keep the keyboard up after a tap elsewhere unless a field
+/// says otherwise; every field in the app closes it this way (yasin, 16 Oct:
+/// "klavye kapatılabilir olmalı").
+void dismissKeyboard([PointerDownEvent? _]) => FocusManager.instance.primaryFocus?.unfocus();

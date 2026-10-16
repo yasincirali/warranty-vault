@@ -453,5 +453,6 @@
   "catAppliance": "Appliance",
   "catVacuum": "Vacuum",
   "catOther": "Other",
-  "lifetime": "Lifetime"
+  "lifetime": "Lifetime",
+  "hideKeyboard": "Hide keyboard"
 }

@@ -758,4 +758,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get lifetime => 'Ömür boyu';
+
+  @override
+  String get hideKeyboard => 'Klavyeyi kapat';
 }
