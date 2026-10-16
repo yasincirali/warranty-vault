@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/material.dart';
@@ -28,6 +29,23 @@ final photoPickerProvider = Provider<Future<Uint8List?> Function(PhotoSource)>(
       imageQuality: 92,
     );
     return file?.readAsBytes();
+  },
+);
+
+/// The system's subject lifting (iOS 17+, `SubjectLift.swift`): a
+/// transparent PNG cropped to the product, or null when the platform has
+/// none or found no subject. Every failure is a null, never an error: the
+/// flood fill in [liftSubject] is always there behind it.
+final systemLiftProvider = Provider<Future<Uint8List?> Function(Uint8List)>(
+  (_) => (bytes) async {
+    if (!Platform.isIOS) return null;
+    try {
+      return await const MethodChannel('warranty_vault/subject_lift').invokeMethod<Uint8List>('lift', bytes);
+    } on PlatformException {
+      return null;
+    } on MissingPluginException {
+      return null;
+    }
   },
 );
 
@@ -126,7 +144,8 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
       _photoFailed = false;
     });
     try {
-      final result = await Isolate.run(() => liftSubject(bytes));
+      final system = await ref.read(systemLiftProvider)(bytes);
+      final result = await Isolate.run(() => liftSubject(bytes, system: system));
       if (!mounted) return;
       setState(() {
         _photo = result;
