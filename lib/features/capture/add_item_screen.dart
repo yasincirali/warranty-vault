@@ -194,6 +194,8 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
     final currency = _currency ?? _currencyFor(region);
     final shelves = ref.watch(vaultProvider).value?.shelves ?? const [];
     final canSave = _name.text.trim().isNotEmpty && !_saving && !_lifting;
+    // Read above the Scaffold: its body sees the keyboard as already removed.
+    final keyboardUp = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     String warrantyText(int m) => m == 0 ? l.warrantyNone : (m % 12 == 0 ? l.durYears(m ~/ 12) : l.durMonths(m));
 
@@ -208,154 +210,203 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.sm, VSpace.xl, VSpace.xxl),
-        children: _staggered([
-          _PhotoArea(
-            photo: _chosen,
-            picked: _picked,
-            lifting: _lifting,
-            failed: _photoFailed,
-            noCutout: _photo != null && _photo!.cutout == null,
-            onPick: _pick,
-          ),
-          if (_photo?.cutout != null) ...[
-            const SizedBox(height: VSpace.md),
-            VSegment<bool>(
-              options: [(true, l.photoCutout), (false, l.photoOriginal)],
-              selected: _useCutout,
-              onChanged: (v) => setState(() => _useCutout = v),
-            ),
-          ],
-          if (_photo != null) ...[
-            const SizedBox(height: VSpace.xs),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton.icon(
-                onPressed: () => _pick(PhotoSource.gallery),
-                icon: const Icon(Icons.photo_library_outlined, size: 18),
-                label: Text(l.photoChange),
-              ),
-            ),
-          ],
-          const SizedBox(height: VSpace.lg),
-          VFieldLift(
-            child: TextField(
-              controller: _name,
-              textCapitalization: TextCapitalization.sentences,
-              textInputAction: TextInputAction.next,
-              decoration: InputDecoration(
-                labelText: l.fieldProduct,
-                hintText: l.nameHint,
-                // The one required field says when it is done.
-                suffixIcon: VDoneTick(visible: _name.text.trim().isNotEmpty),
-              ),
-            ),
-          ),
-          const SizedBox(height: VSpace.md),
-          VFieldLift(
-            child: TextField(
-              controller: _store,
-              textCapitalization: TextCapitalization.words,
-              textInputAction: TextInputAction.next,
-              decoration: InputDecoration(labelText: l.fieldStore),
-            ),
-          ),
-          const SizedBox(height: VSpace.md),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: VFieldLift(
+      // The save bar is part of the body, not bottomNavigationBar: the body
+      // shrinks above the keyboard, so the bar rides on top of it and the
+      // focused field is scrolled into the space that is left.
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.sm, VSpace.xl, VSpace.xxl),
+              children: _staggered([
+                _PhotoArea(
+                  photo: _chosen,
+                  picked: _picked,
+                  lifting: _lifting,
+                  failed: _photoFailed,
+                  noCutout: _photo != null && _photo!.cutout == null,
+                  onPick: _pick,
+                ),
+                if (_photo?.cutout != null) ...[
+                  const SizedBox(height: VSpace.md),
+                  VSegment<bool>(
+                    options: [(true, l.photoCutout), (false, l.photoOriginal)],
+                    selected: _useCutout,
+                    onChanged: (v) => setState(() => _useCutout = v),
+                  ),
+                ],
+                if (_photo != null) ...[
+                  const SizedBox(height: VSpace.xs),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: () => _pick(PhotoSource.gallery),
+                      icon: const Icon(Icons.photo_library_outlined, size: 18),
+                      label: Text(l.photoChange),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: VSpace.lg),
+                VFieldLift(
                   child: TextField(
-                    controller: _price,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: InputDecoration(labelText: l.fieldAmount),
+                    controller: _name,
+                    textCapitalization: TextCapitalization.sentences,
+                    textInputAction: TextInputAction.next,
+                    groupId: formFieldsGroup,
+                    onTapOutside: dismissKeyboard,
+                    decoration: InputDecoration(
+                      labelText: l.fieldProduct,
+                      hintText: l.nameHint,
+                      // The one required field says when it is done.
+                      suffixIcon: VDoneTick(visible: _name.text.trim().isNotEmpty),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: VSpace.md),
-              SizedBox(
-                width: 110,
-                child: VFieldLift(
-                  child: DropdownButtonFormField<String>(
-                    initialValue: currency,
-                    isExpanded: true,
-                    items: [for (final c in _currencies) DropdownMenuItem(value: c, child: Text(c))],
-                    onChanged: (c) => setState(() => _currency = c),
+                const SizedBox(height: VSpace.md),
+                VFieldLift(
+                  child: TextField(
+                    controller: _store,
+                    textCapitalization: TextCapitalization.words,
+                    textInputAction: TextInputAction.next,
+                    groupId: formFieldsGroup,
+                    onTapOutside: dismissKeyboard,
+                    decoration: InputDecoration(labelText: l.fieldStore),
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: VSpace.md),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: VFieldLift(
+                        child: TextField(
+                          controller: _price,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          // Android shows a done key; iOS's decimal pad has none,
+                          // so the bar above the keyboard carries "hide keyboard".
+                          textInputAction: TextInputAction.done,
+                          groupId: formFieldsGroup,
+                          onTapOutside: dismissKeyboard,
+                          // Keep the read-back line under the field in view too.
+                          scrollPadding: const EdgeInsets.fromLTRB(20, 20, 20, 72),
+                          decoration: InputDecoration(labelText: l.fieldAmount),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: VSpace.md),
+                    SizedBox(
+                      width: 110,
+                      child: VFieldLift(
+                        child: DropdownButtonFormField<String>(
+                          initialValue: currency,
+                          isExpanded: true,
+                          items: [for (final c in _currencies) DropdownMenuItem(value: c, child: Text(c))],
+                          onChanged: (c) => setState(() => _currency = c),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                // Read back what will be saved, so "1.299" is never a surprise.
+                _AmountEcho(raw: _price.text, currency: currency),
+                const SizedBox(height: VSpace.md),
+                _FieldButton(
+                  label: l.fieldDate,
+                  value: fmtDate(context, _date),
+                  onTap: () async {
+                    dismissKeyboard();
+                    final today = ref.read(clockProvider)();
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: _date,
+                      firstDate: DateTime(today.year - 15),
+                      lastDate: today,
+                    );
+                    if (picked != null) setState(() => _date = picked);
+                  },
+                ),
+                const SizedBox(height: VSpace.lg),
+                Text(l.fieldChannel, style: context.t.section.copyWith(color: context.c.textSecondary)),
+                const SizedBox(height: VSpace.sm),
+                // The channel changes the rights (online = 14-day withdrawal), so
+                // it is asked, not guessed.
+                VSegment<SalesChannel>(
+                  options: [(SalesChannel.store, l.channelStore), (SalesChannel.online, l.channelOnline)],
+                  selected: _channel,
+                  onChanged: (v) => setState(() => _channel = v),
+                ),
+                const SizedBox(height: VSpace.lg),
+                DropdownButtonFormField<String>(
+                  initialValue: region,
+                  isExpanded: true,
+                  decoration: InputDecoration(labelText: l.fieldRegion),
+                  items: [for (final r in kRegions) DropdownMenuItem(value: r, child: Text(regionName(l, r)))],
+                  onChanged: (r) => setState(() => _region = r),
+                ),
+                const SizedBox(height: VSpace.md),
+                DropdownButtonFormField<int>(
+                  initialValue: _warranty,
+                  isExpanded: true,
+                  decoration: InputDecoration(labelText: l.kindManufacturer),
+                  items: [for (final m in _warrantyMonths) DropdownMenuItem(value: m, child: Text(warrantyText(m)))],
+                  onChanged: (m) => setState(() => _warranty = m ?? 0),
+                ),
+                const SizedBox(height: VSpace.md),
+                DropdownButtonFormField<String?>(
+                  initialValue: _shelfId,
+                  isExpanded: true,
+                  decoration: InputDecoration(labelText: l.fieldShelf),
+                  items: [
+                    DropdownMenuItem(value: null, child: Text(l.shelfAuto)),
+                    for (final (i, s) in shelves.indexed)
+                      DropdownMenuItem(value: s.id, child: Text(s.label.isEmpty ? l.shelfName(i + 1) : s.label)),
+                  ],
+                  onChanged: (s) => setState(() => _shelfId = s),
+                ),
+              ]),
+            ),
           ),
-          // Read back what will be saved, so "1.299" is never a surprise.
-          _AmountEcho(raw: _price.text, currency: currency),
-          const SizedBox(height: VSpace.md),
-          _FieldButton(
-            label: l.fieldDate,
-            value: fmtDate(context, _date),
-            onTap: () async {
-              final today = ref.read(clockProvider)();
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: _date,
-                firstDate: DateTime(today.year - 15),
-                lastDate: today,
-              );
-              if (picked != null) setState(() => _date = picked);
-            },
-          ),
-          const SizedBox(height: VSpace.lg),
-          Text(l.fieldChannel, style: context.t.section.copyWith(color: context.c.textSecondary)),
-          const SizedBox(height: VSpace.sm),
-          // The channel changes the rights (online = 14-day withdrawal), so
-          // it is asked, not guessed.
-          VSegment<SalesChannel>(
-            options: [(SalesChannel.store, l.channelStore), (SalesChannel.online, l.channelOnline)],
-            selected: _channel,
-            onChanged: (v) => setState(() => _channel = v),
-          ),
-          const SizedBox(height: VSpace.lg),
-          DropdownButtonFormField<String>(
-            initialValue: region,
-            isExpanded: true,
-            decoration: InputDecoration(labelText: l.fieldRegion),
-            items: [for (final r in kRegions) DropdownMenuItem(value: r, child: Text(regionName(l, r)))],
-            onChanged: (r) => setState(() => _region = r),
-          ),
-          const SizedBox(height: VSpace.md),
-          DropdownButtonFormField<int>(
-            initialValue: _warranty,
-            isExpanded: true,
-            decoration: InputDecoration(labelText: l.kindManufacturer),
-            items: [for (final m in _warrantyMonths) DropdownMenuItem(value: m, child: Text(warrantyText(m)))],
-            onChanged: (m) => setState(() => _warranty = m ?? 0),
-          ),
-          const SizedBox(height: VSpace.md),
-          DropdownButtonFormField<String?>(
-            initialValue: _shelfId,
-            isExpanded: true,
-            decoration: InputDecoration(labelText: l.fieldShelf),
-            items: [
-              DropdownMenuItem(value: null, child: Text(l.shelfAuto)),
-              for (final (i, s) in shelves.indexed)
-                DropdownMenuItem(value: s.id, child: Text(s.label.isEmpty ? l.shelfName(i + 1) : s.label)),
-            ],
-            onChanged: (s) => setState(() => _shelfId = s),
-          ),
-        ]),
+          _SaveBar(keyboardUp: keyboardUp, onSave: canSave ? _save : null, saving: _saving),
+        ],
       ),
-      bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.md, VSpace.xl, VSpace.md),
-        child: FilledButton(
-          onPressed: canSave ? _save : null,
-          child: AnimatedSwitcher(
-            duration: VMotion.of(context, VMotion.quick),
-            child: _saving
-                ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator.adaptive(strokeWidth: 2))
-                : Text(l.putOnShelf),
+    );
+  }
+}
+
+/// "Put it on the shelf", and while the keyboard is up a "hide keyboard"
+/// button next to it: the one way to close a keyboard that has no return
+/// key, in the place the thumb already is.
+class _SaveBar extends StatelessWidget {
+  const _SaveBar({required this.keyboardUp, required this.onSave, required this.saving});
+  final bool keyboardUp;
+  final VoidCallback? onSave;
+  final bool saving;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return SafeArea(
+      top: false,
+      minimum: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.md, VSpace.xl, VSpace.md),
+      child: Row(
+        children: [
+          if (keyboardUp) ...[
+            VIconButton(icon: Icons.keyboard_hide_outlined, label: l.hideKeyboard, onPressed: dismissKeyboard),
+            const SizedBox(width: VSpace.sm),
+          ],
+          Expanded(
+            child: FilledButton(
+              onPressed: onSave,
+              child: AnimatedSwitcher(
+                duration: VMotion.of(context, VMotion.quick),
+                child: saving
+                    ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator.adaptive(strokeWidth: 2))
+                    : Text(l.putOnShelf),
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

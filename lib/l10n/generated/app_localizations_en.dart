@@ -775,4 +775,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lifetime => 'Lifetime';
+
+  @override
+  String get hideKeyboard => 'Hide keyboard';
 }

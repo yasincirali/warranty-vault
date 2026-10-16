@@ -1351,6 +1351,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Lifetime'**
   String get lifetime;
+
+  /// No description provided for @hideKeyboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide keyboard'**
+  String get hideKeyboard;
 }
 
 class _AppLocalizationsDelegate

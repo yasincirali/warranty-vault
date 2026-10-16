@@ -208,5 +208,6 @@
   "catAppliance": "Beyaz eşya",
   "catVacuum": "Süpürge",
   "catOther": "Diğer",
-  "lifetime": "Ömür boyu"
+  "lifetime": "Ömür boyu",
+  "hideKeyboard": "Klavyeyi kapat"
 }
