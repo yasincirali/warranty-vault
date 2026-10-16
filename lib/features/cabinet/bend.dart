@@ -4,7 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'shelf_physics.dart';
 
 /// Draws its child flexed: the image is cut into horizontal bands and each
-/// band is shifted sideways by [bend] × width × [Feel.profile] of its height.
+/// band is sheared sideways so that height t moves by
+/// [bend] × width × [Feel.profile] (t), piecewise linear between bands.
 /// A photo has no separate parts, so this is how a laptop lid rocks on its
 /// hinge or a vacuum whips. At rest (bend ≈ 0) the child is painted once,
 /// untouched. Painting and hit testing stay in the child's own box.
@@ -57,13 +58,32 @@ class RenderBend extends RenderProxyBox {
     final w = size.width, h = size.height;
     final band = h / bands;
     for (var i = 0; i < bands; i++) {
-      // Band i counted from the bottom; its middle sets the shift.
-      final t = (i + .5) / bands;
-      final dx = _bend * w * _feel.profile(t);
+      // Band i counted from the bottom. Each band is sheared, not just
+      // shifted: its bottom edge moves by the profile at its bottom and its
+      // top edge by the profile at its top, so neighbouring bands meet
+      // exactly and the outline stays one continuous curve. (16 Oct: plain
+      // shifts made a visible staircase on every edge while an item swung.)
+      final o0 = _bend * w * _feel.profile(i / bands);
+      final o1 = _bend * w * _feel.profile((i + 1) / bands);
+      final bottom = h - i * band;
       final top = h - (i + 1) * band;
-      // Half a pixel of overlap hides seams between bands.
-      final clip = Rect.fromLTWH(-w, top - .5, w * 3, band + 1);
-      context.pushClipRect(needsCompositing, offset + Offset(dx, 0), clip, (c, o) => c.paintChild(child, o));
+      // x' = x + a + k·y, with x' − x = o0 at the bottom and o1 at the top.
+      final k = (o0 - o1) / band;
+      final a = o0 - k * bottom;
+      final shear = Matrix4.identity()
+        ..setEntry(0, 1, k)
+        ..setEntry(0, 3, a);
+      // Hard-edged clips that share an edge split the pixels between them:
+      // no gap and no pixel drawn twice (an overlap drew darker seams on
+      // the soft edges of a cut-out photo). The outer bands reach past the
+      // box for anything the child paints outside it.
+      final clip = Rect.fromLTRB(-w, i == bands - 1 ? -h : top, w * 2, i == 0 ? h * 2 : bottom);
+      context.pushTransform(
+        needsCompositing,
+        offset,
+        shear,
+        (c, o) => c.pushClipRect(needsCompositing, o, clip, (c, o) => c.paintChild(child, o)),
+      );
     }
   }
 }
