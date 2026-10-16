@@ -787,4 +787,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String kindA11y(String kind) {
     return '$kind, kind';
   }
+
+  @override
+  String get hideKeyboard => 'Hide keyboard';
 }

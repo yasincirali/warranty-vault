@@ -463,5 +463,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "hideKeyboard": "Hide keyboard"
 }

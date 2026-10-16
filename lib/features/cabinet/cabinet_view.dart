@@ -912,7 +912,14 @@ class _DymoLabelState extends State<_DymoLabel> {
           cursorColor: context.c.background,
           style: tape,
           textCapitalization: TextCapitalization.sentences,
+          textInputAction: TextInputAction.done,
           onSubmitted: (_) => _finish(),
+          // A tap anywhere else, or scrolling the cabinet, ends the edit and
+          // keeps what was typed (the focus listener saves).
+          onTapOutside: (_) => _focus.unfocus(),
+          // The keyboard lifts the shelf into view with some of the shelf
+          // under its tape, not just the tape on the keyboard's edge.
+          scrollPadding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
           decoration: const InputDecoration(
             isDense: true,
             filled: false,

@@ -769,4 +769,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String kindA11y(String kind) {
     return '$kind, tür';
   }
+
+  @override
+  String get hideKeyboard => 'Klavyeyi kapat';
 }

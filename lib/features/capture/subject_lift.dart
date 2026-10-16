@@ -41,12 +41,15 @@ const _maxSide = 900;
 /// edge into the product itself). Thresholds are the ones tuned in the HTML
 /// prototype (Tur 5): 30 and 150 in RGB distance.
 ///
-/// TODO(lift): VisionKit (iOS 17 `ImageAnalysisInteraction` subject lifting)
-/// and ML Kit Subject Segmentation (Android) give real segmentation; this
-/// stays as the fallback for older devices.
+/// On iOS 17+ the system's own segmentation (Vision, the model behind
+/// "Lift subject") runs first, natively, and its result comes in as
+/// [system]: a transparent PNG cropped to the product. It handles busy
+/// backgrounds, hands and shadows the flood fill can't. The flood fill
+/// stays for older iPhones, Android (ML Kit is a later step) and photos
+/// where Vision finds no subject.
 ///
 /// Pure and synchronous: run it with `Isolate.run`.
-LiftResult liftSubject(Uint8List bytes) {
+LiftResult liftSubject(Uint8List bytes, {Uint8List? system}) {
   final decoded = img.decodeImage(bytes);
   if (decoded == null) throw const FormatException('not an image');
   var src = img.bakeOrientation(decoded);
@@ -60,7 +63,40 @@ LiftResult liftSubject(Uint8List bytes) {
     aspect: src.width / src.height,
     cutout: false,
   );
-  return LiftResult(original: original, cutout: _cut(src));
+  return LiftResult(original: original, cutout: _fromSystem(system) ?? _cut(src));
+}
+
+/// The system's cut-out, brought to the same size limit and padding as the
+/// flood fill's. Null when it is unusable (undecodable, no transparency, or
+/// almost nothing left), so the flood fill gets its turn.
+LiftedPhoto? _fromSystem(Uint8List? png) {
+  if (png == null) return null;
+  final decoded = img.decodeImage(png);
+  if (decoded == null || !decoded.hasAlpha) return null;
+  var src = decoded.numChannels == 4 ? decoded : decoded.convert(numChannels: 4);
+  if (src.width > _maxSide || src.height > _maxSide) {
+    src = src.width >= src.height
+        ? img.copyResize(src, width: _maxSide, interpolation: img.Interpolation.average)
+        : img.copyResize(src, height: _maxSide, interpolation: img.Interpolation.average);
+  }
+  var x0 = src.width, y0 = src.height, x1 = -1, y1 = -1, opaque = 0;
+  for (final p in src) {
+    if (p.a > 8) {
+      opaque++;
+      if (p.x < x0) x0 = p.x;
+      if (p.x > x1) x1 = p.x;
+      if (p.y < y0) y0 = p.y;
+      if (p.y > y1) y1 = p.y;
+    }
+  }
+  // A speck is a misfire, not a product.
+  if (x1 < x0 || opaque < 64) return null;
+  const pad = 4;
+  final cw = x1 - x0 + 1 + 2 * pad, ch = y1 - y0 + 1 + 2 * pad;
+  final out = img.Image(width: cw, height: ch, numChannels: 4);
+  img.compositeImage(out, src, srcX: x0, srcY: y0, srcW: x1 - x0 + 1, srcH: y1 - y0 + 1, dstX: pad, dstY: pad,
+      blend: img.BlendMode.direct);
+  return LiftedPhoto(png: img.encodePng(out, level: 6), aspect: cw / ch, cutout: true);
 }
 
 LiftedPhoto? _cut(img.Image src) {
