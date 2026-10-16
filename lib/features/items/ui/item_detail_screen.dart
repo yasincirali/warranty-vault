@@ -12,6 +12,7 @@ import '../../counter/counter_screen.dart';
 import '../../issue/issue_flow_screen.dart';
 import '../domain/item.dart';
 import '../providers.dart';
+import 'documents.dart';
 import 'item_photo.dart';
 
 /// Answer first: the top card says where the user stands today in one
@@ -76,6 +77,8 @@ class ItemDetailScreen extends ConsumerWidget {
                 ),
             ]),
           ),
+          const SizedBox(height: VSpace.lg),
+          DocumentsSection(item: item),
           const SizedBox(height: VSpace.md),
           // One strong action instead of two small shortcuts (review round 1):
           // the moment that matters is showing proof to someone else.

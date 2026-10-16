@@ -772,4 +772,167 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get hideKeyboard => 'Klavyeyi kapat';
+
+  @override
+  String reminderEndsBody(String what) {
+    return '$what. Bir sorun varsa son günü bekleme, şimdi bildir.';
+  }
+
+  @override
+  String reminderProofBody(int days) {
+    return '$days gün sonra arızayı ispat yükü sana geçiyor. Bir sorun varsa şimdi bildir.';
+  }
+
+  @override
+  String get cancel => 'Vazgeç';
+
+  @override
+  String get searchTitle => 'Ara';
+
+  @override
+  String get searchHint => 'Ürün, mağaza, seri no ya da raf';
+
+  @override
+  String get searchClear => 'Aramayı temizle';
+
+  @override
+  String searchNone(String query) {
+    return 'Dolapta “$query” ile eşleşen bir şey yok.';
+  }
+
+  @override
+  String get docsHeader => 'Fiş ve belgeler';
+
+  @override
+  String get docReceipt => 'Fiş ya da fatura';
+
+  @override
+  String get docWarrantyCard => 'Garanti belgesi';
+
+  @override
+  String get docManual => 'Kullanım kılavuzu';
+
+  @override
+  String get docOther => 'Diğer belge';
+
+  @override
+  String get docPdf => 'PDF';
+
+  @override
+  String get docPhoto => 'Fotoğraf';
+
+  @override
+  String get docAdd => 'Fiş ya da belge ekle';
+
+  @override
+  String get docAddWhy =>
+      'Satıcı alış kanıtı ister. Burada dursun, termal fiş gibi solmaz.';
+
+  @override
+  String get docWhat => 'Bu ne?';
+
+  @override
+  String get docFromCamera => 'Fotoğrafını çek';
+
+  @override
+  String get docFromGallery => 'Fotoğraflardan seç';
+
+  @override
+  String get docFromFile => 'PDF dosyası (e-fatura)';
+
+  @override
+  String docAdded(String kind) {
+    return '$kind kaydedildi';
+  }
+
+  @override
+  String get docTooLarge =>
+      'Bu dosya 20 MB\'tan büyük. Daha küçük bir kopyasını dene.';
+
+  @override
+  String get docFailed => 'Kaydedilemedi. Tekrar dene.';
+
+  @override
+  String get docDelete => 'Sil';
+
+  @override
+  String docDeleteTitle(String kind) {
+    return '$kind silinsin mi?';
+  }
+
+  @override
+  String get docDeleteBody => 'Bu telefondan kaldırılır. Ürün dolapta kalır.';
+
+  @override
+  String get counterOpenPdf => 'Faturayı aç (PDF)';
+
+  @override
+  String get counterReceiptA11y => 'Fiş, tam ekran açılır';
+
+  @override
+  String get settingsReminders => 'Hatırlatmalar';
+
+  @override
+  String get remindersSwitch => 'Haklarım bitmeden hatırlat';
+
+  @override
+  String get remindersWhy =>
+      'İade süresi kapanmadan birkaç gün, garanti bitmeden bir ay önce ve ispat yükü sana geçmeden önce. Yalnız bu telefondan gönderilir.';
+
+  @override
+  String get settingsBackup => 'Yedek';
+
+  @override
+  String get backupMake => 'Dolabı yedekle';
+
+  @override
+  String get backupMakeWhy => 'Tüm ürünler, fotoğraflar ve fişler tek dosyada';
+
+  @override
+  String get backupRestore => 'Yedekten geri yükle';
+
+  @override
+  String get backupRestoreWhy => 'Bu telefondaki dolabın yerine geçer';
+
+  @override
+  String get backupHint =>
+      'Dosyayı iCloud Drive\'a ya da Dosyalar\'a kaydet. Bilgisayarda açılabilen düz bir zip dosyası, o yüzden kendine ait bir yerde tut.';
+
+  @override
+  String get backupFilePrefix => 'dolap-yedegi';
+
+  @override
+  String get backupInvalid => 'Bu dosya bir dolap yedeği değil.';
+
+  @override
+  String get backupFailed => 'Yedek tamamlanamadı. Tekrar dene.';
+
+  @override
+  String backupConfirmTitle(int count) {
+    return '$count ürün geri yüklensin mi?';
+  }
+
+  @override
+  String backupFrom(String date) {
+    return '$date tarihli yedek.';
+  }
+
+  @override
+  String backupConfirmBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Bu telefondaki $count ürünün yerine geçecek.',
+      zero: 'Bu telefondaki dolap boş.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupReplace => 'Geri yükle';
+
+  @override
+  String backupRestored(int count) {
+    return '$count ürün geri yüklendi';
+  }
 }

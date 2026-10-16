@@ -10,6 +10,7 @@ import 'app.dart';
 import 'core/config/env.dart';
 import 'features/items/data/vault_store.dart';
 import 'features/items/providers.dart';
+import 'features/reminders/reminders.dart';
 import 'features/settings/settings.dart';
 
 Future<void> main() async {
@@ -28,6 +29,7 @@ Future<void> main() async {
       overrides: [
         vaultStoreProvider.overrideWithValue(store),
         settingsStoreProvider.overrideWithValue(PrefsSettingsStore(prefs)),
+        if (Platform.isIOS || Platform.isAndroid) reminderSchedulerProvider.overrideWithValue(LocalReminderScheduler()),
       ],
       child: const WarrantyVaultApp(),
     ),

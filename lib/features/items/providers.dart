@@ -65,6 +65,37 @@ class VaultController extends AsyncNotifier<Vault> {
     return id;
   }
 
+  /// Keeps a receipt / invoice / manual with the product. [extension] is
+  /// `jpg` for photographed paper, `pdf` for e-invoices.
+  Future<void> addDoc(String itemId, Uint8List bytes, {required String extension, required DocKind kind}) async {
+    final rel = await ref.read(vaultStoreProvider).saveDoc('$itemId-${_id('d')}.$extension', bytes);
+    final now = ref.read(clockProvider)();
+    await _commit(Vault(
+      items: [
+        for (final i in _v.items)
+          i.id == itemId ? i.copyWith(documents: [...i.documents, ItemDoc(path: rel, kind: kind, added: now)]) : i,
+      ],
+      shelves: _v.shelves,
+    ));
+  }
+
+  /// The list changes first, the file goes after: a failed delete leaves
+  /// an orphan file, never a document row pointing at nothing.
+  Future<void> removeDoc(String itemId, String path) async {
+    await _commit(Vault(
+      items: [
+        for (final i in _v.items)
+          i.id == itemId ? i.copyWith(documents: [for (final d in i.documents) if (d.path != path) d]) : i,
+      ],
+      shelves: _v.shelves,
+    ));
+    try {
+      await ref.read(vaultStoreProvider).deleteFile(path);
+    } catch (e, s) {
+      FlutterError.reportError(FlutterErrorDetails(exception: e, stack: s, library: 'vault'));
+    }
+  }
+
   Future<void> move(String itemId, int shelfIndex, int insertAt) =>
       _commit(moveItem(_v, itemId, shelfIndex, insertAt, newShelfId: _shelfId));
 

@@ -790,4 +790,186 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hideKeyboard => 'Hide keyboard';
+
+  @override
+  String reminderEndsBody(String what) {
+    return '$what. If something is wrong, report it before the last day.';
+  }
+
+  @override
+  String reminderProofBody(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days',
+      one: '1 day',
+    );
+    return 'In $_temp0 the burden of proving a fault moves to you. Report any problem now.';
+  }
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get searchTitle => 'Search';
+
+  @override
+  String get searchHint => 'Product, store, serial or shelf';
+
+  @override
+  String get searchClear => 'Clear search';
+
+  @override
+  String searchNone(String query) {
+    return 'Nothing in the cabinet matches “$query”.';
+  }
+
+  @override
+  String get docsHeader => 'Receipts and papers';
+
+  @override
+  String get docReceipt => 'Receipt or invoice';
+
+  @override
+  String get docWarrantyCard => 'Warranty card';
+
+  @override
+  String get docManual => 'Manual';
+
+  @override
+  String get docOther => 'Other paper';
+
+  @override
+  String get docPdf => 'PDF';
+
+  @override
+  String get docPhoto => 'Photo';
+
+  @override
+  String get docAdd => 'Add a receipt or paper';
+
+  @override
+  String get docAddWhy =>
+      'The seller asks for proof of purchase. Keep it here and it never fades.';
+
+  @override
+  String get docWhat => 'What is it?';
+
+  @override
+  String get docFromCamera => 'Take a photo';
+
+  @override
+  String get docFromGallery => 'Choose from photos';
+
+  @override
+  String get docFromFile => 'PDF file (e-invoice)';
+
+  @override
+  String docAdded(String kind) {
+    return '$kind saved';
+  }
+
+  @override
+  String get docTooLarge => 'That file is over 20 MB. Try a smaller copy.';
+
+  @override
+  String get docFailed => 'Couldn\'t save it. Try again.';
+
+  @override
+  String get docDelete => 'Delete';
+
+  @override
+  String docDeleteTitle(String kind) {
+    return 'Delete $kind?';
+  }
+
+  @override
+  String get docDeleteBody =>
+      'It is removed from this phone. The product stays in the cabinet.';
+
+  @override
+  String get counterOpenPdf => 'Open the invoice (PDF)';
+
+  @override
+  String get counterReceiptA11y => 'Receipt, opens full screen';
+
+  @override
+  String get settingsReminders => 'Reminders';
+
+  @override
+  String get remindersSwitch => 'Remind me before rights end';
+
+  @override
+  String get remindersWhy =>
+      'A few days before a return window closes, a month before a warranty ends, and before the burden of proof moves to you. Sent from this phone only.';
+
+  @override
+  String get settingsBackup => 'Backup';
+
+  @override
+  String get backupMake => 'Back up the cabinet';
+
+  @override
+  String get backupMakeWhy => 'Every product, photo and receipt in one file';
+
+  @override
+  String get backupRestore => 'Restore from a backup';
+
+  @override
+  String get backupRestoreWhy => 'Replaces the cabinet on this phone';
+
+  @override
+  String get backupHint =>
+      'Save the file to iCloud Drive or Files. It is a plain zip you can open on a computer, so keep it somewhere private.';
+
+  @override
+  String get backupFilePrefix => 'cabinet-backup';
+
+  @override
+  String get backupInvalid => 'That file is not a cabinet backup.';
+
+  @override
+  String get backupFailed => 'The backup couldn\'t be completed. Try again.';
+
+  @override
+  String backupConfirmTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Restore $count products?',
+      one: 'Restore 1 product?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String backupFrom(String date) {
+    return 'Backup from $date.';
+  }
+
+  @override
+  String backupConfirmBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'The $count products on this phone will be replaced.',
+      one: 'The 1 product on this phone will be replaced.',
+      zero: 'The cabinet on this phone is empty.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupReplace => 'Restore';
+
+  @override
+  String backupRestored(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count products restored',
+      one: '1 product restored',
+    );
+    return '$_temp0';
+  }
 }
