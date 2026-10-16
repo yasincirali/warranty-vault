@@ -138,4 +138,86 @@ void main() {
       expect(b.squash, 0);
     }
   });
+
+  group('each kind of product moves like itself', () {
+    // Drags a product sideways for a moment, lets go, and records how far its
+    // upper part bends each frame until it settles.
+    List<double> dragAndLetGo(Feel feel) {
+      final w = _world();
+      final b = Body(id: 'a', x: 0, y: 0, w: 70, h: 84, feel: feel);
+      w.bodies['a'] = b;
+      w.place(b, 1, 1);
+      b.held = true;
+      b.targetY = b.y - 20;
+      final bends = <double>[];
+      for (var i = 0; i < 20; i++) {
+        b.targetX = b.x + 18; // a quick drag to the right
+        w.step(1 / 60);
+        bends.add(b.bend);
+      }
+      w.release('a', 0, 0, allowFling: false);
+      for (var i = 0; i < 240; i++) {
+        w.step(1 / 60);
+        bends.add(b.bend);
+      }
+      return bends;
+    }
+
+    test('a laptop lid lags behind a drag, swings past upright and settles', () {
+      final bends = dragAndLetGo(Feel.laptop);
+      expect(bends.take(20).reduce((a, c) => a < c ? a : c), lessThan(-.01)); // leans back
+      expect(bends.skip(20).reduce((a, c) => a > c ? a : c), greaterThan(0)); // swings over
+      expect(bends.last.abs(), lessThan(.002)); // and comes to rest
+    });
+
+    test('headphones give far more than a washing machine', () {
+      double peak(List<double> xs) => xs.map((x) => x.abs()).reduce((a, c) => a > c ? a : c);
+      expect(peak(dragAndLetGo(Feel.headphones)), greaterThan(peak(dragAndLetGo(Feel.appliance)) * 3));
+    });
+
+    test('a washing machine lands without bouncing, headphones bounce', () {
+      double rebound(Feel feel) {
+        final w = _world();
+        final b = Body(id: 'a', x: 0, y: 0, w: 70, h: 70, feel: feel);
+        w.bodies['a'] = b;
+        w.place(b, 1, 1, drop: true);
+        b.y -= 60;
+        var lowest = double.infinity;
+        var landed = false;
+        for (var i = 0; i < 120; i++) {
+          w.step(1 / 60);
+          if (b.bottom >= w.geo.plankTop(1) - .5) landed = true;
+          if (landed) lowest = lowest < b.bottom ? lowest : b.bottom;
+        }
+        return w.geo.plankTop(1) - lowest; // how high it rose after touching
+      }
+
+      expect(rebound(Feel.appliance), lessThan(.5));
+      expect(rebound(Feel.headphones), greaterThan(rebound(Feel.appliance)));
+    });
+
+    test('a heavy product pushes a light one aside, not the other way', () {
+      final w = _world();
+      final heavy = Body(id: 'h', x: 0, y: 0, w: 70, h: 70, feel: Feel.appliance);
+      final light = Body(id: 'l', x: 0, y: 0, w: 50, h: 50, feel: Feel.phone);
+      w.bodies['h'] = heavy;
+      w.bodies['l'] = light;
+      w.place(heavy, 1, 1);
+      w.place(light, 1, 1);
+      final hx = heavy.x, lx = light.x;
+      _run(w, .5);
+      expect((light.x - lx).abs(), greaterThan((heavy.x - hx).abs() * 3));
+    });
+
+    test('reduce motion: nothing bends', () {
+      final w = _world();
+      final b = Body(id: 'a', x: 0, y: 0, w: 70, h: 84, feel: Feel.vacuum);
+      w.bodies['a'] = b;
+      w.place(b, 1, 1, drop: true);
+      for (var i = 0; i < 60; i++) {
+        w.step(1 / 60, tilt: false);
+        expect(b.bend, 0);
+      }
+    });
+  });
 }

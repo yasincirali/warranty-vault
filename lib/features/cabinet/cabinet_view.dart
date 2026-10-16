@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/semantics.dart';
@@ -17,6 +18,7 @@ import '../items/data/vault_store.dart';
 import '../items/domain/item.dart';
 import '../items/domain/vault.dart';
 import '../items/providers.dart';
+import 'bend.dart';
 import 'shelf_physics.dart';
 
 /// The home of the app: the user's things standing on shelves.
@@ -49,6 +51,25 @@ class CabinetView extends ConsumerStatefulWidget {
   @override
   ConsumerState<CabinetView> createState() => _CabinetViewState();
 }
+
+/// Which way a product moves follows what it is (see [Feel]).
+Feel feelOf(ItemCategory c) => switch (c) {
+  ItemCategory.laptop => Feel.laptop,
+  ItemCategory.phone => Feel.phone,
+  ItemCategory.headphones => Feel.headphones,
+  ItemCategory.tv => Feel.tv,
+  ItemCategory.appliance => Feel.appliance,
+  ItemCategory.vacuum => Feel.vacuum,
+  ItemCategory.other => Feel.other,
+};
+
+/// Gap between the cabinet's sides and the screen edge.
+const _wallInset = 4.0;
+
+/// How deep into the plank's lit top a product stands. Its base covers the
+/// back of the board and leaves the front strip visible: that overlap is
+/// what makes the product read as standing *on* the shelf, not in front of it.
+const _standDepth = 5.0;
 
 class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProviderStateMixin {
   late ShelfPhysics _world;
@@ -112,7 +133,7 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
         final size = geo.sizeFor(item.photoPath == null ? null : item.photoAspect ?? 1);
         var b = _world.bodies[item.id];
         if (b == null) {
-          b = Body(id: item.id, x: 0, y: 0, w: size.w, h: size.h);
+          b = Body(id: item.id, x: 0, y: 0, w: size.w, h: size.h, feel: feelOf(item.category));
           if (first) {
             // On first open everything is already standing there.
             _world.bodies[item.id] = b;
@@ -131,7 +152,8 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
         } else {
           b
             ..w = size.w
-            ..h = size.h;
+            ..h = size.h
+            ..feel = feelOf(item.category);
           final widthChanged = _syncedWidth != widget.width;
           if (!b.held && !b.flying && (geo.bandAt(b.y) != s || widthChanged)) {
             _world.place(b, s, k, drop: !_reduceMotion && !widthChanged);
@@ -367,8 +389,66 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
       child: Stack(
         clipBehavior: Clip.none,
         children: [
+          // One cabinet, not stripes across the page: a back wall a step
+          // darker than the page, rounded like a piece of furniture.
+          Positioned.fill(
+            left: _wallInset,
+            right: _wallInset,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: context.c.wall,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(VRadius.md)),
+              ),
+            ),
+          ),
+          // Inner sides of the cabinet in soft shade: reads as a box with
+          // depth, not a coloured band.
+          for (final left in [true, false])
+            Positioned(
+              top: 0,
+              bottom: 0,
+              left: left ? _wallInset : null,
+              right: left ? null : _wallInset,
+              width: 16,
+              child: IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: left ? Alignment.centerLeft : Alignment.centerRight,
+                      end: left ? Alignment.centerRight : Alignment.centerLeft,
+                      colors: [context.c.shade.withValues(alpha: .06), context.c.shade.withValues(alpha: 0)],
+                    ),
+                  ),
+                ),
+              ),
+            ),
           for (var s = 0; s < geo.shelves; s++) ...[
-            Positioned(left: 0, right: 0, top: geo.plankTop(s), height: CabinetGeometry.plank, child: const _Plank()),
+            // Shade cast on the wall by the cabinet top or the plank above.
+            Positioned(
+              left: _wallInset,
+              right: _wallInset,
+              top: geo.bandTop(s),
+              height: 28,
+              child: IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: s == 0 ? const BorderRadius.vertical(top: Radius.circular(VRadius.md)) : null,
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [context.c.shade.withValues(alpha: .07), context.c.shade.withValues(alpha: 0)],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: _wallInset,
+              right: _wallInset,
+              top: geo.plankTop(s),
+              height: CabinetGeometry.plank,
+              child: const _Plank(),
+            ),
             if (s < widget.vault.shelves.length)
               Positioned(
                 left: CabinetGeometry.sidePad,
@@ -411,22 +491,50 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
     // Contact shadow: full when standing, fading as the product is lifted,
     // so "picked up" reads without any extra chrome.
     final lift = ((plankTop - b.bottom) / 80).clamp(0.0, 1.0);
+    final sink = _standDepth * (1 - lift);
+    final product = _Product(item: view.item, store: store, lifted: b.held);
 
     return [
+      // Cast shadow on the back wall: the product's own silhouette, up and
+      // to the right of it (light from the top left). Lifting the product
+      // pulls it off the wall, so the shadow drifts further and softens.
       if (!b.flying)
         Positioned(
-          left: b.x - b.w * .42,
-          top: plankTop - 5,
-          width: b.w * .84,
-          height: 10,
+          left: b.left + 4 + 10 * lift,
+          top: b.top - 3 - 6 * lift + sink,
+          width: b.w,
+          height: b.h,
+          child: IgnorePointer(
+            child: ExcludeSemantics(
+              child: Opacity(
+                opacity: b.appear,
+                child: ImageFiltered(
+                  imageFilter: ui.ImageFilter.blur(sigmaX: 5 + 6 * lift, sigmaY: 5 + 6 * lift),
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.mode(context.c.shade.withValues(alpha: .16), BlendMode.srcIn),
+                    child: _Silhouette(item: view.item, store: store),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      // Contact shadow where the base meets the board: tight and dark while
+      // standing, fading as the product is lifted.
+      if (!b.flying)
+        Positioned(
+          left: b.x - b.w * .4,
+          top: plankTop + sink - 4,
+          width: b.w * .8,
+          height: 8,
           child: IgnorePointer(
             child: DecoratedBox(
               decoration: ShapeDecoration(
                 shape: const OvalBorder(),
                 shadows: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: .22 * (1 - lift)),
-                    blurRadius: 8 + 10 * lift,
+                    color: context.c.shade.withValues(alpha: .28 * (1 - lift)),
+                    blurRadius: 5 + 12 * lift,
                   ),
                 ],
               ),
@@ -438,13 +546,13 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
       if (days != null && !b.flying && !b.held && b.grounded)
         Positioned(
           left: (b.x - 34).clamp(2.0, widget.width - 70),
-          top: plankTop + 12,
+          top: plankTop + _Plank.top + 1,
           width: 68,
           child: ExcludeSemantics(child: _DeadlineTag(text: l.durDays(days))),
         ),
       Positioned(
         left: b.left,
-        top: b.top,
+        top: b.top + sink,
         width: b.w,
         height: b.h,
         child: Transform(
@@ -475,7 +583,9 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
                   onUp: _up,
                   onCancel: _cancel,
                   child: ExcludeSemantics(
-                    child: _Product(item: view.item, store: store, lifted: b.held),
+                    // Light outside the bend: Bend paints its child once per band, which
+                    // only works for a child that draws without its own layers.
+                    child: _Lit(child: Bend(bend: b.bend, feel: b.feel, child: product)),
                   ),
                 ),
               ),
@@ -581,25 +691,111 @@ class _Tile extends StatelessWidget {
   );
 }
 
+/// A board seen slightly from above: its lit top (the depth a product stands
+/// in), its front edge in shade where deadline tags hang, and the soft shadow
+/// it throws on the wall below.
 class _Plank extends StatelessWidget {
   const _Plank();
 
+  /// Visible depth of the board's top surface.
+  static const top = 10.0;
+
+  /// Front edge, tall enough for a deadline tag.
+  static const front = 22.0;
+
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      // Top of the board, then its front edge where tags hang.
-      Container(height: 8, color: context.c.border),
-      Expanded(
-        child: Container(
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          height: top,
           decoration: BoxDecoration(
-            color: context.c.tile,
-            border: Border(bottom: BorderSide(color: context.c.border)),
+            // Back of the board meets the wall in shade, front catches light.
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color.alphaBlend(c.shade.withValues(alpha: .06), c.plankTop), c.plankTop],
+            ),
           ),
         ),
+        Container(
+          height: front,
+          decoration: BoxDecoration(
+            color: c.plankFront,
+            border: Border(
+              top: BorderSide(color: c.plankTop.withValues(alpha: .9)),
+              bottom: BorderSide(color: c.shade.withValues(alpha: .12)),
+            ),
+          ),
+        ),
+        Expanded(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [c.shade.withValues(alpha: .12), c.shade.withValues(alpha: .04)],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// The outline a product casts: a cut-out photo's own alpha, otherwise its
+/// rounded box. No text inside, so a shadow never doubles a product's name.
+class _Silhouette extends StatelessWidget {
+  const _Silhouette({required this.item, required this.store});
+  final Item item;
+  final VaultStore store;
+
+  @override
+  Widget build(BuildContext context) {
+    final path = item.photoPath;
+    final box = DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.c.shade,
+        borderRadius: BorderRadius.circular(path == null ? VRadius.md : VRadius.sm),
       ),
-    ],
-  );
+    );
+    if (path == null || !item.photoCutout) return box;
+    return Image(
+      image: store.photo(path),
+      fit: BoxFit.contain,
+      gaplessPlayback: true,
+      filterQuality: FilterQuality.low,
+      errorBuilder: (_, _, _) => box,
+    );
+  }
+}
+
+/// Light from the top left on a product: a faint sheen on top, a little
+/// shade towards the base. Drawn only on the product's own pixels (srcATop),
+/// so a cut-out photo keeps its outline. Gives a flat photo some volume
+/// without pretending to be a 3D model.
+class _Lit extends StatelessWidget {
+  const _Lit({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final shade = context.c.shade;
+    final sheen = context.c.plankTop;
+    return ShaderMask(
+      blendMode: BlendMode.srcATop,
+      shaderCallback: (r) => LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        stops: const [0, .45, 1],
+        colors: [sheen.withValues(alpha: .18), sheen.withValues(alpha: 0), shade.withValues(alpha: .18)],
+      ).createShader(r),
+      child: child,
+    );
+  }
 }
 
 class _DeadlineTag extends StatelessWidget {
@@ -672,10 +868,12 @@ class _DymoLabelState extends State<_DymoLabel> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final empty = widget.shelf.label.isEmpty;
+    // Round 6: smaller tape. At 13 pt bold the three black labels were the
+    // loudest thing on the cabinet and the products came second.
     final tape = TextStyle(
-      fontSize: 13,
+      fontSize: 11.5,
       fontWeight: FontWeight.w700,
-      letterSpacing: 1.1,
+      letterSpacing: 1.4,
       color: empty && !_editing ? context.c.muted : context.c.background,
     );
     final decoration = BoxDecoration(
@@ -729,7 +927,7 @@ class _DymoLabelState extends State<_DymoLabel> {
             widthFactor: 1,
             heightFactor: 1,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
               decoration: decoration,
               child: Text(
                 empty ? l.shelfLabelHint : widget.shelf.label,

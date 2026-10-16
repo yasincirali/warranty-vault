@@ -28,6 +28,10 @@ class VColors extends ThemeExtension<VColors> {
     required this.adviceBorder,
     required this.adviceTitle,
     required this.lift,
+    required this.wall,
+    required this.plankTop,
+    required this.plankFront,
+    required this.shade,
   });
 
   final Color background;
@@ -52,6 +56,16 @@ class VColors extends ThemeExtension<VColors> {
   /// Shadow of something picked up: a product off its shelf, a field in
   /// focus. One shadow colour so "lifted" means one thing.
   final Color lift;
+
+  /// The cabinet (round 6, 2026-10-16): one object with depth instead of
+  /// stripes across the page. Light comes from above: the back [wall] is a
+  /// step darker than the page, a plank's [plankTop] catches the light and
+  /// its [plankFront] edge is in shade. [shade] is the base of every cast
+  /// shadow inside the cabinet, always used with a low alpha.
+  final Color wall;
+  final Color plankTop;
+  final Color plankFront;
+  final Color shade;
 
   // Text colours were picked for ≥4.5:1 on their surface in each theme.
   //
@@ -80,6 +94,10 @@ class VColors extends ThemeExtension<VColors> {
     adviceBorder: Color(0xFF16181D),
     adviceTitle: Color(0xFF16181D),
     lift: Color(0x2916181D),
+    wall: Color(0xFFEBE7DD),
+    plankTop: Color(0xFFFBFAF6),
+    plankFront: Color(0xFFE2DCCF),
+    shade: Color(0xFF2A2418),
   );
 
   static const dark = VColors(
@@ -100,6 +118,10 @@ class VColors extends ThemeExtension<VColors> {
     adviceBorder: Color(0xFFF2F1EE),
     adviceTitle: Color(0xFFF2F1EE),
     lift: Color(0x8C000000),
+    wall: Color(0xFF17181B),
+    plankTop: Color(0xFF34363C),
+    plankFront: Color(0xFF26282D),
+    shade: Color(0xFF000000),
   );
 
   @override

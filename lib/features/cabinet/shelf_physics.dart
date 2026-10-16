@@ -50,9 +50,143 @@ class CabinetGeometry {
   }
 }
 
+/// Where a product gives when it moves: the shape of its flex along its
+/// height (t = 0 at the base, 1 at the top).
+enum FlexShape {
+  /// Bends along its whole length, the top most (a stick vacuum, a cable).
+  whip,
+
+  /// Rigid above a joint: the part above [Feel.joint] rocks as one piece
+  /// (a laptop lid on its hinge, a TV panel on its neck).
+  hinge,
+
+  /// Barely gives; the whole body only shivers a little (a washing machine).
+  stiff,
+}
+
+/// How a kind of product moves (round 6, 2026-10-16: "mechanics should be
+/// flexible and realistic, parts swaying according to the object"). One
+/// photo has no separate parts, so the "part" is a band of the image above a
+/// joint or along a whip; it is driven by a damped spring excited by the
+/// body's sideways acceleration and by landings. Numbers were tuned by eye in
+/// the web preview: a heavy appliance lands with a thud and does not bounce,
+/// headphones bounce and their band wobbles, a vacuum whips.
+class Feel {
+  const Feel({
+    required this.mass,
+    required this.shape,
+    this.joint = 0,
+    required this.stiffness,
+    required this.damping,
+    required this.give,
+    required this.bounce,
+    required this.squash,
+  });
+
+  /// Relative mass (1 = a laptop). Heavier: follows the finger with more lag,
+  /// pushes lighter products aside, is pushed less.
+  final double mass;
+  final FlexShape shape;
+
+  /// For [FlexShape.hinge]: height fraction of the joint.
+  final double joint;
+
+  /// Spring constant and damping of the flex (per second², per second).
+  final double stiffness, damping;
+
+  /// How much sideways acceleration bends it (fraction of width per px/s²).
+  final double give;
+
+  /// Fraction of the landing speed it bounces back with.
+  final double bounce;
+
+  /// How much a landing squashes it (relative to the default).
+  final double squash;
+
+  static const laptop = Feel(
+    mass: 1,
+    shape: FlexShape.hinge,
+    joint: .16,
+    stiffness: 260,
+    damping: 9,
+    give: .000045,
+    bounce: .12,
+    squash: .6,
+  );
+  static const phone = Feel(
+    mass: .35,
+    shape: FlexShape.stiff,
+    stiffness: 420,
+    damping: 16,
+    give: .00002,
+    bounce: .22,
+    squash: .5,
+  );
+  static const headphones = Feel(
+    mass: .3,
+    shape: FlexShape.whip,
+    stiffness: 150,
+    damping: 5,
+    give: .00008,
+    bounce: .3,
+    squash: 1.4,
+  );
+  static const tv = Feel(
+    mass: 1.6,
+    shape: FlexShape.hinge,
+    joint: .22,
+    stiffness: 170,
+    damping: 6,
+    give: .00006,
+    bounce: .08,
+    squash: .5,
+  );
+  static const appliance = Feel(
+    mass: 4,
+    shape: FlexShape.stiff,
+    stiffness: 520,
+    damping: 22,
+    give: .000012,
+    bounce: 0,
+    squash: .35,
+  );
+  static const vacuum = Feel(
+    mass: .8,
+    shape: FlexShape.whip,
+    stiffness: 110,
+    damping: 4,
+    give: .0001,
+    bounce: .15,
+    squash: .8,
+  );
+  static const other = Feel(
+    mass: 1,
+    shape: FlexShape.whip,
+    stiffness: 240,
+    damping: 10,
+    give: .00004,
+    bounce: .18,
+    squash: 1,
+  );
+
+  /// Horizontal displacement of height fraction [t] for a unit bend.
+  double profile(double t) => switch (shape) {
+    FlexShape.whip => t * t,
+    FlexShape.hinge => t <= joint ? 0 : (t - joint) / (1 - joint),
+    FlexShape.stiff => t,
+  };
+}
+
 class Body {
-  Body({required this.id, required this.x, required this.y, required this.w, required this.h});
+  Body({required this.id, required this.x, required this.y, required this.w, required this.h, this.feel = Feel.other});
   final String id;
+
+  Feel feel;
+
+  /// Flex of the product's upper part, as a fraction of its width (+ = to the
+  /// right). Visual only, like [angle].
+  double bend = 0, bendV = 0;
+  double _lastVx = 0;
 
   /// Centre.
   double x, y;
@@ -121,6 +255,8 @@ class ShelfPhysics {
         b.angle.abs() < .002 &&
         b.spin.abs() < .02 &&
         b.squash.abs() < .002 &&
+        b.bend.abs() < .002 &&
+        b.bendV.abs() < .02 &&
         b.squashV.abs() < .02 &&
         b.appear >= 1,
   );
@@ -152,9 +288,27 @@ class ShelfPhysics {
   }
 
   void _integrate(Body b, double dt, bool tilt) {
+    final vx0 = b._lastVx;
+    _integrateBody(b, dt, tilt);
+    // The upper part lags behind sideways acceleration: start a drag to the
+    // right and a lid or a band leans left, stop and it swings over.
+    if (tilt && !b.flying) {
+      final ax = (b.vx - vx0) / dt;
+      final f = b.feel;
+      b.bendV += (-f.stiffness * b.bend - f.damping * b.bendV) * dt - ax * f.give * 60 * dt;
+      b.bend = (b.bend + b.bendV * dt).clamp(-.45, .45);
+    } else if (!tilt) {
+      b.bend = 0;
+      b.bendV = 0;
+    }
+    b._lastVx = b.vx;
+  }
+
+  void _integrateBody(Body b, double dt, bool tilt) {
     if (b.held) {
-      // Follows the finger with a short lag so the product feels heavy.
-      final k = math.min(1.0, 28 * dt);
+      // Follows the finger with a lag that grows with mass: a washing
+      // machine trails the finger, a phone sticks to it.
+      final k = math.min(1.0, 28 / math.sqrt(b.feel.mass) * dt);
       final nx = b.x + (b.targetX - b.x) * k;
       final ny = b.y + (b.targetY - b.y) * k;
       b.vx = (nx - b.x) / dt;
@@ -218,14 +372,19 @@ class ShelfPhysics {
       if (prevBottom <= p + .5 && b.bottom >= p) {
         b.y = p - b.h / 2;
         if (b.vy > 220) {
-          b.spin += (b.vx.sign == 0 ? 1 : b.vx.sign) * b.vy * .004;
-          if (tilt) b.squash = math.max(b.squash, (b.vy / maxSpeed * .14).clamp(0.0, .14));
+          final side = b.vx.sign == 0 ? (b.angle >= 0 ? 1.0 : -1.0) : b.vx.sign;
+          b.spin += side * b.vy * .004 / math.sqrt(b.feel.mass);
+          if (tilt) {
+            b.squash = math.max(b.squash, (b.vy / maxSpeed * .14 * b.feel.squash).clamp(0.0, .2));
+            // The impact runs up the product: a lid nods, a band wobbles.
+            b.bendV += side * b.vy * b.feel.give * 25;
+          }
         }
         if (b.ghostShelf >= 0) {
           b.ghostShelf = -1;
           landed.add(b.id);
         }
-        b.vy = b.vy > 120 ? -b.vy * .18 : 0;
+        b.vy = b.vy > 120 && b.feel.bounce > 0 ? -b.vy * b.feel.bounce : 0;
         b.vx *= math.max(0, 1 - 10 * dt);
         b.grounded = b.vy == 0;
         break;
@@ -254,8 +413,10 @@ class ShelfPhysics {
           a.x += dir * ox;
           a.vx = dir * 120;
         } else {
-          a.x += dir * ox / 2;
-          c.x -= dir * ox / 2;
+          // Shared by mass: a phone gives way to a washing machine.
+          final share = c.feel.mass / (a.feel.mass + c.feel.mass);
+          a.x += dir * ox * share;
+          c.x -= dir * ox * (1 - share);
           a.vx *= .5;
           c.vx *= .5;
         }
@@ -296,6 +457,9 @@ class ShelfPhysics {
     b.vy = 0;
     b.angle = 0;
     b.spin = drop ? .6 : 0;
+    b.bend = 0;
+    b.bendV = 0;
+    b._lastVx = 0;
     b.grounded = !drop;
     b.flying = false;
     b.held = false;
