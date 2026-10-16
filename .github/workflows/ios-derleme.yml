@@ -1,0 +1,45 @@
+name: iOS — derleme kontrolü
+
+# PR'da yerel (Swift) kod derleniyor mu? TestFlight iş akışı yalnız main'de
+# koşar; ios/ altındaki bir derleme hatası ancak birleşmeden SONRA, TF
+# build'i kırılınca görülürdü. Bu iş onu birleşmeden önce yakalar.
+# Maliyet kararı: yalnız ios/ değişince koşar (macOS dakikası pahalı) ve
+# simülatör + debug derler (imza yok, secret yok, release'den çok daha kısa).
+
+on:
+  pull_request:
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ios-derleme.yml'
+
+concurrency:
+  group: ios-derleme-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  derle:
+    runs-on: macos-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select stable Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.2
+          cache: true
+
+      - name: Flutter dependencies
+        run: flutter pub get
+
+      - name: iOS simulator debug build (no codesign)
+        run: flutter build ios --simulator --debug
