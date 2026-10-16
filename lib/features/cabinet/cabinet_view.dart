@@ -130,7 +130,7 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
     for (final (s, shelf) in v.shelves.indexed) {
       for (final (k, item) in v.on(shelf.id).indexed) {
         keep.add(item.id);
-        final size = geo.sizeFor(item.photoPath == null ? null : item.photoAspect ?? 1);
+        final size = geo.sizeFor(item.photoPath == null ? CategoryArt.aspect(item.category) : item.photoAspect ?? 1);
         var b = _world.bodies[item.id];
         if (b == null) {
           b = Body(id: item.id, x: 0, y: 0, w: size.w, h: size.h, feel: feelOf(item.category));
@@ -585,7 +585,9 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
                   child: ExcludeSemantics(
                     // Light outside the bend: Bend paints its child once per band, which
                     // only works for a child that draws without its own layers.
-                    child: _Lit(child: Bend(bend: b.bend, feel: b.feel, child: product)),
+                    child: _Lit(
+                      child: Bend(bend: b.bend, feel: b.feel, child: product),
+                    ),
                   ),
                 ),
               ),
@@ -648,46 +650,58 @@ class _Product extends StatelessWidget {
         fit: item.photoCutout ? BoxFit.contain : BoxFit.cover,
         gaplessPlayback: true,
         filterQuality: FilterQuality.medium,
-        errorBuilder: (_, _, _) => _Tile(item: item),
+        errorBuilder: (_, _, _) => _Drawn(item: item),
       );
       return item.photoCutout ? image : ClipRRect(borderRadius: BorderRadius.circular(VRadius.sm), child: image);
     }
-    return _Tile(item: item);
+    return _Drawn(item: item);
   }
 }
 
-/// A product without a photo: neutral tile, category icon, its name.
-class _Tile extends StatelessWidget {
-  const _Tile({required this.item});
+/// A product without a photo: its category's drawing standing on the shelf
+/// like a cut-out photo, with its name on a small paper tag, because two
+/// laptops drawn alike are told apart by name.
+class _Drawn extends StatelessWidget {
+  const _Drawn({required this.item});
   final Item item;
 
   @override
-  Widget build(BuildContext context) => Container(
-    decoration: BoxDecoration(
-      color: context.c.surface,
-      border: Border.all(color: context.c.border),
-      borderRadius: BorderRadius.circular(VRadius.md),
-    ),
-    padding: const EdgeInsets.all(VSpace.xs + 2),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(ItemThumb.iconFor(item.category), size: 26, color: context.c.text),
-        const SizedBox(height: 2),
-        Flexible(
+  Widget build(BuildContext context) => Stack(
+    clipBehavior: Clip.none,
+    alignment: Alignment.bottomCenter,
+    children: [
+      Positioned.fill(
+        child: Image.asset(
+          CategoryArt.asset(item.category),
+          fit: BoxFit.contain,
+          alignment: Alignment.bottomCenter,
+          filterQuality: FilterQuality.medium,
+        ),
+      ),
+      // Hangs over the product's foot, inside its box so it moves, bends
+      // and is thrown out together with it.
+      Padding(
+        padding: const EdgeInsets.only(bottom: 4),
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 76),
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+          decoration: BoxDecoration(
+            color: context.c.surface,
+            border: Border.all(color: context.c.border),
+            borderRadius: BorderRadius.circular(3),
+          ),
           child: Text(
             item.name,
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            // The tile is a fixed-size physical object; its caption is a
+            // The product is a fixed-size physical object; its tag is a
             // hint, the full name is in the accessibility label and detail.
             textScaler: TextScaler.noScaling,
-            style: context.t.small.copyWith(fontSize: 10.5, height: 1.15, fontWeight: FontWeight.w600),
+            style: context.t.small.copyWith(fontSize: 10, height: 1.2, fontWeight: FontWeight.w600),
           ),
         ),
-      ],
-    ),
+      ),
+    ],
   );
 }
 

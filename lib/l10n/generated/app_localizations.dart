@@ -1351,6 +1351,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Lifetime'**
   String get lifetime;
+
+  /// No description provided for @fieldKind.
+  ///
+  /// In en, this message translates to:
+  /// **'What kind of product?'**
+  String get fieldKind;
+
+  /// No description provided for @kindHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Without a photo, it stands on the shelf as this drawing.'**
+  String get kindHint;
+
+  /// No description provided for @kindA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind}, kind'**
+  String kindA11y(String kind);
 }
 
 class _AppLocalizationsDelegate

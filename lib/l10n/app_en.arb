@@ -453,5 +453,15 @@
   "catAppliance": "Appliance",
   "catVacuum": "Vacuum",
   "catOther": "Other",
-  "lifetime": "Lifetime"
+  "lifetime": "Lifetime",
+  "fieldKind": "What kind of product?",
+  "kindHint": "Without a photo, it stands on the shelf as this drawing.",
+  "kindA11y": "{kind}, kind",
+  "@kindA11y": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  }
 }

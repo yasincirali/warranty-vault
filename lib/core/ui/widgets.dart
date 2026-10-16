@@ -39,34 +39,45 @@ class SectionTitle extends StatelessWidget {
   );
 }
 
-/// Placeholder until the user's product photo exists. Neutral on purpose:
-/// a coloured tile would suggest a status it does not have.
+/// The drawing a product without a photo gets: same style as the sample
+/// cabinet's products (flat, cut out, no shadow), one per category. A
+/// product you didn't photograph still stands on the shelf as a thing, not
+/// as a grey box with an icon (yasin, 16 Oct).
+abstract final class CategoryArt {
+  static String asset(ItemCategory c) => 'assets/kategori/${c.name}.png';
+
+  /// Width / height of each drawing, so the cabinet sizes the product before
+  /// the image has loaded and nothing jumps.
+  static double aspect(ItemCategory c) => switch (c) {
+    ItemCategory.laptop => 1.389,
+    ItemCategory.phone => 0.45,
+    ItemCategory.headphones => 1.298,
+    ItemCategory.tv => 1.17,
+    ItemCategory.appliance => 0.728,
+    ItemCategory.vacuum => 0.58,
+    ItemCategory.other => 1.139,
+  };
+}
+
+/// Placeholder until the user's product photo exists: the category drawing
+/// on the neutral tile. Neutral on purpose: a coloured tile would suggest a
+/// status it does not have.
 class ItemThumb extends StatelessWidget {
-  const ItemThumb(this.category, {super.key, this.size = 44, this.iconSize = 24});
+  const ItemThumb(this.category, {super.key, this.size = 44});
   final ItemCategory category;
   final double size;
-  final double iconSize;
-
-  static IconData iconFor(ItemCategory c) => switch (c) {
-    ItemCategory.laptop => Icons.laptop_mac_outlined,
-    ItemCategory.phone => Icons.smartphone_outlined,
-    ItemCategory.headphones => Icons.headphones_outlined,
-    ItemCategory.tv => Icons.tv_outlined,
-    ItemCategory.appliance => Icons.local_laundry_service_outlined,
-    ItemCategory.vacuum => Icons.cleaning_services_outlined,
-    ItemCategory.other => Icons.inventory_2_outlined,
-  };
 
   @override
   Widget build(BuildContext context) => ExcludeSemantics(
     child: Container(
       width: size,
       height: size,
+      padding: EdgeInsets.all(size * .14),
       decoration: BoxDecoration(
         color: context.c.tile,
         borderRadius: BorderRadius.circular(size > 60 ? VRadius.md : VRadius.sm),
       ),
-      child: Icon(iconFor(category), size: iconSize, color: context.c.text),
+      child: Image.asset(CategoryArt.asset(category), fit: BoxFit.contain, filterQuality: FilterQuality.medium),
     ),
   );
 }

@@ -67,6 +67,7 @@ flutter:
   assets:
     - assets/rules/
     - assets/demo/
+    - assets/kategori/
     # Inventory export (PDF): the pdf package needs TrueType outlines, the
     # system fonts are not reachable from it. Inter, OFL (OFL-Inter.txt).
     - assets/fonts/

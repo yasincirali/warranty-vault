@@ -208,5 +208,8 @@
   "catAppliance": "Beyaz eşya",
   "catVacuum": "Süpürge",
   "catOther": "Diğer",
-  "lifetime": "Ömür boyu"
+  "lifetime": "Ömür boyu",
+  "fieldKind": "Ne tür bir ürün?",
+  "kindHint": "Fotoğraf yoksa rafta bu çizimle durur.",
+  "kindA11y": "{kind}, tür"
 }

@@ -31,14 +31,10 @@ class CabinetGeometry {
   /// Centre x of slot [k] on any shelf.
   double slotX(int k) => sidePad + (k + .5) * slotWidth;
 
-  /// Display size of a product: a photo keeps its aspect ratio inside the
-  /// slot; an item without a photo is a square tile.
-  ({double w, double h}) sizeFor(double? aspect) {
+  /// Display size of a product: its photo, or its category drawing when it
+  /// has none, keeps its aspect ratio inside the slot.
+  ({double w, double h}) sizeFor(double aspect) {
     final maxW = slotWidth - 8;
-    if (aspect == null) {
-      final s = math.min(maxW, 80.0);
-      return (w: s, h: s);
-    }
     var h = 84.0;
     var w = h * aspect;
     if (w > maxW) {
