@@ -17,6 +17,15 @@ abstract interface class VaultStore {
   Future<String> savePhoto(String fileName, Uint8List png);
 
   ImageProvider photo(String relativePath);
+
+  /// The photo's file bytes, for things drawn outside Flutter's image
+  /// pipeline (the PDF export). Null when the file is gone.
+  Future<Uint8List?> photoBytes(String relativePath);
+}
+
+Future<Uint8List?> _bundledBytes(String path) async {
+  final data = await rootBundle.load('assets/${path.substring(6)}');
+  return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 }
 
 /// `asset:demo/x.png` → a bundled picture (sample cabinet).
@@ -59,6 +68,13 @@ class LocalVaultStore implements VaultStore {
 
   @override
   ImageProvider photo(String relativePath) => bundledPhoto(relativePath) ?? FileImage(File('${dir.path}/$relativePath'));
+
+  @override
+  Future<Uint8List?> photoBytes(String relativePath) async {
+    if (relativePath.startsWith('asset:')) return _bundledBytes(relativePath);
+    final f = File('${dir.path}/$relativePath');
+    return await f.exists() ? f.readAsBytes() : null;
+  }
 }
 
 /// In-memory store: widget tests, screenshots, and the default when no
@@ -86,6 +102,10 @@ class MemoryVaultStore implements VaultStore {
   @override
   ImageProvider photo(String relativePath) =>
       bundledPhoto(relativePath) ?? MemoryImage(_photos[relativePath] ?? _transparentPixel);
+
+  @override
+  Future<Uint8List?> photoBytes(String relativePath) async =>
+      relativePath.startsWith('asset:') ? _bundledBytes(relativePath) : _photos[relativePath];
 }
 
 final _transparentPixel = base64Decode(
