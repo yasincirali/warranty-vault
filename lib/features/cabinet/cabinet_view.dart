@@ -18,6 +18,7 @@ import '../items/data/vault_store.dart';
 import '../items/domain/item.dart';
 import '../items/domain/vault.dart';
 import '../items/providers.dart';
+import 'bend.dart';
 import 'shelf_physics.dart';
 
 /// The home of the app: the user's things standing on shelves.
@@ -50,6 +51,17 @@ class CabinetView extends ConsumerStatefulWidget {
   @override
   ConsumerState<CabinetView> createState() => _CabinetViewState();
 }
+
+/// Which way a product moves follows what it is (see [Feel]).
+Feel feelOf(ItemCategory c) => switch (c) {
+  ItemCategory.laptop => Feel.laptop,
+  ItemCategory.phone => Feel.phone,
+  ItemCategory.headphones => Feel.headphones,
+  ItemCategory.tv => Feel.tv,
+  ItemCategory.appliance => Feel.appliance,
+  ItemCategory.vacuum => Feel.vacuum,
+  ItemCategory.other => Feel.other,
+};
 
 /// Gap between the cabinet's sides and the screen edge.
 const _wallInset = 4.0;
@@ -121,7 +133,7 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
         final size = geo.sizeFor(item.photoPath == null ? null : item.photoAspect ?? 1);
         var b = _world.bodies[item.id];
         if (b == null) {
-          b = Body(id: item.id, x: 0, y: 0, w: size.w, h: size.h);
+          b = Body(id: item.id, x: 0, y: 0, w: size.w, h: size.h, feel: feelOf(item.category));
           if (first) {
             // On first open everything is already standing there.
             _world.bodies[item.id] = b;
@@ -140,7 +152,8 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
         } else {
           b
             ..w = size.w
-            ..h = size.h;
+            ..h = size.h
+            ..feel = feelOf(item.category);
           final widthChanged = _syncedWidth != widget.width;
           if (!b.held && !b.flying && (geo.bandAt(b.y) != s || widthChanged)) {
             _world.place(b, s, k, drop: !_reduceMotion && !widthChanged);
@@ -569,7 +582,11 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
                   onMove: _move,
                   onUp: _up,
                   onCancel: _cancel,
-                  child: ExcludeSemantics(child: _Lit(child: product)),
+                  child: ExcludeSemantics(
+                    // Light outside the bend: Bend paints its child once per band, which
+                    // only works for a child that draws without its own layers.
+                    child: _Lit(child: Bend(bend: b.bend, feel: b.feel, child: product)),
+                  ),
                 ),
               ),
             ),
