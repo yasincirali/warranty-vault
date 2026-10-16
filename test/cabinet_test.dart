@@ -9,6 +9,7 @@ import 'package:warranty_vault/features/capture/add_item_screen.dart';
 import 'package:warranty_vault/features/items/data/demo_vault.dart';
 import 'package:warranty_vault/features/items/data/vault_store.dart';
 import 'package:warranty_vault/rights/rights_engine.dart';
+import 'package:warranty_vault/features/items/domain/item.dart';
 import 'package:warranty_vault/features/items/providers.dart';
 import 'package:warranty_vault/rights/rule_set.dart';
 
@@ -159,6 +160,37 @@ void main() {
     expect(t.takeException(), isNull);
   });
 
+  testWidgets('a product without a photo stands on its shelf as its kind\'s drawing, with its name', (t) async {
+    final semantics = t.ensureSemantics();
+    final store = await _open(t);
+    await t.tap(find.text('Add a product'));
+    await t.pumpAndSettle();
+    await t.enterText(find.widgetWithText(TextField, 'Product'), 'Dyson V15');
+    await t.pumpAndSettle();
+    // Guessed from the name until the user picks.
+    expect(_kindSelected(t, 'Vacuum'), isTrue);
+    await t.tap(find.bySemanticsLabel('Appliance, kind'));
+    await t.pumpAndSettle();
+    expect(_kindSelected(t, 'Vacuum'), isFalse);
+    expect(_kindSelected(t, 'Appliance'), isTrue);
+    await t.tap(find.text('Put it on the shelf'));
+    await t.pumpAndSettle();
+
+    final item = store.current.items.firstWhere((i) => i.name == 'Dyson V15');
+    expect(item.category, ItemCategory.appliance);
+    final drawing = find.descendant(
+      of: find.byType(CabinetView),
+      matching: find.byWidgetPredicate(
+        (w) =>
+            w is Image && w.image is AssetImage && (w.image as AssetImage).assetName == 'assets/kategori/appliance.png',
+      ),
+    );
+    expect(drawing, findsOneWidget);
+    expect(_onShelf('Dyson V15'), findsOneWidget, reason: 'its name tag');
+    expect(t.takeException(), isNull);
+    semantics.dispose();
+  });
+
   testWidgets('a new product falls in from above after the add screen has gone, onto its shelf', (t) async {
     final store = await _open(t);
     await t.tap(find.text('Add a product'));
@@ -204,7 +236,12 @@ void main() {
     await t.tap(find.text('Add a product'));
     await t.pumpAndSettle();
     await t.enterText(find.widgetWithText(TextField, 'Product'), 'Lamp');
-    await t.scrollUntilVisible(find.text('Online'), 200, scrollable: find.byType(Scrollable).last);
+    // The form's list, not one of the text fields' own horizontal scrollers.
+    await t.scrollUntilVisible(
+      find.text('Online'),
+      200,
+      scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down),
+    );
     await t.tap(find.text('Online'));
     await t.pumpAndSettle();
     await t.tap(find.text('Put it on the shelf'));
@@ -218,6 +255,40 @@ void main() {
     await t.pumpAndSettle();
     final button = t.widget<FilledButton>(find.widgetWithText(FilledButton, 'Put it on the shelf'));
     expect(button.onPressed, isNull);
+  });
+
+  testWidgets('the kind picker fits at 3.1x text without overflow', (t) async {
+    t.view.physicalSize = const Size(1179, 2556);
+    t.view.devicePixelRatio = 3;
+    addTearDown(t.view.reset);
+    await t.pumpWidget(ProviderScope(
+      overrides: [
+        clockProvider.overrideWithValue(() => DateTime.utc(2026, 10, 13)),
+        vaultStoreProvider.overrideWithValue(MemoryVaultStore(demoVault())),
+        ruleSetProvider.overrideWith((_) async => _rules),
+        photoPickerProvider.overrideWithValue((_) async => null),
+      ],
+      child: const MediaQuery(
+        data: MediaQueryData(size: Size(393, 852), textScaler: TextScaler.linear(3.1)),
+        child: WarrantyVaultApp(),
+      ),
+    ));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Add a product'));
+    await t.pumpAndSettle();
+    await t.scrollUntilVisible(
+      find.text('Other'),
+      200,
+      scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down),
+    );
+    await t.pumpAndSettle();
+    expect(t.takeException(), isNull);
+    // Every kind is a 44-pt-or-larger target.
+    for (final c in ['Laptop', 'Phone', 'Headphones', 'TV', 'Appliance', 'Vacuum', 'Other']) {
+      final box = t.getSize(find.ancestor(of: find.text(c), matching: find.byType(GestureDetector)).first);
+      expect(box.width, greaterThanOrEqualTo(44));
+      expect(box.height, greaterThanOrEqualTo(44));
+    }
   });
 
   testWidgets('cabinet fits at 3.1x text without overflow', (t) async {
@@ -268,3 +339,6 @@ void main() {
     expect(t.getCenter(kettle), before);
   });
 }
+
+bool _kindSelected(WidgetTester t, String kind) =>
+    isSemantics(isSelected: true).matches(t.getSemantics(find.bySemanticsLabel('$kind, kind')), {});

@@ -7,17 +7,16 @@ import '../domain/item.dart';
 import '../providers.dart';
 
 /// The user's own photo of the product when there is one, otherwise the
-/// neutral category tile. Same box size either way so lists don't jump.
+/// category drawing on the neutral tile. Same box size either way so lists don't jump.
 class ItemPhoto extends ConsumerWidget {
-  const ItemPhoto({super.key, required this.item, this.size = 44, this.iconSize = 24});
+  const ItemPhoto({super.key, required this.item, this.size = 44});
   final Item item;
   final double size;
-  final double iconSize;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final path = item.photoPath;
-    if (path == null) return ItemThumb(item.category, size: size, iconSize: iconSize);
+    if (path == null) return ItemThumb(item.category, size: size);
     final radius = BorderRadius.circular(size > 60 ? VRadius.md : VRadius.sm);
     return ExcludeSemantics(
       child: Container(
@@ -30,7 +29,7 @@ class ItemPhoto extends ConsumerWidget {
           image: ref.watch(vaultStoreProvider).photo(path),
           fit: item.photoCutout ? BoxFit.contain : BoxFit.cover,
           gaplessPlayback: true,
-          errorBuilder: (_, _, _) => ItemThumb(item.category, size: size, iconSize: iconSize),
+          errorBuilder: (_, _, _) => ItemThumb(item.category, size: size),
         ),
       ),
     );

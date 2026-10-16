@@ -49,7 +49,7 @@ class ItemDetailScreen extends ConsumerWidget {
         padding: const EdgeInsets.fromLTRB(VSpace.xl, 0, VSpace.xl, VSpace.xxl),
         children: [
           Row(children: [
-            ItemPhoto(item: item, size: 96, iconSize: 44),
+            ItemPhoto(item: item, size: 96),
             const SizedBox(width: VSpace.lg - 2),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

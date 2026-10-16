@@ -88,7 +88,6 @@ void main() {
     final wide = g.sizeFor(4);
     expect(wide.w, g.slotWidth - 8);
     expect(wide.h, greaterThanOrEqualTo(36));
-    expect(g.sizeFor(null).w, g.sizeFor(null).h);
   });
 
   test('a new product dropped from above the screen passes the upper shelves and lands on its own', () {

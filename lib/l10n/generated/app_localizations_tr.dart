@@ -760,5 +760,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get lifetime => 'Ömür boyu';
 
   @override
+  String get fieldKind => 'Ne tür bir ürün?';
+
+  @override
+  String get kindHint => 'Fotoğraf yoksa rafta bu çizimle durur.';
+
+  @override
+  String kindA11y(String kind) {
+    return '$kind, tür';
+  }
+
+  @override
   String get hideKeyboard => 'Klavyeyi kapat';
 }

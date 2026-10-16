@@ -777,5 +777,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lifetime => 'Lifetime';
 
   @override
+  String get fieldKind => 'What kind of product?';
+
+  @override
+  String get kindHint =>
+      'Without a photo, it stands on the shelf as this drawing.';
+
+  @override
+  String kindA11y(String kind) {
+    return '$kind, kind';
+  }
+
+  @override
   String get hideKeyboard => 'Hide keyboard';
 }

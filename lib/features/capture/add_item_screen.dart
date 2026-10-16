@@ -15,6 +15,7 @@ import '../../rights/rights_engine.dart';
 import '../items/domain/item.dart';
 import '../items/providers.dart';
 import '../settings/settings.dart';
+import 'category_guess.dart';
 import 'subject_lift.dart';
 
 enum PhotoSource { camera, gallery }
@@ -94,6 +95,11 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
   int _warranty = 24;
   String? _shelfId;
 
+  /// The kind the user picked; until then it is guessed from the name.
+  ItemCategory? _kind;
+
+  ItemCategory get _effectiveKind => _kind ?? guessCategory(_name.text) ?? ItemCategory.other;
+
   @override
   void initState() {
     super.initState();
@@ -168,6 +174,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
     final item = Item(
       id: '',
       name: _name.text.trim(),
+      category: _effectiveKind,
       store: _store.text.trim(),
       price: amount == null ? null : Money(amount, _currency ?? _currencyFor(region)),
       shelfId: _shelfId,
@@ -282,6 +289,14 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
                     ),
                   ),
                 ),
+                const SizedBox(height: VSpace.lg),
+                Text(l.fieldKind, style: context.t.section.copyWith(color: context.c.textSecondary)),
+                const SizedBox(height: VSpace.sm),
+                _KindPicker(selected: _effectiveKind, onChanged: (k) => setState(() => _kind = k)),
+                if (_chosen == null) ...[
+                  const SizedBox(height: VSpace.xs),
+                  Text(l.kindHint, style: context.t.small.copyWith(color: context.c.textSecondary)),
+                ],
                 const SizedBox(height: VSpace.md),
                 VFieldLift(
                   child: TextField(
@@ -588,6 +603,90 @@ class _FieldButton extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// The seven kinds as their drawings, the same ones a product without a
+/// photo stands on the shelf as: picking one shows exactly what you'll get.
+class _KindPicker extends StatelessWidget {
+  const _KindPicker({required this.selected, required this.onChanged});
+  final ItemCategory selected;
+  final ValueChanged<ItemCategory> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final d = VMotion.of(context, VMotion.quick);
+    return Wrap(
+      spacing: VSpace.sm,
+      runSpacing: VSpace.sm,
+      children: [
+        for (final k in ItemCategory.values)
+          Semantics(
+            button: true,
+            selected: k == selected,
+            label: l.kindA11y(categoryLabel(l, k)),
+            excludeSemantics: true,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                if (k == selected) return;
+                HapticFeedback.selectionClick();
+                onChanged(k);
+              },
+              child: SizedBox(
+                width: 72,
+                child: Column(
+                  children: [
+                    AnimatedContainer(
+                      duration: d,
+                      curve: Curves.easeOutCubic,
+                      width: 64,
+                      height: 56,
+                      padding: const EdgeInsets.all(VSpace.sm),
+                      decoration: BoxDecoration(
+                        color: context.c.surface,
+                        borderRadius: BorderRadius.circular(VRadius.md),
+                        // Selection is the ink edge plus the tick, never colour alone.
+                        border: Border.all(
+                          color: k == selected ? context.c.text : context.c.border,
+                          width: k == selected ? 2 : 1,
+                        ),
+                      ),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Positioned.fill(child: Image.asset(CategoryArt.asset(k), fit: BoxFit.contain)),
+                          if (k == selected)
+                            Positioned(
+                              right: -VSpace.sm + 2,
+                              top: -VSpace.sm + 2,
+                              child: Icon(Icons.check_circle_rounded, size: 16, color: context.c.text),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      categoryLabel(l, k),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      // Grows with Dynamic Type up to where two lines still
+                      // fit the 72-pt column; the spoken label is the full name.
+                      textScaler: MediaQuery.textScalerOf(context).clamp(maxScaleFactor: 1.4),
+                      style: context.t.small.copyWith(
+                        color: k == selected ? context.c.text : context.c.textSecondary,
+                        fontWeight: k == selected ? FontWeight.w600 : null,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
 }
 
 class _Enter extends StatelessWidget {
