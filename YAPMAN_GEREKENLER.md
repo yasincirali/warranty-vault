@@ -1,4 +1,4 @@
-# YAPMAN GEREKENLER — Garanti Kasası
+# YAPMAN GEREKENLER — Rafım
 
 Yalnız yasin'in yapabileceği adımlar. Sıra önemlidir.
 
@@ -11,8 +11,8 @@ Yalnız yasin'in yapabileceği adımlar. Sıra önemlidir.
    Project settings › Resources'a ekle. Yerel depo hazır; depo açılınca push edilir.
 2. **Apple Developer › Identifiers**: `com.sandik.warrantyvault` App ID
    (capability yok).
-3. **App Store Connect › Apps › +**: ad **"Garanti Kasası"** (alınmışsa
-   "Garanti Kasası: Fiş" gibi bir yedek). Ad **geçicidir** — marka kararı
+3. **App Store Connect › Apps › +**: ad **"Rafım: Garanti Belgelerim"** (telefonda "Rafım").
+   "Garanti Kasası" bırakıldı (yasin 2026-10-15): Garanti BBVA'yı çağrıştırıyordu. Ad **geçicidir** — marka kararı
    (Recourse/Coverline) verilince değişir; bundle id değişmez. Bundle id yukarıdaki,
    SKU `warrantyvault`, birincil dil Türkçe, kategori **Utilities** (ikincil
    Productivity). TestFlight › Test Information'ı doldur.
