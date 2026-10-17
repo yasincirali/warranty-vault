@@ -21,6 +21,16 @@ abstract interface class VaultStore {
   /// The photo's file bytes, for things drawn outside Flutter's image
   /// pipeline (the PDF export). Null when the file is gone.
   Future<Uint8List?> photoBytes(String relativePath);
+
+  /// Stores a receipt / invoice / manual and returns its relative path.
+  Future<String> saveDoc(String fileName, Uint8List bytes);
+
+  /// Removes a stored file; a missing file is not an error.
+  Future<void> deleteFile(String relativePath);
+
+  /// The file on disk, for handing a PDF to the system viewer. Null for
+  /// bundled samples and the in-memory store.
+  String? filePath(String relativePath);
 }
 
 Future<Uint8List?> _bundledBytes(String path) async {
@@ -70,6 +80,25 @@ class LocalVaultStore implements VaultStore {
   ImageProvider photo(String relativePath) => bundledPhoto(relativePath) ?? FileImage(File('${dir.path}/$relativePath'));
 
   @override
+  Future<String> saveDoc(String fileName, Uint8List bytes) async {
+    final rel = 'docs/$fileName';
+    final f = File('${dir.path}/$rel');
+    await f.parent.create(recursive: true);
+    await f.writeAsBytes(bytes, flush: true);
+    return rel;
+  }
+
+  @override
+  Future<void> deleteFile(String relativePath) async {
+    if (relativePath.startsWith('asset:')) return;
+    final f = File('${dir.path}/$relativePath');
+    if (await f.exists()) await f.delete();
+  }
+
+  @override
+  String? filePath(String relativePath) => relativePath.startsWith('asset:') ? null : '${dir.path}/$relativePath';
+
+  @override
   Future<Uint8List?> photoBytes(String relativePath) async {
     if (relativePath.startsWith('asset:')) return _bundledBytes(relativePath);
     final f = File('${dir.path}/$relativePath');
@@ -102,6 +131,19 @@ class MemoryVaultStore implements VaultStore {
   @override
   ImageProvider photo(String relativePath) =>
       bundledPhoto(relativePath) ?? MemoryImage(_photos[relativePath] ?? _transparentPixel);
+
+  @override
+  Future<String> saveDoc(String fileName, Uint8List bytes) async {
+    final rel = 'docs/$fileName';
+    _photos[rel] = bytes;
+    return rel;
+  }
+
+  @override
+  Future<void> deleteFile(String relativePath) async => _photos.remove(relativePath);
+
+  @override
+  String? filePath(String relativePath) => null;
 
   @override
   Future<Uint8List?> photoBytes(String relativePath) async =>

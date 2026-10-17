@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -7,17 +9,59 @@ import 'core/ui/brand_mark.dart';
 import 'core/ui/cover_observer.dart';
 import 'features/items/providers.dart';
 import 'features/items/ui/home_screen.dart';
+import 'features/items/ui/item_detail_screen.dart';
+import 'features/reminders/reminders.dart';
 import 'features/settings/settings.dart';
 import 'l10n/generated/app_localizations.dart';
 
-class WarrantyVaultApp extends ConsumerWidget {
+class WarrantyVaultApp extends ConsumerStatefulWidget {
   const WarrantyVaultApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<WarrantyVaultApp> createState() => _WarrantyVaultAppState();
+}
+
+class _WarrantyVaultAppState extends ConsumerState<WarrantyVaultApp> {
+  final _navigator = GlobalKey<NavigatorState>();
+  late final AppLifecycleListener _lifecycle;
+  StreamSubscription<String>? _taps;
+
+  @override
+  void initState() {
+    super.initState();
+    // Days pass while the app sleeps: coming back re-plans, and the plan's
+    // signature check keeps that free when nothing moved.
+    _lifecycle = AppLifecycleListener(onResume: () => ref.read(reminderSyncProvider).schedule());
+    final scheduler = ref.read(reminderSchedulerProvider);
+    _taps = scheduler.taps.listen(_openItem);
+    scheduler.launchItem().then((id) {
+      if (id != null) _openItem(id);
+    }).ignore();
+  }
+
+  /// A tapped reminder lands on the product's page, the one that says what
+  /// is left and what to do; after the cabinet has loaded.
+  Future<void> _openItem(String id) async {
+    final view = await ref.read(itemViewProvider(id).future);
+    final nav = _navigator.currentState;
+    if (view == null || nav == null) return;
+    nav.push(MaterialPageRoute(builder: (_) => ItemDetailScreen(itemId: id)));
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    _taps?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.watch(reminderSyncProvider);
     final language = ref.watch(settingsProvider.select((s) => s.language));
     final ready = ref.watch(itemViewsProvider.select((v) => v.hasValue));
     return MaterialApp(
+      navigatorKey: _navigator,
       // null follows the phone; a choice in Settings wins over it.
       locale: language == null ? null : Locale(language),
       onGenerateTitle: (c) => AppLocalizations.of(c).appTitle,

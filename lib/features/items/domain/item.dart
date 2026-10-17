@@ -11,6 +11,32 @@ class Money {
   final String currency;
 }
 
+/// What a stored paper is for. The counter screen shows the receipt first:
+/// it is the proof of purchase a seller asks for.
+enum DocKind { receipt, warrantyCard, manual, other }
+
+/// A receipt, invoice, warranty card or manual kept with the product.
+class ItemDoc {
+  const ItemDoc({required this.path, required this.kind, required this.added});
+
+  /// Relative to the vault folder (`docs/<file>`), like [Item.photoPath].
+  final String path;
+  final DocKind kind;
+  final DateTime added;
+
+  /// E-invoices (e-Arşiv, most online shops) arrive as PDF; everything
+  /// photographed is a JPEG.
+  bool get isPdf => path.toLowerCase().endsWith('.pdf');
+
+  Map<String, Object?> toJson() => {'path': path, 'kind': kind.name, 'added': added.toIso8601String()};
+
+  static ItemDoc fromJson(Map<String, dynamic> j) => ItemDoc(
+        path: j['path'] as String,
+        kind: DocKind.values.asNameMap()[j['kind']] ?? DocKind.other,
+        added: DateTime.tryParse(j['added'] as String? ?? '') ?? DateTime.utc(2000),
+      );
+}
+
 class Item {
   const Item({
     required this.id,
@@ -20,7 +46,7 @@ class Item {
     this.category = ItemCategory.other,
     this.price,
     this.serial,
-    this.invoicePath,
+    this.documents = const [],
     this.photoPath,
     this.photoAspect,
     this.photoCutout = false,
@@ -35,7 +61,17 @@ class Item {
   final ItemCategory category;
   final Money? price;
   final String? serial;
-  final String? invoicePath;
+
+  /// Receipts, invoices, warranty cards, manuals; oldest first.
+  final List<ItemDoc> documents;
+
+  /// The proof of purchase the counter screen shows, if one is stored.
+  ItemDoc? get receipt {
+    for (final d in documents) {
+      if (d.kind == DocKind.receipt) return d;
+    }
+    return null;
+  }
 
   /// Relative to the vault folder (`photos/<id>.png`). Never absolute: iOS
   /// moves the app container on every update, so an absolute path would
@@ -68,6 +104,7 @@ class Item {
     bool? photoCutout,
     DateTime? disposedAt,
     bool clearDisposed = false,
+    List<ItemDoc>? documents,
   }) =>
       Item(
         id: id ?? this.id,
@@ -77,7 +114,7 @@ class Item {
         category: category,
         price: price,
         serial: serial,
-        invoicePath: invoicePath,
+        documents: documents ?? this.documents,
         photoPath: photoPath ?? this.photoPath,
         photoAspect: photoAspect ?? this.photoAspect,
         photoCutout: photoCutout ?? this.photoCutout,
@@ -92,7 +129,7 @@ class Item {
         'category': category.name,
         if (price != null) 'price': {'amount': price!.amount, 'currency': price!.currency},
         'serial': ?serial,
-        'invoicePath': ?invoicePath,
+        if (documents.isNotEmpty) 'documents': [for (final d in documents) d.toJson()],
         'photoPath': ?photoPath,
         'photoAspect': ?photoAspect,
         'photoCutout': photoCutout,
@@ -110,7 +147,13 @@ class Item {
       category: ItemCategory.values.asNameMap()[j['category']] ?? ItemCategory.other,
       price: price == null ? null : Money(price['amount'] as num, price['currency'] as String),
       serial: j['serial'] as String?,
-      invoicePath: j['invoicePath'] as String?,
+      documents: [
+        for (final d in (j['documents'] as List? ?? const [])) ItemDoc.fromJson(d as Map<String, dynamic>),
+        // Builds before documents existed kept one `invoicePath`; it is
+        // read as the receipt so nothing a tester stored disappears.
+        if (j['documents'] == null && j['invoicePath'] is String)
+          ItemDoc(path: j['invoicePath'] as String, kind: DocKind.receipt, added: DateTime.utc(2000)),
+      ],
       photoPath: j['photoPath'] as String?,
       photoAspect: (j['photoAspect'] as num?)?.toDouble(),
       photoCutout: j['photoCutout'] as bool? ?? false,

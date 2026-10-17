@@ -7,6 +7,7 @@ import '../../../core/ui/widgets.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../cabinet/cabinet_view.dart';
 import '../../capture/add_item_screen.dart';
+import '../../search/search_screen.dart';
 import '../../settings/settings_screen.dart';
 import '../domain/item.dart';
 import '../providers.dart';
@@ -69,6 +70,15 @@ class HomeScreen extends ConsumerWidget {
                           style: context.t.small.copyWith(color: context.c.textSecondary)),
                   ]),
                 ),
+                if (active.isNotEmpty) ...[
+                  VIconButton(
+                    icon: Icons.search,
+                    label: l.searchTitle,
+                    onPressed: () => Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (_) => const SearchScreen())),
+                  ),
+                  const SizedBox(width: VSpace.sm),
+                ],
                 VIconButton(
                   icon: Icons.settings_outlined,
                   label: l.settingsTitle,

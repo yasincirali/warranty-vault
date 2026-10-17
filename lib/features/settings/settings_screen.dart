@@ -6,6 +6,8 @@ import '../../core/format.dart';
 import '../../core/theme/tokens.dart';
 import '../../core/ui/widgets.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../backup/backup.dart';
+import '../backup/backup_rows.dart';
 import '../export/exporter.dart';
 import 'settings.dart';
 
@@ -14,7 +16,9 @@ import 'settings.dart';
 /// - language: the phone's, or Türkçe / English regardless of the phone;
 /// - country: which law new products are judged by;
 /// - where the data lives;
-/// - taking it all out as a file (yasin, 16 Oct: PDF and Excel export).
+/// - taking it all out as a file (yasin, 16 Oct: PDF and Excel export);
+/// - reminders and a whole-cabinet backup (benchmark, 17 Oct: every
+///   compared app reminds; a new phone must not mean an empty cabinet).
 /// Choices are checkmark lists, the iOS Settings pattern, not dropdowns:
 /// every option is visible and one tap away.
 class SettingsScreen extends ConsumerWidget {
@@ -25,6 +29,7 @@ class SettingsScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context);
     final s = ref.watch(settingsProvider);
     final ctl = ref.read(settingsProvider.notifier);
+    final vaultDir = ref.watch(backupDirProvider);
     final phoneLanguage = WidgetsBinding.instance.platformDispatcher.locale.languageCode == 'tr' ? l.langTr : l.langEn;
 
     return Scaffold(
@@ -66,6 +71,43 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: VSpace.sm),
           Text(l.settingsRegionHint, style: context.t.small.copyWith(color: context.c.textSecondary)),
           const SizedBox(height: VSpace.xxl),
+          SectionTitle(l.settingsReminders),
+          VCard(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(VRadius.lg - 1),
+              child: MergeSemantics(
+                child: InkWell(
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    ctl.setReminders(!s.reminders);
+                  },
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: VSize.button),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: VSpace.lg, vertical: VSpace.md),
+                      child: Row(children: [
+                        Expanded(
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text(l.remindersSwitch, style: context.t.label),
+                            Text(l.remindersWhy, style: context.t.small.copyWith(color: context.c.textSecondary)),
+                          ]),
+                        ),
+                        const SizedBox(width: VSpace.md),
+                        Switch.adaptive(
+                          value: s.reminders,
+                          onChanged: (v) {
+                            HapticFeedback.selectionClick();
+                            ctl.setReminders(v);
+                          },
+                        ),
+                      ]),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: VSpace.xxl),
           SectionTitle(l.settingsExport),
           VCard(
             // Clip so a row's press highlight follows the card's corners.
@@ -92,6 +134,13 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: VSpace.sm),
           Text(l.exportHint, style: context.t.small.copyWith(color: context.c.textSecondary)),
+          if (vaultDir != null) ...[
+            const SizedBox(height: VSpace.xxl),
+            SectionTitle(l.settingsBackup),
+            BackupCard(vaultDir: vaultDir),
+            const SizedBox(height: VSpace.sm),
+            Text(l.backupHint, style: context.t.small.copyWith(color: context.c.textSecondary)),
+          ],
           const SizedBox(height: VSpace.xxl),
           SectionTitle(l.settingsAbout),
           VCard(

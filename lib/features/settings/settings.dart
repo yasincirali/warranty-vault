@@ -24,13 +24,24 @@ String deviceRegion() {
 /// What the user chose in Settings. null = follow the phone.
 @immutable
 class AppSettings {
-  const AppSettings({this.language, this.region});
+  const AppSettings({this.language, this.region, this.reminders = true});
 
   /// 'tr' / 'en'; null = the phone's language.
   final String? language;
 
   /// One of [kRegions]; null = the phone's country ([deviceRegion]).
   final String? region;
+
+  /// Local reminders before a right ends. On by default: a reminder is the
+  /// reason to keep a warranty app at all (every app compared has one); iOS
+  /// still asks for permission, after the first product is saved.
+  final bool reminders;
+
+  AppSettings copyWith({String? Function()? language, String? Function()? region, bool? reminders}) => AppSettings(
+        language: language == null ? this.language : language(),
+        region: region == null ? this.region : region(),
+        reminders: reminders ?? this.reminders,
+      );
 }
 
 /// Where settings live. v1: shared_preferences on the device, read
@@ -69,7 +80,7 @@ final settingsStoreProvider = Provider<SettingsStore>((_) => MemorySettingsStore
 final settingsProvider = NotifierProvider<SettingsController, AppSettings>(SettingsController.new);
 
 class SettingsController extends Notifier<AppSettings> {
-  static const _language = 'language', _region = 'region';
+  static const _language = 'language', _region = 'region', _reminders = 'reminders';
 
   SettingsStore get _store => ref.read(settingsStoreProvider);
 
@@ -83,17 +94,23 @@ class SettingsController extends Notifier<AppSettings> {
     return AppSettings(
       language: const {'tr', 'en'}.contains(lang) ? lang : null,
       region: kRegions.contains(region) ? region : null,
+      reminders: store.read(_reminders) != 'off',
     );
   }
 
   Future<void> setLanguage(String? code) async {
-    state = AppSettings(language: code, region: state.region);
+    state = state.copyWith(language: () => code);
     await _store.write(_language, code);
   }
 
   Future<void> setRegion(String? region) async {
-    state = AppSettings(language: state.language, region: region);
+    state = state.copyWith(region: () => region);
     await _store.write(_region, region);
+  }
+
+  Future<void> setReminders(bool on) async {
+    state = state.copyWith(reminders: on);
+    await _store.write(_reminders, on ? null : 'off');
   }
 }
 

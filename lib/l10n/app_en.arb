@@ -464,5 +464,113 @@
       }
     }
   },
-  "hideKeyboard": "Hide keyboard"
+  "hideKeyboard": "Hide keyboard",
+  "reminderEndsBody": "{what}. If something is wrong, report it before the last day.",
+  "@reminderEndsBody": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderProofBody": "In {days, plural, =1{1 day} other{{days} days}} the burden of proving a fault moves to you. Report any problem now.",
+  "@reminderProofBody": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "cancel": "Cancel",
+  "searchTitle": "Search",
+  "searchHint": "Product, store, serial or shelf",
+  "searchClear": "Clear search",
+  "searchNone": "Nothing in the cabinet matches “{query}”.",
+  "@searchNone": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "docsHeader": "Receipts and papers",
+  "docReceipt": "Receipt or invoice",
+  "docWarrantyCard": "Warranty card",
+  "docManual": "Manual",
+  "docOther": "Other paper",
+  "docPdf": "PDF",
+  "docPhoto": "Photo",
+  "docAdd": "Add a receipt or paper",
+  "docAddWhy": "The seller asks for proof of purchase. Keep it here and it never fades.",
+  "docWhat": "What is it?",
+  "docFromCamera": "Take a photo",
+  "docFromGallery": "Choose from photos",
+  "docFromFile": "PDF file (e-invoice)",
+  "docAdded": "{kind} saved",
+  "@docAdded": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "docTooLarge": "That file is over 20 MB. Try a smaller copy.",
+  "docFailed": "Couldn't save it. Try again.",
+  "docDelete": "Delete",
+  "docDeleteTitle": "Delete {kind}?",
+  "@docDeleteTitle": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "docDeleteBody": "It is removed from this phone. The product stays in the cabinet.",
+  "counterOpenPdf": "Open the invoice (PDF)",
+  "counterReceiptA11y": "Receipt, opens full screen",
+  "settingsReminders": "Reminders",
+  "remindersSwitch": "Remind me before rights end",
+  "remindersWhy": "A few days before a return window closes, a month before a warranty ends, and before the burden of proof moves to you. Sent from this phone only.",
+  "settingsBackup": "Backup",
+  "backupMake": "Back up the cabinet",
+  "backupMakeWhy": "Every product, photo and receipt in one file",
+  "backupRestore": "Restore from a backup",
+  "backupRestoreWhy": "Replaces the cabinet on this phone",
+  "backupHint": "Save the file to iCloud Drive or Files. It is a plain zip you can open on a computer, so keep it somewhere private.",
+  "backupFilePrefix": "cabinet-backup",
+  "backupInvalid": "That file is not a cabinet backup.",
+  "backupFailed": "The backup couldn't be completed. Try again.",
+  "backupConfirmTitle": "{count, plural, =1{Restore 1 product?} other{Restore {count} products?}}",
+  "@backupConfirmTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupFrom": "Backup from {date}.",
+  "@backupFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "backupConfirmBody": "{count, plural, =0{The cabinet on this phone is empty.} =1{The 1 product on this phone will be replaced.} other{The {count} products on this phone will be replaced.}}",
+  "@backupConfirmBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupReplace": "Restore",
+  "backupRestored": "{count, plural, =1{1 product restored} other{{count} products restored}}",
+  "@backupRestored": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

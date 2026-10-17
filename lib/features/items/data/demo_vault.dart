@@ -36,7 +36,7 @@ List<Item> _items() => [
     category: ItemCategory.laptop,
     price: const Money(1299, 'EUR'),
     serial: 'C02FK3XJQ6L4',
-    invoicePath: 'demo/macbook.pdf',
+    documents: [ItemDoc(path: 'asset:demo/fis_macbook.jpg', kind: DocKind.receipt, added: _d(2024, 11, 10))],
     purchase: Purchase(
       date: _d(2024, 11, 10),
       region: 'DE',

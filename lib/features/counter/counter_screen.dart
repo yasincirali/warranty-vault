@@ -6,7 +6,9 @@ import '../../core/theme/tokens.dart';
 import '../../core/ui/widgets.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../rights/rights_engine.dart';
+import '../items/domain/item.dart';
 import '../items/providers.dart';
+import '../items/ui/documents.dart';
 
 /// "Kasada göster": the screen you turn towards the shop assistant.
 /// Review round 1: the most common real moment is standing at a counter
@@ -94,19 +96,63 @@ class CounterScreen extends ConsumerWidget {
             ),
           ],
           const SizedBox(height: VSpace.md),
-          Container(
+          _Receipt(item: item),
+        ],
+      ),
+    );
+  }
+}
+
+/// The stored receipt, big enough to read across a counter; a tap opens it
+/// full screen to zoom in on the date or the serial. Without one the
+/// placeholder says so instead of leaving an empty frame.
+class _Receipt extends ConsumerWidget {
+  const _Receipt({required this.item});
+  final Item item;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
+    final doc = item.receipt;
+    if (doc == null || doc.isPdf) {
+      return Semantics(
+        button: doc != null,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(VRadius.lg),
+          onTap: doc == null ? null : () => openDoc(context, ref, item, doc),
+          child: Container(
             height: 150,
             decoration: BoxDecoration(color: context.c.tile, borderRadius: BorderRadius.circular(VRadius.lg)),
             alignment: Alignment.center,
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Icon(Icons.description_outlined, size: 18, color: context.c.textSecondary),
+              Icon(doc == null ? Icons.description_outlined : Icons.picture_as_pdf_outlined,
+                  size: 18, color: context.c.textSecondary),
               const SizedBox(width: VSpace.sm),
-              // TODO(counter): show the stored invoice image, pinch to zoom.
-              Text(item.invoicePath == null ? l.counterNoInvoice : l.invoice,
-                  style: context.t.label.copyWith(fontSize: 14.5, color: context.c.textSecondary)),
+              Flexible(
+                child: Text(doc == null ? l.counterNoInvoice : l.counterOpenPdf,
+                    style: context.t.label.copyWith(color: context.c.textSecondary)),
+              ),
             ]),
           ),
-        ],
+        ),
+      );
+    }
+    final store = ref.watch(vaultStoreProvider);
+    final w = MediaQuery.sizeOf(context).width * MediaQuery.devicePixelRatioOf(context);
+    return Semantics(
+      button: true,
+      label: l.counterReceiptA11y,
+      child: GestureDetector(
+        onTap: () => openDoc(context, ref, item, doc),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(VRadius.lg),
+          child: Image(
+            // Screen width is all it is ever drawn at.
+            image: ResizeImage(store.photo(doc.path), width: w.round(), policy: ResizeImagePolicy.fit),
+            fit: BoxFit.fitWidth,
+            errorBuilder: (_, _, _) => const SizedBox.shrink(),
+          ),
+        ),
       ),
     );
   }

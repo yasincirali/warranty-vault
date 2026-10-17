@@ -1375,6 +1375,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hide keyboard'**
   String get hideKeyboard;
+
+  /// No description provided for @reminderEndsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{what}. If something is wrong, report it before the last day.'**
+  String reminderEndsBody(String what);
+
+  /// No description provided for @reminderProofBody.
+  ///
+  /// In en, this message translates to:
+  /// **'In {days, plural, =1{1 day} other{{days} days}} the burden of proving a fault moves to you. Report any problem now.'**
+  String reminderProofBody(int days);
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @searchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchTitle;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Product, store, serial or shelf'**
+  String get searchHint;
+
+  /// No description provided for @searchClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get searchClear;
+
+  /// No description provided for @searchNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing in the cabinet matches “{query}”.'**
+  String searchNone(String query);
+
+  /// No description provided for @docsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipts and papers'**
+  String get docsHeader;
+
+  /// No description provided for @docReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt or invoice'**
+  String get docReceipt;
+
+  /// No description provided for @docWarrantyCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Warranty card'**
+  String get docWarrantyCard;
+
+  /// No description provided for @docManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual'**
+  String get docManual;
+
+  /// No description provided for @docOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other paper'**
+  String get docOther;
+
+  /// No description provided for @docPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF'**
+  String get docPdf;
+
+  /// No description provided for @docPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get docPhoto;
+
+  /// No description provided for @docAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a receipt or paper'**
+  String get docAdd;
+
+  /// No description provided for @docAddWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'The seller asks for proof of purchase. Keep it here and it never fades.'**
+  String get docAddWhy;
+
+  /// No description provided for @docWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'What is it?'**
+  String get docWhat;
+
+  /// No description provided for @docFromCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get docFromCamera;
+
+  /// No description provided for @docFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from photos'**
+  String get docFromGallery;
+
+  /// No description provided for @docFromFile.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF file (e-invoice)'**
+  String get docFromFile;
+
+  /// No description provided for @docAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind} saved'**
+  String docAdded(String kind);
+
+  /// No description provided for @docTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'That file is over 20 MB. Try a smaller copy.'**
+  String get docTooLarge;
+
+  /// No description provided for @docFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save it. Try again.'**
+  String get docFailed;
+
+  /// No description provided for @docDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get docDelete;
+
+  /// No description provided for @docDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {kind}?'**
+  String docDeleteTitle(String kind);
+
+  /// No description provided for @docDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It is removed from this phone. The product stays in the cabinet.'**
+  String get docDeleteBody;
+
+  /// No description provided for @counterOpenPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the invoice (PDF)'**
+  String get counterOpenPdf;
+
+  /// No description provided for @counterReceiptA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt, opens full screen'**
+  String get counterReceiptA11y;
+
+  /// No description provided for @settingsReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders'**
+  String get settingsReminders;
+
+  /// No description provided for @remindersSwitch.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me before rights end'**
+  String get remindersSwitch;
+
+  /// No description provided for @remindersWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'A few days before a return window closes, a month before a warranty ends, and before the burden of proof moves to you. Sent from this phone only.'**
+  String get remindersWhy;
+
+  /// No description provided for @settingsBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup'**
+  String get settingsBackup;
+
+  /// No description provided for @backupMake.
+  ///
+  /// In en, this message translates to:
+  /// **'Back up the cabinet'**
+  String get backupMake;
+
+  /// No description provided for @backupMakeWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Every product, photo and receipt in one file'**
+  String get backupMakeWhy;
+
+  /// No description provided for @backupRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore from a backup'**
+  String get backupRestore;
+
+  /// No description provided for @backupRestoreWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Replaces the cabinet on this phone'**
+  String get backupRestoreWhy;
+
+  /// No description provided for @backupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the file to iCloud Drive or Files. It is a plain zip you can open on a computer, so keep it somewhere private.'**
+  String get backupHint;
+
+  /// No description provided for @backupFilePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'cabinet-backup'**
+  String get backupFilePrefix;
+
+  /// No description provided for @backupInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'That file is not a cabinet backup.'**
+  String get backupInvalid;
+
+  /// No description provided for @backupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The backup couldn\'t be completed. Try again.'**
+  String get backupFailed;
+
+  /// No description provided for @backupConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Restore 1 product?} other{Restore {count} products?}}'**
+  String backupConfirmTitle(int count);
+
+  /// No description provided for @backupFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup from {date}.'**
+  String backupFrom(String date);
+
+  /// No description provided for @backupConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{The cabinet on this phone is empty.} =1{The 1 product on this phone will be replaced.} other{The {count} products on this phone will be replaced.}}'**
+  String backupConfirmBody(int count);
+
+  /// No description provided for @backupReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get backupReplace;
+
+  /// No description provided for @backupRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 product restored} other{{count} products restored}}'**
+  String backupRestored(int count);
 }
 
 class _AppLocalizationsDelegate
