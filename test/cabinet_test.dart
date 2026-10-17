@@ -163,6 +163,16 @@ void main() {
   testWidgets('a product without a photo stands on its shelf as its kind\'s drawing, with its name', (t) async {
     final semantics = t.ensureSemantics();
     final store = await _open(t);
+    final drawing = find.descendant(
+      of: find.byType(CabinetView),
+      matching: find.byWidgetPredicate(
+        (w) =>
+            w is Image && w.image is AssetImage && (w.image as AssetImage).assetName == 'assets/kategori/appliance.png',
+      ),
+    );
+    // The sample washing machine already wears this picture (sample products
+    // share the category renders), so count what the new product adds.
+    final before = drawing.evaluate().length;
     await t.tap(find.text('Add a product'));
     await t.pumpAndSettle();
     await t.enterText(find.widgetWithText(TextField, 'Product'), 'Dyson V15');
@@ -178,14 +188,7 @@ void main() {
 
     final item = store.current.items.firstWhere((i) => i.name == 'Dyson V15');
     expect(item.category, ItemCategory.appliance);
-    final drawing = find.descendant(
-      of: find.byType(CabinetView),
-      matching: find.byWidgetPredicate(
-        (w) =>
-            w is Image && w.image is AssetImage && (w.image as AssetImage).assetName == 'assets/kategori/appliance.png',
-      ),
-    );
-    expect(drawing, findsOneWidget);
+    expect(drawing, findsNWidgets(before + 1));
     expect(_onShelf('Dyson V15'), findsOneWidget, reason: 'its name tag');
     expect(t.takeException(), isNull);
     semantics.dispose();

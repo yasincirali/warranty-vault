@@ -27,8 +27,8 @@ List<Item> _items() => [
 
   Item(
     id: 'macbook',
-    photoPath: 'asset:demo/macbook.png',
-    photoAspect: 1.368,
+    photoPath: 'asset:kategori/laptop.png',
+    photoAspect: 1.009,
     photoCutout: true,
     shelfId: 'desk',
     name: 'MacBook Air 13"',
@@ -46,8 +46,8 @@ List<Item> _items() => [
   ),
   Item(
     id: 'sony',
-    photoPath: 'asset:demo/sony.png',
-    photoAspect: 1.282,
+    photoPath: 'asset:kategori/headphones.png',
+    photoAspect: 1.365,
     photoCutout: true,
     shelfId: 'desk',
     name: 'Sony WH-1000XM5',
@@ -63,8 +63,8 @@ List<Item> _items() => [
   ),
   Item(
     id: 'bosch',
-    photoPath: 'asset:demo/bosch.png',
-    photoAspect: 0.738,
+    photoPath: 'asset:kategori/appliance.png',
+    photoAspect: 0.659,
     photoCutout: true,
     shelfId: 'kitchen',
     name: 'Bosch Serie 6',
@@ -80,8 +80,8 @@ List<Item> _items() => [
   ),
   Item(
     id: 'pixel',
-    photoPath: 'asset:demo/pixel.png',
-    photoAspect: 0.471,
+    photoPath: 'asset:kategori/phone.png',
+    photoAspect: 0.463,
     photoCutout: true,
     shelfId: 'desk',
     name: 'Pixel 9',
@@ -97,8 +97,8 @@ List<Item> _items() => [
   ),
   Item(
     id: 'lg',
-    photoPath: 'asset:demo/lg.png',
-    photoAspect: 1.161,
+    photoPath: 'asset:kategori/tv.png',
+    photoAspect: 1.376,
     photoCutout: true,
     shelfId: 'living',
     name: 'LG OLED C3',
@@ -114,8 +114,8 @@ List<Item> _items() => [
   ),
   Item(
     id: 'dyson',
-    photoPath: 'asset:demo/dyson.png',
-    photoAspect: 0.596,
+    photoPath: 'asset:kategori/vacuum.png',
+    photoAspect: 0.456,
     photoCutout: true,
     shelfId: 'living',
     name: 'Dyson V12',
