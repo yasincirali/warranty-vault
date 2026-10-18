@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -45,6 +47,34 @@ final systemLiftProvider = Provider<Future<Uint8List?> Function(Uint8List)>(
     } on PlatformException {
       return null;
     } on MissingPluginException {
+      return null;
+    }
+  },
+);
+
+/// Decodes a photo with the phone's codec (HEIC on iPhone), scaled to
+/// [maxPhotoSide]. Null when the platform can't read it either.
+final platformDecodeProvider = Provider<Future<RawPhoto?> Function(Uint8List)>(
+  (_) => (bytes) async {
+    try {
+      final buffer = await ui.ImmutableBuffer.fromUint8List(bytes);
+      final desc = await ui.ImageDescriptor.encoded(buffer);
+      final k = math.min(1.0, maxPhotoSide / math.max(desc.width, desc.height));
+      final codec = await desc.instantiateCodec(
+        targetWidth: math.max(1, (desc.width * k).round()),
+        targetHeight: math.max(1, (desc.height * k).round()),
+      );
+      final frame = await codec.getNextFrame();
+      final data = await frame.image.toByteData(format: ui.ImageByteFormat.rawRgba);
+      final raw = data == null
+          ? null
+          : RawPhoto(width: frame.image.width, height: frame.image.height, rgba: data.buffer.asUint8List());
+      frame.image.dispose();
+      codec.dispose();
+      desc.dispose();
+      buffer.dispose();
+      return raw;
+    } catch (_) {
       return null;
     }
   },
@@ -151,7 +181,10 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
     });
     try {
       final system = await ref.read(systemLiftProvider)(bytes);
-      final result = await Isolate.run(() => liftSubject(bytes, system: system));
+      // The platform codec runs here (it needs the engine), only for formats
+      // the isolate's decoder can't read.
+      final raw = dartCanDecode(bytes) ? null : await ref.read(platformDecodeProvider)(bytes);
+      final result = await Isolate.run(() => liftSubject(bytes, system: system, raw: raw));
       if (!mounted) return;
       setState(() {
         _photo = result;

@@ -57,6 +57,31 @@ void main() {
     expect(() => liftSubject(Uint8List.fromList([1, 2, 3])), throwsFormatException);
   });
 
+  group('formats the Dart decoder cannot read (HEIC)', () {
+    // The first bytes of an iPhone HEIC file: an ISO-BMFF "ftypheic" box.
+    final heic = Uint8List.fromList([0, 0, 0, 24, ...'ftypheic'.codeUnits, 0, 0, 0, 0, ...'mif1heic'.codeUnits]);
+
+    test('are recognised as such, cheaply', () {
+      expect(dartCanDecode(heic), isFalse);
+      expect(dartCanDecode(_photo(w: 8, h: 8, paint: (_) {})), isTrue);
+    });
+
+    test('are lifted from the pixels the phone decoded', () {
+      final im = img.Image(width: 400, height: 300, numChannels: 4);
+      img.fill(im, color: img.ColorRgba8(236, 232, 224, 255));
+      img.fillRect(im, x1: 150, y1: 60, x2: 250, y2: 260, color: img.ColorRgba8(30, 60, 160, 255));
+      final raw = RawPhoto(width: 400, height: 300, rgba: im.getBytes(order: img.ChannelOrder.rgba));
+      final r = liftSubject(heic, raw: raw);
+      expect(r.original.aspect, closeTo(4 / 3, .01));
+      expect(r.cutout, isNotNull);
+      expect(r.cutout!.aspect, closeTo(108 / 208, .03));
+    });
+
+    test('without decoded pixels are still an error', () {
+      expect(() => liftSubject(heic), throwsFormatException);
+    });
+  });
+
   group('system cut-out (iOS Vision)', () {
     /// What the native side sends: transparent PNG, product in the middle.
     Uint8List systemPng({int w = 300, int h = 400, bool alpha = true}) {

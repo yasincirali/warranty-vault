@@ -26,10 +26,29 @@ class LiftResult {
   final LiftedPhoto? cutout;
 }
 
+/// Pixels decoded by the phone's own codec, for formats the pure-Dart
+/// decoder can't read. iPhone photos are HEIC by default and the `image`
+/// package has no HEIC decoder: every such photo said "couldn't be read"
+/// (yasin, 18 Oct). Already upright (the platform codec applies EXIF
+/// orientation) and already within [maxPhotoSide].
+class RawPhoto {
+  const RawPhoto({required this.width, required this.height, required this.rgba});
+  final int width;
+  final int height;
+  final Uint8List rgba;
+
+  img.Image toImage() =>
+      img.Image.fromBytes(width: width, height: height, bytes: rgba.buffer, numChannels: 4, order: img.ChannelOrder.rgba);
+}
+
+/// True when the pure-Dart decoder knows this format; a cheap header check,
+/// so the platform decode only runs for the rest (HEIC, AVIF…).
+bool dartCanDecode(Uint8List bytes) => img.findDecoderForData(bytes) != null;
+
 /// Longest side kept on the phone. A shelf shows products at ≤ 120 pt, the
 /// detail at ≤ 240 pt; 900 px covers that at 3× with room to spare and keeps
 /// a cabinet of 200 things under ~40 MB.
-const _maxSide = 900;
+const maxPhotoSide = 900;
 
 /// Lifts the product off its background, like "Lift subject" in iOS Photos.
 ///
@@ -49,14 +68,14 @@ const _maxSide = 900;
 /// where Vision finds no subject.
 ///
 /// Pure and synchronous: run it with `Isolate.run`.
-LiftResult liftSubject(Uint8List bytes, {Uint8List? system}) {
-  final decoded = img.decodeImage(bytes);
+LiftResult liftSubject(Uint8List bytes, {Uint8List? system, RawPhoto? raw}) {
+  final decoded = img.decodeImage(bytes) ?? raw?.toImage();
   if (decoded == null) throw const FormatException('not an image');
   var src = img.bakeOrientation(decoded);
-  if (src.width > _maxSide || src.height > _maxSide) {
+  if (src.width > maxPhotoSide || src.height > maxPhotoSide) {
     src = src.width >= src.height
-        ? img.copyResize(src, width: _maxSide, interpolation: img.Interpolation.average)
-        : img.copyResize(src, height: _maxSide, interpolation: img.Interpolation.average);
+        ? img.copyResize(src, width: maxPhotoSide, interpolation: img.Interpolation.average)
+        : img.copyResize(src, height: maxPhotoSide, interpolation: img.Interpolation.average);
   }
   final original = LiftedPhoto(
     png: img.encodePng(src, level: 6),
@@ -74,10 +93,10 @@ LiftedPhoto? _fromSystem(Uint8List? png) {
   final decoded = img.decodeImage(png);
   if (decoded == null || !decoded.hasAlpha) return null;
   var src = decoded.numChannels == 4 ? decoded : decoded.convert(numChannels: 4);
-  if (src.width > _maxSide || src.height > _maxSide) {
+  if (src.width > maxPhotoSide || src.height > maxPhotoSide) {
     src = src.width >= src.height
-        ? img.copyResize(src, width: _maxSide, interpolation: img.Interpolation.average)
-        : img.copyResize(src, height: _maxSide, interpolation: img.Interpolation.average);
+        ? img.copyResize(src, width: maxPhotoSide, interpolation: img.Interpolation.average)
+        : img.copyResize(src, height: maxPhotoSide, interpolation: img.Interpolation.average);
   }
   var x0 = src.width, y0 = src.height, x1 = -1, y1 = -1, opaque = 0;
   for (final p in src) {
