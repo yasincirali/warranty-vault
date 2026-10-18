@@ -39,8 +39,10 @@ class SectionTitle extends StatelessWidget {
   );
 }
 
-/// The drawing a product without a photo gets: same style as the sample
-/// cabinet's products (flat, cut out, no shadow), one per category. A
+/// The picture a product without a photo gets, one per category: modelled
+/// and lit in Blender (`tool/3d/urunler.py`) so it sits on the shelf like
+/// the cut-out photos around it; flat drawings read as another world next
+/// to a photo (17 Oct). Cut out, no shadow: the shelf draws its own. A
 /// product you didn't photograph still stands on the shelf as a thing, not
 /// as a grey box with an icon (yasin, 16 Oct).
 abstract final class CategoryArt {
@@ -49,13 +51,13 @@ abstract final class CategoryArt {
   /// Width / height of each drawing, so the cabinet sizes the product before
   /// the image has loaded and nothing jumps.
   static double aspect(ItemCategory c) => switch (c) {
-    ItemCategory.laptop => 1.389,
-    ItemCategory.phone => 0.45,
-    ItemCategory.headphones => 1.298,
-    ItemCategory.tv => 1.17,
-    ItemCategory.appliance => 0.728,
-    ItemCategory.vacuum => 0.58,
-    ItemCategory.other => 1.139,
+    ItemCategory.laptop => 1.009,
+    ItemCategory.phone => 0.463,
+    ItemCategory.headphones => 1.365,
+    ItemCategory.tv => 1.376,
+    ItemCategory.appliance => 0.659,
+    ItemCategory.vacuum => 0.456,
+    ItemCategory.other => 1.336,
   };
 }
 
