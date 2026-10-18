@@ -36,21 +36,34 @@ final photoPickerProvider = Provider<Future<Uint8List?> Function(PhotoSource)>(
 );
 
 /// The system's subject lifting (iOS 17+, `SubjectLift.swift`): a
-/// transparent PNG cropped to the product, or null when the platform has
-/// none or found no subject. Every failure is a null, never an error: the
-/// flood fill in [liftSubject] is always there behind it.
-final systemLiftProvider = Provider<Future<Uint8List?> Function(Uint8List)>(
+/// transparent PNG cropped to the product, or a short code saying why not
+/// (`android`, `ios_old`, `no_subject`, `vision`…). Never an error: the flood
+/// fill in [liftSubject] is always there behind it. The code is shown small
+/// under an uncut photo, so a TestFlight report says which step failed.
+typedef SystemLift = ({Uint8List? png, String? why});
+
+final systemLiftProvider = Provider<Future<SystemLift> Function(Uint8List)>(
   (_) => (bytes) async {
-    if (!Platform.isIOS) return null;
+    if (!Platform.isIOS) return (png: null, why: 'android');
     try {
-      return await const MethodChannel('warranty_vault/subject_lift').invokeMethod<Uint8List>('lift', bytes);
-    } on PlatformException {
-      return null;
+      final png = await const MethodChannel('warranty_vault/subject_lift').invokeMethod<Uint8List>('lift', bytes);
+      return (png: png, why: png == null ? 'empty' : null);
+    } on PlatformException catch (e) {
+      return (png: null, why: e.code);
     } on MissingPluginException {
-      return null;
+      return (png: null, why: 'no_channel');
     }
   },
 );
+
+/// [liftSubject] on a background isolate. A top-level function on purpose:
+/// a closure written inside the State's method shares its scope with the
+/// `setState` closures there, so it carried the State (and through it the
+/// engine's ports) into the isolate message, which Dart refuses as
+/// unsendable. Every photo then ended as "couldn't be read" or uncut
+/// (yasin, 18 Oct); `lift_diagnostic_test` runs the real isolate.
+Future<LiftResult> _liftOffMain(Uint8List bytes, Uint8List? system, RawPhoto? raw) =>
+    Isolate.run(() => liftSubject(bytes, system: system, raw: raw));
 
 /// Decodes a photo with the phone's codec (HEIC on iPhone), scaled to
 /// [maxPhotoSide]. Null when the platform can't read it either.
@@ -117,6 +130,9 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
   bool _useCutout = true;
   bool _lifting = false;
   bool _photoFailed = false;
+
+  /// Why the system lift gave nothing (see [systemLiftProvider]).
+  String? _liftWhy;
   bool _saving = false;
   late DateTime _date = ref.read(clockProvider)();
   SalesChannel _channel = SalesChannel.store;
@@ -184,10 +200,12 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
       // The platform codec runs here (it needs the engine), only for formats
       // the isolate's decoder can't read.
       final raw = dartCanDecode(bytes) ? null : await ref.read(platformDecodeProvider)(bytes);
-      final result = await Isolate.run(() => liftSubject(bytes, system: system, raw: raw));
+      final result = await _liftOffMain(bytes, system.png, raw);
       if (!mounted) return;
       setState(() {
         _photo = result;
+        // A PNG came back but [liftSubject] refused it (no transparency, a speck).
+        _liftWhy = system.why ?? 'rejected';
         _useCutout = result.cutout != null;
       });
     } catch (_) {
@@ -285,6 +303,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
                   lifting: _lifting,
                   failed: _photoFailed,
                   noCutout: _photo != null && _photo!.cutout == null,
+                  liftWhy: _liftWhy,
                   onPick: _pick,
                 ),
                 if (_photo?.cutout != null) ...[
@@ -507,6 +526,7 @@ class _PhotoArea extends StatelessWidget {
     required this.failed,
     required this.noCutout,
     required this.onPick,
+    this.liftWhy,
   });
   final LiftedPhoto? photo;
 
@@ -515,6 +535,7 @@ class _PhotoArea extends StatelessWidget {
   final bool lifting;
   final bool failed;
   final bool noCutout;
+  final String? liftWhy;
   final void Function(PhotoSource) onPick;
 
   @override
@@ -610,6 +631,10 @@ class _PhotoArea extends StatelessWidget {
         if (noCutout) ...[
           const SizedBox(height: VSpace.sm),
           Text(l.photoNoCutout, style: context.t.small.copyWith(color: context.c.textSecondary)),
+          // A diagnostic code, not prose: it names the failed step for a bug
+          // report. Not translated on purpose.
+          if (liftWhy != null)
+            Text(liftWhy!, style: context.t.small.copyWith(color: context.c.muted)),
         ],
       ],
     );
