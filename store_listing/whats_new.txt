@@ -1,1 +1,7 @@
-İlk TestFlight sürümü: kasanı kendi eşya fotoğraflarınla kur, rafları etiketle, eşyaları raflar arasında taşı ya da dışarı fırlat. Geri bildirimini TestFlight'tan gönder.
+Bu sürümde:
+- Fotoğraftaki ürün yeniden arka plandan kesilip rafa konuyor (iPhone fotoğrafları dahil). Kesilmezse fotoğrafın altında küçük bir kod çıkar; o kodu bize yaz.
+- Fotoğrafsız ürünler rafta türünün 3D resmiyle duruyor.
+- Hak bitmeden hatırlatma, fiş ve belge saklama, arama ve dolap yedeği.
+
+Denemen için: Ürün ekle > Fotoğraf çek ya da seç. Ürünün arka plandan ayrıldığını ve "Kesilmiş / Orijinal" seçicinin çıktığını kontrol et.
+Geri bildirimini TestFlight'tan gönder.
