@@ -766,6 +766,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get kindHint => 'Fotoğraf yoksa rafta bu çizimle durur.';
 
   @override
+  String get kindFromPhoto =>
+      'Türü fotoğraftan tahmin ettik; yanlışsa doğrusuna dokun.';
+
+  @override
   String kindA11y(String kind) {
     return '$kind, tür';
   }

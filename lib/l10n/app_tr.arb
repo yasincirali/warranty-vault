@@ -211,6 +211,7 @@
   "lifetime": "Ömür boyu",
   "fieldKind": "Ne tür bir ürün?",
   "kindHint": "Fotoğraf yoksa rafta bu çizimle durur.",
+  "kindFromPhoto": "Türü fotoğraftan tahmin ettik; yanlışsa doğrusuna dokun.",
   "kindA11y": "{kind}, tür",
   "hideKeyboard": "Klavyeyi kapat",
   "reminderEndsBody": "{what}. Bir sorun varsa son günü bekleme, şimdi bildir.",

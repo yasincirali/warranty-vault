@@ -21,7 +21,18 @@ enum SubjectLift {
   static func register(with messenger: FlutterBinaryMessenger) {
     let channel = FlutterMethodChannel(name: channelName, binaryMessenger: messenger)
     channel.setMethodCallHandler { call, result in
-      guard call.method == "lift", let bytes = call.arguments as? FlutterStandardTypedData else {
+      guard let bytes = call.arguments as? FlutterStandardTypedData else {
+        result(FlutterMethodNotImplemented)
+        return
+      }
+      if call.method == "classify" {
+        DispatchQueue.global(qos: .userInitiated).async {
+          let labels = classify(bytes.data)
+          DispatchQueue.main.async { result(labels) }
+        }
+        return
+      }
+      guard call.method == "lift" else {
         result(FlutterMethodNotImplemented)
         return
       }
@@ -70,16 +81,37 @@ enum SubjectLift {
     return .success(png)
   }
 
-  /// The photo the right way up and at most [maxSide], straight from
+  /// What the photo shows, as Vision's own labels ("laptop", "headphones",
+  /// "television"…) with their confidence, strongest first. On-device and
+  /// free (iOS 13+); the Dart side maps labels to the seven kinds
+  /// (`category_guess.dart`). Empty on any failure: the kind is then left
+  /// to the name and the user, never guessed.
+  static func classify(_ data: Data) -> [[Any]] {
+    guard let upright = uprightCGImage(data, limit: 600) else { return [] }
+    let handler = VNImageRequestHandler(cgImage: upright, options: [:])
+    let request = VNClassifyImageRequest()
+    do {
+      try handler.perform([request])
+    } catch {
+      return []
+    }
+    return (request.results ?? [])
+      .filter { $0.confidence >= 0.1 }
+      .sorted { $0.confidence > $1.confidence }
+      .prefix(15)
+      .map { [$0.identifier, Double($0.confidence)] }
+  }
+
+  /// The photo the right way up and at most [limit] px, straight from
   /// ImageIO: it reads HEIC and applies the EXIF orientation itself (a
   /// portrait camera photo is stored sideways with a flag), with no
   /// UIGraphics redraw that could hand Vision an extended-range bitmap.
-  private static func uprightCGImage(_ data: Data) -> CGImage? {
+  private static func uprightCGImage(_ data: Data, limit: Int = SubjectLift.maxSide) -> CGImage? {
     guard let source = CGImageSourceCreateWithData(data as CFData, nil) else { return nil }
     let options: [CFString: Any] = [
       kCGImageSourceCreateThumbnailFromImageAlways: true,
       kCGImageSourceCreateThumbnailWithTransform: true,
-      kCGImageSourceThumbnailMaxPixelSize: maxSide,
+      kCGImageSourceThumbnailMaxPixelSize: limit,
     ]
     return CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary)
   }

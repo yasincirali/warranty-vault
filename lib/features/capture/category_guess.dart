@@ -87,3 +87,62 @@ ItemCategory? guessCategory(String name) {
   }
   return null;
 }
+
+/// Parts of Apple Vision's classification labels ("headphones",
+/// "computer_laptop", "washing_machine"…) that give a kind away. Matched as
+/// parts of the label, so the taxonomy's spelling variants all land. Order
+/// matters: "headphones" holds "phone", so headphones are checked first.
+const _visionWords = <ItemCategory, List<String>>{
+  ItemCategory.headphones: ['headphone', 'earphone', 'earbud', 'headset'],
+  ItemCategory.laptop: ['laptop', 'notebook', 'computer'],
+  ItemCategory.phone: ['phone', 'smartphone', 'cellphone', 'mobile'],
+  ItemCategory.tv: ['television', 'tv', 'monitor', 'screen', 'display'],
+  ItemCategory.vacuum: ['vacuum'],
+  ItemCategory.appliance: [
+    'appliance',
+    'washing',
+    'washer',
+    'dryer',
+    'dishwasher',
+    'refrigerator',
+    'fridge',
+    'oven',
+    'microwave',
+    'coffee',
+    'espresso',
+    'kettle',
+    'toaster',
+    'blender',
+    'air_conditioner',
+    'stove',
+  ],
+};
+
+/// Below this summed confidence the photo says nothing: no kind is picked
+/// rather than a made-up one (a wrong preselection reads as the app being
+/// sure). Tuned so one clear label (laptop .6) wins and noise (.1–.2 spread
+/// over unrelated labels) does not.
+const visionKindThreshold = .35;
+
+/// The kind the photo most likely shows, from Vision's (label, confidence)
+/// pairs, or null when no kind gathers [visionKindThreshold]. Each label
+/// counts once, for the first kind it matches.
+ItemCategory? guessCategoryFromLabels(List<(String, double)> labels) {
+  final score = <ItemCategory, double>{};
+  for (final (label, confidence) in labels) {
+    final parts = label.toLowerCase().split(RegExp('[^a-z]+'));
+    kinds:
+    for (final MapEntry(key: kind, value: words) in _visionWords.entries) {
+      for (final w in words) {
+        final hit = w.length <= 3 ? parts.contains(w) : parts.any((p) => p.contains(w));
+        if (hit) {
+          score[kind] = (score[kind] ?? 0) + confidence;
+          break kinds;
+        }
+      }
+    }
+  }
+  if (score.isEmpty) return null;
+  final best = score.entries.reduce((a, b) => a.value >= b.value ? a : b);
+  return best.value >= visionKindThreshold ? best.key : null;
+}

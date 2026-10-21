@@ -456,6 +456,7 @@
   "lifetime": "Lifetime",
   "fieldKind": "What kind of product?",
   "kindHint": "Without a photo, it stands on the shelf as this drawing.",
+  "kindFromPhoto": "We guessed the kind from the photo; tap the right one if it's wrong.",
   "kindA11y": "{kind}, kind",
   "@kindA11y": {
     "placeholders": {

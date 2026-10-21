@@ -65,6 +65,29 @@ final systemLiftProvider = Provider<Future<SystemLift> Function(Uint8List)>(
 Future<LiftResult> _liftOffMain(Uint8List bytes, Uint8List? system, RawPhoto? raw) =>
     Isolate.run(() => liftSubject(bytes, system: system, raw: raw));
 
+/// What the photo shows, as the system's (label, confidence) pairs (iOS,
+/// Vision; `SubjectLift.swift`). Empty off iOS and on any failure: then the
+/// kind comes from the name or the user, never from a guess.
+final photoLabelsProvider = Provider<Future<List<(String, double)>> Function(Uint8List)>(
+  (_) => (bytes) async {
+    if (!Platform.isIOS) return const [];
+    try {
+      final raw = await const MethodChannel('warranty_vault/subject_lift').invokeListMethod<List<Object?>>(
+        'classify',
+        bytes,
+      );
+      return [
+        for (final r in raw ?? const <List<Object?>>[])
+          if (r.length == 2 && r[0] is String && r[1] is num) (r[0] as String, (r[1] as num).toDouble()),
+      ];
+    } on PlatformException {
+      return const [];
+    } on MissingPluginException {
+      return const [];
+    }
+  },
+);
+
 /// Decodes a photo with the phone's codec (HEIC on iPhone), scaled to
 /// [maxPhotoSide]. Null when the platform can't read it either.
 final platformDecodeProvider = Provider<Future<RawPhoto?> Function(Uint8List)>(
@@ -144,7 +167,14 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
   /// The kind the user picked; until then it is guessed from the name.
   ItemCategory? _kind;
 
-  ItemCategory get _effectiveKind => _kind ?? guessCategory(_name.text) ?? ItemCategory.other;
+  /// The kind the photo shows (Vision), when it was clear enough.
+  ItemCategory? _photoKind;
+
+  /// The user's pick wins, then the typed name (a deliberate word), then the
+  /// photo. The photo usually comes first, before any name.
+  ItemCategory get _effectiveKind => _kind ?? guessCategory(_name.text) ?? _photoKind ?? ItemCategory.other;
+
+  bool get _kindFromPhoto => _kind == null && guessCategory(_name.text) == null && _photoKind != null;
 
   @override
   void initState() {
@@ -196,14 +226,18 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
       _photoFailed = false;
     });
     try {
+      // Both are on-device Vision requests; they run side by side.
+      final labelsFuture = ref.read(photoLabelsProvider)(bytes);
       final system = await ref.read(systemLiftProvider)(bytes);
       // The platform codec runs here (it needs the engine), only for formats
       // the isolate's decoder can't read.
       final raw = dartCanDecode(bytes) ? null : await ref.read(platformDecodeProvider)(bytes);
       final result = await _liftOffMain(bytes, system.png, raw);
+      final photoKind = guessCategoryFromLabels(await labelsFuture);
       if (!mounted) return;
       setState(() {
         _photo = result;
+        _photoKind = photoKind;
         // A PNG came back but [liftSubject] refused it (no transparency, a speck).
         _liftWhy = system.why ?? 'rejected';
         _useCutout = result.cutout != null;
@@ -348,6 +382,9 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
                 if (_chosen == null) ...[
                   const SizedBox(height: VSpace.xs),
                   Text(l.kindHint, style: context.t.small.copyWith(color: context.c.textSecondary)),
+                ] else if (_kindFromPhoto) ...[
+                  const SizedBox(height: VSpace.xs),
+                  Text(l.kindFromPhoto, style: context.t.small.copyWith(color: context.c.textSecondary)),
                 ],
                 const SizedBox(height: VSpace.md),
                 VFieldLift(
