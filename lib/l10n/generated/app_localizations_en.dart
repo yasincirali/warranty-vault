@@ -784,6 +784,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Without a photo, it stands on the shelf as this drawing.';
 
   @override
+  String get kindFromPhoto =>
+      'We guessed the kind from the photo; tap the right one if it\'s wrong.';
+
+  @override
   String kindA11y(String kind) {
     return '$kind, kind';
   }

@@ -27,7 +27,7 @@ Uint8List _busy() {
 void main() {
   // yasin, 18 Oct: "hala algılayamıyor" on TestFlight with no way to tell
   // which step failed. The system lift's reason now shows under the photo.
-  Future<void> pick(WidgetTester t, SystemLift system) async {
+  Future<void> pick(WidgetTester t, SystemLift system, {List<(String, double)> labels = const []}) async {
     t.view.physicalSize = const Size(1179, 2556);
     t.view.devicePixelRatio = 3;
     addTearDown(t.view.reset);
@@ -39,6 +39,7 @@ void main() {
         ruleSetProvider.overrideWith((_) async => _rules),
         photoPickerProvider.overrideWithValue((_) async => photo),
         systemLiftProvider.overrideWithValue((_) async => system),
+        photoLabelsProvider.overrideWithValue((_) async => labels),
       ],
       child: const WarrantyVaultApp(),
     ));
@@ -65,5 +66,21 @@ void main() {
     expect(find.text('Cut out'), findsOneWidget);
     expect(find.text('Original'), findsOneWidget);
     expect(find.textContaining("wasn't clear enough"), findsNothing);
+  });
+
+  testWidgets('the kind is preselected from the photo, and says so', (t) async {
+    await pick(t, (png: null, why: 'no_subject'), labels: [('laptop', .7)]);
+    await t.scrollUntilVisible(find.textContaining('guessed the kind'), 200, scrollable: find.byType(Scrollable).first);
+    expect(find.text('We guessed the kind from the photo; tap the right one if it\'s wrong.'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate((w) => w is Semantics && w.properties.selected == true && w.properties.label == 'Laptop, kind'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('a photo that shows nothing clear preselects nothing', (t) async {
+    await pick(t, (png: null, why: 'no_subject'), labels: [('sofa', .9)]);
+    await t.scrollUntilVisible(find.textContaining('Store'), 200, scrollable: find.byType(Scrollable).first);
+    expect(find.textContaining('guessed the kind'), findsNothing);
   });
 }

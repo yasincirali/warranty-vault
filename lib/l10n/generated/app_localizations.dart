@@ -1364,6 +1364,12 @@ abstract class AppLocalizations {
   /// **'Without a photo, it stands on the shelf as this drawing.'**
   String get kindHint;
 
+  /// No description provided for @kindFromPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'We guessed the kind from the photo; tap the right one if it\'s wrong.'**
+  String get kindFromPhoto;
+
   /// No description provided for @kindA11y.
   ///
   /// In en, this message translates to:

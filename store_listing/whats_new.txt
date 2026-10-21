@@ -1,7 +1,6 @@
 Bu sürümde:
-- Fotoğraftaki ürün yeniden arka plandan kesilip rafa konuyor (iPhone fotoğrafları dahil). Kesilmezse fotoğrafın altında küçük bir kod çıkar; o kodu bize yaz.
-- Fotoğrafsız ürünler rafta türünün 3D resmiyle duruyor.
-- Hak bitmeden hatırlatma, fiş ve belge saklama, arama ve dolap yedeği.
+- Fotoğraf eklediğinde ürünün türü (laptop, telefon, kulaklık…) fotoğraftan tahmin edilip önceden seçiliyor. Yanlışsa doğrusuna dokunman yeter.
+- Fotoğraftaki ürün arka plandan kesilip rafa konuyor (iPhone fotoğrafları dahil). Kesilmezse fotoğrafın altında küçük bir kod çıkar; o kodu bize yaz.
 
-Denemen için: Ürün ekle > Fotoğraf çek ya da seç. Ürünün arka plandan ayrıldığını ve "Kesilmiş / Orijinal" seçicinin çıktığını kontrol et.
+Denemen için: Ürün ekle > Fotoğraf çek ya da seç. Tür seçicide doğru türün seçili geldiğini ve altında "Türü fotoğraftan tahmin ettik" yazdığını kontrol et.
 Geri bildirimini TestFlight'tan gönder.
