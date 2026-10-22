@@ -1,5 +1,7 @@
-// App Store screenshots (6.9" iPhone, 1320×2868), Turkish demo cabinet.
+// App Store screenshots (6.9" iPhone, 1320×2868). The app launches globally
+// (yasin 2026-10-22), so every store language gets its own set.
 // Run: SHOT_OUT=store_listing/ekran/tr flutter test tool/magaza/ekran_test.dart
+//      SHOT_LANG=en SHOT_OUT=store_listing/ekran/en flutter test tool/magaza/ekran_test.dart
 // Not under test/: it writes files and needs SHOT_OUT.
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -19,6 +21,7 @@ import 'package:warranty_vault/rights/rule_set.dart';
 
 final _rules = RuleSet.fromJsonString(File('assets/rules/rules.json').readAsStringSync());
 final out = Platform.environment['SHOT_OUT']!;
+final lang = Platform.environment['SHOT_LANG'] ?? 'tr';
 
 Future<void> fonts() async {
   const m = '/opt/flutter/bin/cache/artifacts/material_fonts';
@@ -62,9 +65,11 @@ void main() {
     await t.pumpWidget(ProviderScope(
       overrides: [
         clockProvider.overrideWithValue(() => DateTime.utc(2026, 10, 13)),
-        settingsStoreProvider.overrideWithValue(MemorySettingsStore({'language': 'tr'})),
+        settingsStoreProvider.overrideWithValue(MemorySettingsStore({'language': lang})),
         vaultStoreProvider.overrideWithValue(
-            MemoryVaultStore(demoVault(desk: 'Çalışma masası', living: 'Salon', kitchen: 'Mutfak'))),
+            MemoryVaultStore(lang == 'tr'
+                ? demoVault(desk: 'Çalışma masası', living: 'Salon', kitchen: 'Mutfak')
+                : demoVault())),
         ruleSetProvider.overrideWith((_) async => _rules),
         photoPickerProvider.overrideWithValue((_) async => File('assets/kategori/headphones.png').readAsBytesSync()),
         systemLiftProvider.overrideWithValue((b) async => (png: b, why: null)),
@@ -83,7 +88,7 @@ void main() {
     await t.tap(find.byIcon(Icons.arrow_back));
     await t.pumpAndSettle();
     // 3: adding a product from a photo: cut out, kind guessed.
-    await t.tap(find.text('Ürün ekle'));
+    await t.tap(find.text(lang == 'tr' ? 'Ürün ekle' : 'Add a product'));
     await t.pumpAndSettle();
     await t.runAsync(() async {
       await t.tap(find.byIcon(Icons.photo_library_outlined));
