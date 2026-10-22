@@ -700,6 +700,32 @@ class _FieldButton extends StatelessWidget {
   );
 }
 
+/// Two lines wrap between words, but a single word wider than the column
+/// ("Headphones" in bold) would break mid-word ("Headpho / nes"); shrink the
+/// label just enough that its widest word fits instead. The app ships in every
+/// store language (yasin 2026-10-22), so this can't be fixed per string.
+TextScaler _fitWords(BuildContext context, String label, TextStyle style, TextScaler scaler,
+    {double width = 72}) {
+  var widest = 0.0;
+  for (final w in label.split(' ')) {
+    final tp = TextPainter(
+      // Measured in the font the Text will actually use: the token style
+      // carries no family of its own, it inherits the platform one.
+      text: TextSpan(text: w, style: DefaultTextStyle.of(context).style.merge(style)),
+      textDirection: Directionality.of(context),
+      textScaler: scaler,
+      maxLines: 1,
+    )..layout();
+    if (tp.width > widest) widest = tp.width;
+    tp.dispose();
+  }
+  if (widest <= width) return scaler;
+  final size = style.fontSize ?? 14;
+  // Glyph widths don't scale exactly linearly (hinting, rounding): keep a
+  // little slack or the last letter still drops to a second line.
+  return TextScaler.linear(scaler.scale(size) / size * width / widest * .95);
+}
+
 /// The seven kinds as their drawings, the same ones a product without a
 /// photo stands on the shelf as: picking one shows exactly what you'll get.
 class _KindPicker extends StatelessWidget {
@@ -761,19 +787,24 @@ class _KindPicker extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      categoryLabel(l, k),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      // Grows with Dynamic Type up to where two lines still
-                      // fit the 72-pt column; the spoken label is the full name.
-                      textScaler: MediaQuery.textScalerOf(context).clamp(maxScaleFactor: 1.4),
-                      style: context.t.small.copyWith(
+                    Builder(builder: (context) {
+                      final style = context.t.small.copyWith(
                         color: k == selected ? context.c.text : context.c.textSecondary,
                         fontWeight: k == selected ? FontWeight.w600 : null,
-                      ),
-                    ),
+                      );
+                      final label = categoryLabel(l, k);
+                      return Text(
+                        label,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        // Grows with Dynamic Type up to where two lines still
+                        // fit the 72-pt column; the spoken label is the full name.
+                        textScaler: _fitWords(context, label, style,
+                            MediaQuery.textScalerOf(context).clamp(maxScaleFactor: 1.4)),
+                        style: style,
+                      );
+                    }),
                   ],
                 ),
               ),

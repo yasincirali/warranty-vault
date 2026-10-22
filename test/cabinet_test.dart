@@ -292,6 +292,8 @@ void main() {
       expect(box.width, greaterThanOrEqualTo(44));
       expect(box.height, greaterThanOrEqualTo(44));
     }
+    // A one-word kind shrinks to fit rather than breaking mid-word.
+    expect(t.getSize(find.text('Headphones')).height, lessThanOrEqualTo(t.getSize(find.text('TV')).height));
   });
 
   testWidgets('cabinet fits at 3.1x text without overflow', (t) async {
