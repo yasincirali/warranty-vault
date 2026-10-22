@@ -49,7 +49,9 @@ class InventoryReport {
   int get dueItems => {for (final d in due) d.view.item.id}.length;
 
   factory InventoryReport.from(Vault vault, List<ItemView> views, DateTime today) {
-    final byId = {for (final v in views) v.item.id: v};
+    // Sample products are not the user's: an insurer reading the file
+    // must not see a MacBook nobody bought.
+    final byId = {for (final v in views) if (!v.item.sample) v.item.id: v};
     final shelves = <ShelfGroup>[];
     for (final s in vault.shelves) {
       final items = [for (final i in vault.on(s.id)) ?byId[i.id]];

@@ -448,6 +448,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get waySampleWhy => 'Rafları önce altı örnek ürünle dene.';
 
   @override
+  String get samplesNote => 'Bunlar örnek ürünler. Hatırlatma göndermezler.';
+
+  @override
+  String get samplesRemove => 'Örnekleri kaldır';
+
+  @override
+  String get sampleTag => 'Örnek ürün · hatırlatma gelmez';
+
+  @override
   String get emptyCabinetTitle => 'Aldığın şeyleri raflarına diz.';
 
   @override

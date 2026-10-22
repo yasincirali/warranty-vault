@@ -52,6 +52,7 @@ class Item {
     this.photoCutout = false,
     this.shelfId,
     this.disposedAt,
+    this.sample = false,
   });
 
   final String id;
@@ -96,6 +97,13 @@ class Item {
 
   bool get active => disposedAt == null;
 
+  /// Part of the sample cabinet ("Try the shelves with six sample
+  /// products"). Not the user's: no reminders, not in the exported
+  /// inventory, and removable in one tap. Before this flag existed a
+  /// sample product looked like any other, and a tester got "your MacBook's
+  /// warranty ends" for a MacBook they never bought (Rafım Ar-Ge 23 Oct).
+  final bool sample;
+
   Item copyWith({
     String? id,
     String? shelfId,
@@ -105,6 +113,7 @@ class Item {
     DateTime? disposedAt,
     bool clearDisposed = false,
     List<ItemDoc>? documents,
+    bool? sample,
   }) =>
       Item(
         id: id ?? this.id,
@@ -120,6 +129,7 @@ class Item {
         photoCutout: photoCutout ?? this.photoCutout,
         shelfId: shelfId ?? this.shelfId,
         disposedAt: clearDisposed ? null : (disposedAt ?? this.disposedAt),
+        sample: sample ?? this.sample,
       );
 
   Map<String, Object?> toJson() => {
@@ -135,6 +145,7 @@ class Item {
         'photoCutout': photoCutout,
         'shelfId': ?shelfId,
         if (disposedAt != null) 'disposedAt': disposedAt!.toIso8601String(),
+        if (sample) 'sample': true,
         'purchase': _purchaseToJson(purchase),
       };
 
@@ -159,6 +170,9 @@ class Item {
       photoCutout: j['photoCutout'] as bool? ?? false,
       shelfId: j['shelfId'] as String?,
       disposedAt: j['disposedAt'] == null ? null : DateTime.parse(j['disposedAt'] as String),
+      // Samples loaded by builds before the flag: only they carry a bundled
+      // (`asset:`) photo, a user's own photo is always `photos/…`.
+      sample: j['sample'] as bool? ?? ((j['photoPath'] as String?)?.startsWith('asset:') ?? false),
       purchase: _purchaseFromJson(j['purchase'] as Map<String, dynamic>),
     );
   }

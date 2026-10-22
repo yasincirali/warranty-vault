@@ -115,6 +115,20 @@ class HomeScreen extends ConsumerWidget {
                   // The two gestures, said once in plain words; there is no
                   // tutorial to dismiss.
                   Text(l.cabinetHint, style: context.t.small.copyWith(color: context.c.textSecondary)),
+                  // One quiet line while samples stand on the shelves; no
+                  // dialog when the first own product arrives (it would
+                  // interrupt the moment the user came for). Wrap, not Row:
+                  // at 3.1× text the button drops under the sentence.
+                  if (active.any((v) => v.item.sample))
+                    Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
+                      Text(l.samplesNote, style: context.t.small.copyWith(color: context.c.textSecondary)),
+                      TextButton(
+                        // Flush with the sentence above; 44 pt stays the tap height.
+                        style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(44, 44)),
+                        onPressed: () => ref.read(vaultProvider.notifier).removeSamples(),
+                        child: Text(l.samplesRemove),
+                      ),
+                    ]),
                 ]),
               ),
             ),

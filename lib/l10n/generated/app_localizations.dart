@@ -788,6 +788,24 @@ abstract class AppLocalizations {
   /// **'Try the shelves with six sample products first.'**
   String get waySampleWhy;
 
+  /// No description provided for @samplesNote.
+  ///
+  /// In en, this message translates to:
+  /// **'These are sample products. They send no reminders.'**
+  String get samplesNote;
+
+  /// No description provided for @samplesRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove samples'**
+  String get samplesRemove;
+
+  /// No description provided for @sampleTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample product · no reminders'**
+  String get sampleTag;
+
   /// No description provided for @emptyCabinetTitle.
   ///
   /// In en, this message translates to:

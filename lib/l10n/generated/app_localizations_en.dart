@@ -464,6 +464,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get waySampleWhy => 'Try the shelves with six sample products first.';
 
   @override
+  String get samplesNote =>
+      'These are sample products. They send no reminders.';
+
+  @override
+  String get samplesRemove => 'Remove samples';
+
+  @override
+  String get sampleTag => 'Sample product · no reminders';
+
+  @override
   String get emptyCabinetTitle => 'Put the things you bought on your shelves.';
 
   @override

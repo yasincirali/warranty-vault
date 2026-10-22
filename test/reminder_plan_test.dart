@@ -10,9 +10,10 @@ import 'package:warranty_vault/rights/rule_set.dart';
 final _engine = RightsEngine(RuleSet.fromJsonString(File('assets/rules/rules.json').readAsStringSync()));
 
 ItemView _view(String id, DateTime bought, DateTime today,
-    {String region = 'DE', SalesChannel channel = SalesChannel.online, int warrantyMonths = 24, DateTime? disposed}) {
+    {String region = 'DE', SalesChannel channel = SalesChannel.online, int warrantyMonths = 24, DateTime? disposed, bool sample = false}) {
   final item = Item(
     id: id,
+    sample: sample,
     name: id,
     store: '',
     disposedAt: disposed,
@@ -93,5 +94,13 @@ void main() {
     // ignore: avoid_print
     print('planReminders(1000 items): ${(perRun / 1000).toStringAsFixed(2)} ms');
     expect(perRun, lessThan(16000));
+  });
+
+  test('sample products never remind: the user does not own them', () {
+    final own = _view('kettle', DateTime.utc(2026, 10, 10), today);
+    final sample = _view('macbook', DateTime.utc(2026, 10, 10), today, sample: true);
+    final plan = planReminders([own, sample], today);
+    expect(plan, isNotEmpty);
+    expect(plan.every((r) => r.itemId == 'kettle'), isTrue);
   });
 }

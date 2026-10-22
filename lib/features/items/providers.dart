@@ -136,10 +136,31 @@ class VaultController extends AsyncNotifier<Vault> {
   }
 
   /// Sample cabinet for testers; only offered while the cabinet is empty.
+  /// Marked [Item.sample] here, not in [demoVault]: screenshots and widget
+  /// tests show the same products as the user's own.
   Future<void> loadSample({required String desk, required String living, required String kitchen}) {
     final sample = demoVault(desk: desk, living: living, kitchen: kitchen);
     return _commit(normalize(
-      Vault(items: [..._v.items, ...sample.items], shelves: [...sample.shelves, ..._v.shelves]),
+      Vault(
+        items: [..._v.items, for (final i in sample.items) i.copyWith(sample: true)],
+        shelves: [...sample.shelves, ..._v.shelves],
+      ),
+      newShelfId: _shelfId,
+    ));
+  }
+
+  /// Takes every sample product away for good (not into "thrown out": it
+  /// was never the user's). A sample shelf left empty goes with it; a shelf
+  /// the user has put something of their own on stays.
+  Future<void> removeSamples() {
+    final items = [for (final i in _v.items) if (!i.sample) i];
+    final used = {for (final i in items) if (i.active) i.shelfId};
+    final sampleShelves = {for (final i in _v.items) if (i.sample) i.shelfId};
+    return _commit(normalize(
+      Vault(
+        items: items,
+        shelves: [for (final s in _v.shelves) if (!sampleShelves.contains(s.id) || used.contains(s.id)) s],
+      ),
       newShelfId: _shelfId,
     ));
   }

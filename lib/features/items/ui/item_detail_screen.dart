@@ -59,6 +59,11 @@ class ItemDetailScreen extends ConsumerWidget {
                 // Review round 2: people move and buy abroad; say whose rules apply.
                 const SizedBox(height: VSpace.xs + 2),
                 _Chip(l.rulesOf(regionName(l, item.purchase.region))),
+                // Said in words, not only by a colour: why no reminder comes.
+                if (item.sample) ...[
+                  const SizedBox(height: VSpace.xs),
+                  _Chip(l.sampleTag),
+                ],
               ]),
             ),
           ]),

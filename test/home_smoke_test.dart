@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:warranty_vault/app.dart';
 import 'package:warranty_vault/features/items/data/demo_vault.dart';
 import 'package:warranty_vault/features/items/data/vault_store.dart';
+import 'package:warranty_vault/features/items/domain/vault.dart';
 import 'package:warranty_vault/features/items/providers.dart';
 import 'package:warranty_vault/rights/rule_set.dart';
 
@@ -46,7 +47,12 @@ void main() {
       t.view.physicalSize = const Size(1179, 2556);
       t.view.devicePixelRatio = 3;
       addTearDown(t.view.reset);
-      await t.pumpWidget(app(textScale: scale));
+      // Marked as samples so the "Remove samples" line is on screen too.
+      final d = demoVault();
+      final samples = Vault(items: [for (final i in d.items) i.copyWith(sample: true)], shelves: d.shelves);
+      await t.pumpWidget(app(textScale: scale, store: MemoryVaultStore(samples)));
+      await t.pumpAndSettle();
+      await t.scrollUntilVisible(find.text('Remove samples'), 200, scrollable: find.byType(Scrollable).first);
       await t.pumpAndSettle();
       expect(t.takeException(), isNull);
     });
@@ -103,6 +109,16 @@ void main() {
     await t.pumpAndSettle();
     expect(store.current.active, hasLength(6));
     expect(find.text('Needs attention · 2'), findsOneWidget);
+
+    // Samples are marked, say so in one line and leave in one tap, shelves
+    // included: the first-run page is back, not three empty named shelves.
+    expect(store.current.items.every((i) => i.sample), isTrue);
+    expect(find.text('These are sample products. They send no reminders.'), findsOneWidget);
+    await t.tap(find.text('Remove samples'));
+    await t.pumpAndSettle();
+    expect(store.current.items, isEmpty);
+    expect(store.current.disposed, isEmpty);
+    expect(find.text('Load a sample cabinet'), findsOneWidget);
   });
 
   testWidgets('time rule appears instantly with reduce motion', (t) async {
