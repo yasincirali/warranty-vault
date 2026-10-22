@@ -236,10 +236,12 @@ class VSegment<T> extends StatelessWidget {
                               child: AnimatedDefaultTextStyle(
                                 duration: d,
                                 curve: Curves.easeInOutCubic,
-                                style: context.t.label.copyWith(
+                                // Merged onto the inherited style: a bare token
+                                // style replaces it and loses the font family.
+                                style: DefaultTextStyle.of(context).style.merge(context.t.label.copyWith(
                                   color: i == at ? context.c.text : context.c.textSecondary,
                                   fontWeight: i == at ? FontWeight.w600 : FontWeight.w500,
-                                ),
+                                )),
                                 textAlign: TextAlign.center,
                                 child: Text(label),
                               ),

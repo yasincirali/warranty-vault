@@ -28,7 +28,10 @@ ThemeData buildTheme(Brightness brightness) {
         foregroundColor: c.onAccent,
         minimumSize: const Size.fromHeight(VSize.button),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(VRadius.md)),
-        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        // The family is named, not left null: a null family falls to the
+        // engine default instead of the platform typography, which in
+        // widget-test screenshots (store images) draws as boxes.
+        textStyle: TextStyle(fontFamily: base.textTheme.labelLarge?.fontFamily, fontSize: 16, fontWeight: FontWeight.w600),
       ),
     ),
     // Fields are white cards on the paper background, like everything else
