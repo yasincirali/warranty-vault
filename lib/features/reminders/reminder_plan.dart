@@ -64,7 +64,7 @@ List<PlannedReminder> planReminders(Iterable<ItemView> views, DateTime now) {
   final first = now.hour < reminderHour ? today : today.add(const Duration(days: 1));
   final out = <_Candidate>[];
   for (final v in views) {
-    if (!v.item.active) continue;
+    if (!v.item.active || v.item.sample) continue;
     for (final p in v.protections) {
       if (p.status != ProtectionStatus.active) continue;
       if (p.end != null) {

@@ -127,4 +127,16 @@ void main() {
     expect(back.shelves.single.label, 'Mutfak');
     expect(File('${dir.path}/vault.json.tmp').existsSync(), isFalse);
   });
+
+  test('sample flag round-trips, and samples from older builds are recognised by their bundled photo', () {
+    final sample = demoVault().items.first.copyWith(sample: true);
+    expect(Item.fromJson(sample.toJson()).sample, isTrue);
+    final own = _item('own');
+    expect(own.toJson().containsKey('sample'), isFalse);
+    expect(Item.fromJson(own.toJson()).sample, isFalse);
+    final old = demoVault().items.first.toJson()..remove('sample');
+    expect(Item.fromJson(old).sample, isTrue);
+    final ownPhoto = _item('p').copyWith(photoPath: 'photos/p.png').toJson();
+    expect(Item.fromJson(ownPhoto).sample, isFalse);
+  });
 }
