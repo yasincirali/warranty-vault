@@ -11,6 +11,7 @@ import 'features/items/providers.dart';
 import 'features/items/ui/home_screen.dart';
 import 'features/items/ui/item_detail_screen.dart';
 import 'features/reminders/reminders.dart';
+import 'features/review/review_prompt.dart';
 import 'features/settings/settings.dart';
 import 'l10n/generated/app_localizations.dart';
 
@@ -25,6 +26,12 @@ class _WarrantyVaultAppState extends ConsumerState<WarrantyVaultApp> {
   final _navigator = GlobalKey<NavigatorState>();
   late final AppLifecycleListener _lifecycle;
   StreamSubscription<String>? _taps;
+  late final _review = ReviewPrompt(
+    store: () => ref.read(settingsStoreProvider),
+    requester: () => ref.read(reviewRequesterProvider),
+    // Home is the root route; anything pushed on it means "not now".
+    atHome: () => !(_navigator.currentState?.canPop() ?? true),
+  );
 
   @override
   void initState() {
@@ -52,12 +59,16 @@ class _WarrantyVaultAppState extends ConsumerState<WarrantyVaultApp> {
   void dispose() {
     _lifecycle.dispose();
     _taps?.cancel();
+    _review.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     ref.watch(reminderSyncProvider);
+    ref.listen(vaultProvider, (before, after) {
+      if (after.value case final v?) _review.onVault(before?.value, v);
+    });
     final language = ref.watch(settingsProvider.select((s) => s.language));
     final ready = ref.watch(itemViewsProvider.select((v) => v.hasValue));
     return MaterialApp(
