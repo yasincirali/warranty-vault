@@ -26,6 +26,16 @@ class _WarrantyVaultAppState extends ConsumerState<WarrantyVaultApp> {
   final _navigator = GlobalKey<NavigatorState>();
   late final AppLifecycleListener _lifecycle;
   StreamSubscription<String>? _taps;
+  // Read once per process: the full brand loop plays on the very first
+  // launch only; the key is written at once so a quick second start is
+  // already fast.
+  late final bool _firstLaunch = () {
+    final store = ref.read(settingsStoreProvider);
+    final first = store.read(_introSeenKey) == null;
+    if (first) store.write(_introSeenKey, '1').ignore();
+    return first;
+  }();
+  static const _introSeenKey = 'intro_seen';
   late final _review = ReviewPrompt(
     store: () => ref.read(settingsStoreProvider),
     requester: () => ref.read(reviewRequesterProvider),
@@ -88,9 +98,15 @@ class _WarrantyVaultAppState extends ConsumerState<WarrantyVaultApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       navigatorObservers: [coverObserver],
       // Right after the system splash: the splash comes alive while the
-      // cabinet loads (at least one loop), then fades into the home screen.
+      // cabinet loads (one full loop on the first launch only), then fades
+      // into the home screen.
       builder: (context, child) =>
-          BrandIntro(ready: ready, label: AppLocalizations.of(context).loading, child: child!),
+          BrandIntro(
+        ready: ready,
+        fullLoop: _firstLaunch,
+        label: AppLocalizations.of(context).loading,
+        child: child!,
+      ),
       home: const HomeScreen(),
     );
   }

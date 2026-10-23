@@ -3,11 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:warranty_vault/core/theme/tokens.dart';
 import 'package:warranty_vault/core/ui/brand_mark.dart';
 
-Widget _host({required bool ready, bool still = false}) => MediaQuery(
+Widget _host({required bool ready, bool still = false, bool fullLoop = true}) => MediaQuery(
   data: MediaQueryData(size: const Size(393, 852), disableAnimations: still),
   child: Directionality(
     textDirection: TextDirection.ltr,
-    child: BrandIntro(ready: ready, label: 'Yükleniyor', child: const Text('raf')),
+    child: BrandIntro(ready: ready, fullLoop: fullLoop, label: 'Yükleniyor', child: const Text('raf')),
   ),
 );
 
@@ -34,6 +34,22 @@ void main() {
     await t.pumpAndSettle();
     expect(_covered(t), isFalse);
     expect(find.text('raf'), findsOneWidget);
+  });
+
+  testWidgets('later launches: no waiting for the loop, only the fade', (t) async {
+    await t.pumpWidget(_host(ready: true, fullLoop: false));
+    await t.pump(VMotion.enter + const Duration(milliseconds: 16));
+    expect(_covered(t), isFalse);
+    expect(find.text('raf'), findsOneWidget);
+  });
+
+  testWidgets('later launches: becoming ready mid-loop fades out right away', (t) async {
+    await t.pumpWidget(_host(ready: false, fullLoop: false));
+    await t.pump(VMotion.brandCycle * .3);
+    expect(_covered(t), isTrue);
+    await t.pumpWidget(_host(ready: true, fullLoop: false));
+    await t.pump(VMotion.enter + const Duration(milliseconds: 16));
+    expect(_covered(t), isFalse);
   });
 
   testWidgets('keeps looping until ready, then fades into the app', (t) async {

@@ -104,12 +104,6 @@ abstract class AppLocalizations {
   /// **'My things'**
   String get appTitle;
 
-  /// No description provided for @searchItems.
-  ///
-  /// In en, this message translates to:
-  /// **'Search items'**
-  String get searchItems;
-
   /// No description provided for @attentionHeader.
   ///
   /// In en, this message translates to:
@@ -122,23 +116,11 @@ abstract class AppLocalizations {
   /// **'All · {count}'**
   String allHeader(int count);
 
-  /// No description provided for @addReceipt.
-  ///
-  /// In en, this message translates to:
-  /// **'Add receipt or invoice'**
-  String get addReceipt;
-
   /// No description provided for @emptyTitle.
   ///
   /// In en, this message translates to:
   /// **'Add your first invoice and we\'ll track your rights.'**
   String get emptyTitle;
-
-  /// No description provided for @emptyBody.
-  ///
-  /// In en, this message translates to:
-  /// **'We warn you before a period ends, and when something breaks we tell you what to do on one screen.'**
-  String get emptyBody;
 
   /// No description provided for @endsIn.
   ///
@@ -283,12 +265,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Where does this period come from?'**
   String get whereFrom;
-
-  /// No description provided for @invoice.
-  ///
-  /// In en, this message translates to:
-  /// **'Invoice'**
-  String get invoice;
 
   /// No description provided for @serial.
   ///
@@ -488,12 +464,6 @@ abstract class AppLocalizations {
   /// **'Close'**
   String get close;
 
-  /// No description provided for @back.
-  ///
-  /// In en, this message translates to:
-  /// **'Back'**
-  String get back;
-
   /// No description provided for @edit.
   ///
   /// In en, this message translates to:
@@ -607,54 +577,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We haven\'t checked this country\'s rule against an official source yet, so we don\'t show a period.'**
   String get notVerifiedWhy;
-
-  /// No description provided for @wayPhoto.
-  ///
-  /// In en, this message translates to:
-  /// **'Photograph a receipt'**
-  String get wayPhoto;
-
-  /// No description provided for @wayPhotoWhy.
-  ///
-  /// In en, this message translates to:
-  /// **'Paper receipts fade within months; the photo stays.'**
-  String get wayPhotoWhy;
-
-  /// No description provided for @wayPdf.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose a PDF invoice'**
-  String get wayPdf;
-
-  /// No description provided for @wayPdfWhy.
-  ///
-  /// In en, this message translates to:
-  /// **'Invoices from online shops.'**
-  String get wayPdfWhy;
-
-  /// No description provided for @wayEmail.
-  ///
-  /// In en, this message translates to:
-  /// **'Forward by email'**
-  String get wayEmail;
-
-  /// No description provided for @wayEmailWhy.
-  ///
-  /// In en, this message translates to:
-  /// **'Every invoice you forward is added for you.'**
-  String get wayEmailWhy;
-
-  /// No description provided for @previewTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'What you\'ll see'**
-  String get previewTitle;
-
-  /// No description provided for @previewBody.
-  ///
-  /// In en, this message translates to:
-  /// **'A time rule for every item: how much has passed, how much is left, and when the burden of proof moves to you.'**
-  String get previewBody;
 
   /// No description provided for @daysLeft.
   ///

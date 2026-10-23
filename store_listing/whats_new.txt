@@ -1,8 +1,5 @@
 Bu sürümde:
-- Uygulamanın adı dile göre değişiyor. Telefonun dili Türkçeyse ana ekranda "Rafım", diğer dillerde "Coverline" yazıyor.
-- Kendi üçüncü ürününü kasaya koyduğunda, ürün rafa yerleştikten sonra telefonun standart "Puan ver" penceresi bir kez çıkıyor. Örnek ürünler sayılmıyor; bir ürünün sayfasındayken ya da "Bir sorun var" ekranındayken çıkmıyor.
+- Uygulama daha hızlı açılıyor. Logo animasyonu yalnız ilk açılışta baştan sona oynuyor; sonraki açılışlarda kasa hazır olur olmaz ekrana geliyor.
 
-Denemen için:
-- Kurduktan sonra ana ekranda ikonun altında "Rafım" yazdığına bak. Ayarlar > Genel > Dil ve Bölge'den dili İngilizceye çevir (ya da Ayarlar > Rafım > Dil'den yalnız bu uygulama için); ad "Coverline" olmalı.
-- Kendi ürünlerinden üçüncüsünü ekle ve kasa ekranında bekle; iki saniye sonra puan penceresi açılmalı. TestFlight'ta Apple bu pencereyi gösterir ama puan mağazaya gitmez. Dördüncü üründe tekrar çıkmamalı. Not: Apple bu pencereyi kendi sıklık sınırına göre bazen hiç göstermeyebilir; bu normal.
+Denemen için: Uygulamayı tamamen kapat (uygulama değiştiricide yukarı kaydır) ve yeniden aç. Logo kısa bir geçişle hemen kaybolmalı, kasan görünmeli. Bir hatırlatma bildirimine dokunduğunda da ürün beklemeden açılmalı.
 Geri bildirimini TestFlight'tan gönder.

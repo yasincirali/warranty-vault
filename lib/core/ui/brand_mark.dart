@@ -178,8 +178,15 @@ const kSplashMark = 160.0;
 /// Reduce motion: no loop; the still mark stays until [ready] and then goes
 /// at once.
 class BrandIntro extends StatefulWidget {
-  const BrandIntro({super.key, required this.ready, required this.label, required this.child});
+  const BrandIntro({super.key, required this.ready, required this.label, required this.child, this.fullLoop = true});
   final bool ready;
+
+  /// First launch only: one whole loop even when the cabinet is already
+  /// there, so the mark is met once. Every later launch fades out as soon
+  /// as [ready]: the cabinet loads in ~0.1 s and the loop used to hold
+  /// every cold start (a reminder tap, the shop counter) for ~1.7 s
+  /// (Rafım Ar-Ge 23 Oct 22:20).
+  final bool fullLoop;
 
   /// Read by screen readers while the intro is up ("Loading").
   final String label;
@@ -207,6 +214,8 @@ class _BrandIntroState extends State<BrandIntro> with TickerProviderStateMixin {
     _started = true;
     if (_still) {
       if (widget.ready) _gone = true;
+    } else if (widget.ready && !widget.fullLoop) {
+      _exit.forward();
     } else {
       _loop.forward();
     }
@@ -225,6 +234,11 @@ class _BrandIntroState extends State<BrandIntro> with TickerProviderStateMixin {
   void didUpdateWidget(BrandIntro old) {
     super.didUpdateWidget(old);
     if (widget.ready && !old.ready && _still) setState(() => _gone = true);
+    // Mid-loop: the mark rests where it is and the splash fades from there.
+    if (widget.ready && !old.ready && !_still && !widget.fullLoop) {
+      _loop.stop();
+      _exit.forward();
+    }
   }
 
   @override

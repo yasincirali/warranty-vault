@@ -1,7 +1,6 @@
 {
   "@@locale": "en",
   "appTitle": "My things",
-  "searchItems": "Search items",
   "attentionHeader": "Needs attention · {count}",
   "@attentionHeader": {
     "placeholders": {
@@ -18,9 +17,7 @@
       }
     }
   },
-  "addReceipt": "Add receipt or invoice",
   "emptyTitle": "Add your first invoice and we'll track your rights.",
-  "emptyBody": "We warn you before a period ends, and when something breaks we tell you what to do on one screen.",
   "endsIn": "{kind} ends in {days, plural, =0{today} =1{1 day} other{{days} days}}",
   "@endsIn": {
     "placeholders": {
@@ -100,7 +97,6 @@
   },
   "notVerified": "Not verified yet",
   "whereFrom": "Where does this period come from?",
-  "invoice": "Invoice",
   "serial": "Serial no.",
   "problemButton": "Something's wrong",
   "whatHappened": "What happened?",
@@ -162,7 +158,6 @@
   "save": "Save",
   "retake": "Retake",
   "close": "Close",
-  "back": "Back",
   "edit": "Edit",
   "disclaimer": "For information only, not legal advice.",
   "left": "left",
@@ -213,14 +208,6 @@
   "counterNoInvoice": "No invoice photo yet",
   "adviceIfRefused": "If the seller refuses, we point you to the official consumer body and draft the complaint.",
   "notVerifiedWhy": "We haven't checked this country's rule against an official source yet, so we don't show a period.",
-  "wayPhoto": "Photograph a receipt",
-  "wayPhotoWhy": "Paper receipts fade within months; the photo stays.",
-  "wayPdf": "Choose a PDF invoice",
-  "wayPdfWhy": "Invoices from online shops.",
-  "wayEmail": "Forward by email",
-  "wayEmailWhy": "Every invoice you forward is added for you.",
-  "previewTitle": "What you'll see",
-  "previewBody": "A time rule for every item: how much has passed, how much is left, and when the burden of proof moves to you.",
   "daysLeft": "{n, plural, =1{day left} other{days left}}",
   "@daysLeft": {
     "placeholders": {
