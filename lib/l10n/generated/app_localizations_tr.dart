@@ -13,9 +13,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get appTitle => 'Eşyalarım';
 
   @override
-  String get searchItems => 'Eşya ara';
-
-  @override
   String attentionHeader(int count) {
     return 'İlgilen · $count';
   }
@@ -26,14 +23,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get addReceipt => 'Fiş ya da fatura ekle';
-
-  @override
   String get emptyTitle => 'İlk faturanı ekle, haklarını biz takip edelim.';
-
-  @override
-  String get emptyBody =>
-      'Bir süre bitmeden haber veririz. Bir şey bozulduğunda ne yapacağını tek ekranda söyleriz.';
 
   @override
   String endsIn(String kind, int days) {
@@ -146,9 +136,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get whereFrom => 'Bu süre nereden geliyor?';
-
-  @override
-  String get invoice => 'Fatura';
 
   @override
   String get serial => 'Seri no';
@@ -264,9 +251,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get close => 'Kapat';
 
   @override
-  String get back => 'Geri';
-
-  @override
   String get edit => 'Düzenle';
 
   @override
@@ -332,31 +316,6 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get notVerifiedWhy =>
       'Bu ülkenin kuralını henüz resmi kaynaktan doğrulamadık, bu yüzden süre göstermiyoruz.';
-
-  @override
-  String get wayPhoto => 'Fişin fotoğrafını çek';
-
-  @override
-  String get wayPhotoWhy => 'Kâğıt fiş birkaç ayda silinir; fotoğrafı kalır.';
-
-  @override
-  String get wayPdf => 'PDF fatura seç';
-
-  @override
-  String get wayPdfWhy => 'Online alışverişlerin faturaları.';
-
-  @override
-  String get wayEmail => 'E-postayla ilet';
-
-  @override
-  String get wayEmailWhy => 'İlettiğin her fatura kendiliğinden eklenir.';
-
-  @override
-  String get previewTitle => 'Ne göreceksin';
-
-  @override
-  String get previewBody =>
-      'Her eşyanın süre çizgisi: ne kadar geçti, ne kadar kaldı, ispat yükü ne zaman sana geçiyor.';
 
   @override
   String daysLeft(int n) {

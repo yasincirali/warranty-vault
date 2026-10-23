@@ -13,9 +13,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'My things';
 
   @override
-  String get searchItems => 'Search items';
-
-  @override
   String attentionHeader(int count) {
     return 'Needs attention · $count';
   }
@@ -26,15 +23,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get addReceipt => 'Add receipt or invoice';
-
-  @override
   String get emptyTitle =>
       'Add your first invoice and we\'ll track your rights.';
-
-  @override
-  String get emptyBody =>
-      'We warn you before a period ends, and when something breaks we tell you what to do on one screen.';
 
   @override
   String endsIn(String kind, int days) {
@@ -154,9 +144,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whereFrom => 'Where does this period come from?';
 
   @override
-  String get invoice => 'Invoice';
-
-  @override
   String get serial => 'Serial no.';
 
   @override
@@ -272,9 +259,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get close => 'Close';
 
   @override
-  String get back => 'Back';
-
-  @override
   String get edit => 'Edit';
 
   @override
@@ -340,32 +324,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notVerifiedWhy =>
       'We haven\'t checked this country\'s rule against an official source yet, so we don\'t show a period.';
-
-  @override
-  String get wayPhoto => 'Photograph a receipt';
-
-  @override
-  String get wayPhotoWhy =>
-      'Paper receipts fade within months; the photo stays.';
-
-  @override
-  String get wayPdf => 'Choose a PDF invoice';
-
-  @override
-  String get wayPdfWhy => 'Invoices from online shops.';
-
-  @override
-  String get wayEmail => 'Forward by email';
-
-  @override
-  String get wayEmailWhy => 'Every invoice you forward is added for you.';
-
-  @override
-  String get previewTitle => 'What you\'ll see';
-
-  @override
-  String get previewBody =>
-      'A time rule for every item: how much has passed, how much is left, and when the burden of proof moves to you.';
 
   @override
   String daysLeft(int n) {
