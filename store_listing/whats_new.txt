@@ -1,6 +1,5 @@
 Bu sürümde:
-- Örnek kasadaki ürünler artık hatırlatma göndermiyor. Sahibi olmadığın bir ürün için "garantin bitiyor" bildirimi gelmez.
-- Örnek ürünler kasada dururken üstte "Örnekleri kaldır" yazıyor; tek dokunuşla hepsi ve boş kalan rafları gidiyor.
+- Kendi üçüncü ürününü kasaya koyduğunda, ürün rafa yerleştikten sonra telefonun standart "Puan ver" penceresi bir kez çıkıyor. Örnek ürünler sayılmıyor; bir ürünün sayfasındayken ya da "Bir sorun var" ekranındayken çıkmıyor.
 
-Denemen için: Kasan boşken "Örnek kasayı yükle"ye dokun. Rafların üstünde "Bunlar örnek ürünler" satırını gör. Bir örnek ürünü aç; adının altında "Örnek ürün · hatırlatma gelmez" yazdığına bak. Geri dön, "Örnekleri kaldır"a dokun: kasa ilk açılıştaki hâline dönmeli. Kendi ürünlerin varsa onlar yerinde kalmalı.
+Denemen için: Kendi ürünlerinden üçüncüsünü ekle ve kasa ekranında bekle; iki saniye sonra puan penceresi açılmalı. TestFlight'ta Apple bu pencereyi gösterir ama puan mağazaya gitmez. Dördüncü üründe tekrar çıkmamalı. Not: Apple bu pencereyi kendi sıklık sınırına göre bazen hiç göstermeyebilir; bu normal.
 Geri bildirimini TestFlight'tan gönder.
