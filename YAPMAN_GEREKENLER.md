@@ -14,7 +14,7 @@ Yalnız yasin'in yapabileceği adımlar. Sıra önemlidir.
 3. **App Store Connect › Apps › +**: ad **"Rafım: Garanti Belgelerim"** (telefonda "Rafım").
    "Garanti Kasası" bırakıldı (yasin 2026-10-15): Garanti BBVA'yı çağrıştırıyordu. Global ad
    **Coverline** (yasin 2026-10-23): App Information'da **English (U.S.)** (ve diğer İngilizce
-   dilleri) ekle, adı **"Coverline: Warranty & Rights"** yaz; Türkçe ad aynen kalır.
+   dilleri) ekle, adı **"Coverline: Warranty & Rights"** yaz; Türkçe ad aynen kalır. ✅ 23 Ekim yapıldı.
    Telefondaki ad dile göre değişir (Türkçe Rafım, diğerleri Coverline). Bundle id değişmez. Bundle id yukarıdaki,
    SKU `warrantyvault`, birincil dil Türkçe, kategori **Utilities** (ikincil
    Productivity). TestFlight › Test Information'ı doldur.
