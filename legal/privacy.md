@@ -1,6 +1,8 @@
-# Rafım Privacy Policy
+# Coverline Privacy Policy
 
-Version 1 · 21 October 2026 · [Türkçe](gizlilik.md)
+Coverline is called Rafım in Turkish.
+
+Version 1.1 · 23 October 2026 · [Türkçe](gizlilik.md)
 
 1. **Data we collect:** None. The products, photos, receipts, documents and reminders you add are stored only on your phone. They are never sent to us or to any third party.
 2. **Photos:** Lifting a product off its background and guessing its kind happen on your phone, with Apple's own model. The photo never leaves the device.

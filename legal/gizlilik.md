@@ -1,6 +1,8 @@
 # Rafım Gizlilik Politikası
 
-Sürüm 1 · 21 Ekim 2026 · [English](privacy.md)
+Rafım diğer dillerde Coverline adıyla yayınlanır.
+
+Sürüm 1.1 · 23 Ekim 2026 · [English](privacy.md)
 
 1. **Topladığımız veri:** Hiçbiri. Eklediğin ürünler, fotoğraflar, fişler, belgeler ve hatırlatmalar yalnızca telefonunda saklanır. Bize ya da bir üçüncü tarafa gönderilmez.
 2. **Fotoğraflar:** Ürünü arka plandan ayırmak ve türünü tahmin etmek telefonunda, Apple'ın kendi modeliyle yapılır. Fotoğraf cihazdan çıkmaz.
