@@ -248,5 +248,18 @@
   "backupFrom": "{date} tarihli yedek.",
   "backupConfirmBody": "{count, plural, =0{Bu telefondaki dolap boş.} other{Bu telefondaki {count} ürünün yerine geçecek.}}",
   "backupReplace": "Geri yükle",
-  "backupRestored": "{count} ürün geri yüklendi"
+  "backupRestored": "{count} ürün geri yüklendi",
+  "receiptAskTitle": "Fişini de ekleyelim mi?",
+  "receiptAskBody": "Satıcı satın alma kanıtı ister. Termal fiş birkaç ayda silinir, buradaki fotoğrafı silinmez.",
+  "later": "Sonra",
+  "notifyAskTitle": "Bitmeden haber verelim mi?",
+  "notifyAskBody": "İade ya da garanti süresi bitmeden ve arızayı bildirme zamanı gelince bildirim göndeririz. Başka bildirim yok.",
+  "notifyAskFirst": "Bu ürün için ilki: {date}",
+  "notifyAskYes": "Evet, haber ver",
+  "notNow": "Şimdi değil",
+  "notifyOff": "Telefonun ayarlarında bildirimler kapalı. Hatırlatmalar gelmez.",
+  "notifyNotAsked": "Bildirimlere henüz izin verilmedi. Hatırlatmalar gelmez.",
+  "notifyOpenSettings": "Ayarları aç",
+  "notifyAllow": "İzin ver",
+  "notifyOffItem": "Bildirimler kapalı; bu ürünün hatırlatmaları gelmez."
 }

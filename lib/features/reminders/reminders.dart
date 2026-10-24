@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_settings/app_settings.dart' as system;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +17,15 @@ import 'reminder_plan.dart';
 abstract interface class ReminderScheduler {
   /// Shows the system prompt once; later calls return the stored answer.
   Future<bool> requestPermission();
+
+  /// Whether the phone lets this app's notifications through right now;
+  /// null where nothing can tell (tests, web).
+  Future<bool?> enabled();
+
+  /// The phone's own notification settings for this app: after a "Don't
+  /// allow" the system prompt never comes back, only the user can turn
+  /// them on there.
+  Future<void> openSettings();
 
   /// Replaces every pending reminder with [plan].
   Future<void> replace(List<PlannedReminder> plan, AppLocalizations l);
@@ -59,6 +69,18 @@ class LocalReminderScheduler implements ReminderScheduler {
     final android = _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
     return await android?.requestNotificationsPermission() ?? false;
   }
+
+  @override
+  Future<bool?> enabled() async {
+    await _init();
+    final ios = _plugin.resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+    if (ios != null) return (await ios.checkPermissions())?.isEnabled;
+    final android = _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+    return android?.areNotificationsEnabled();
+  }
+
+  @override
+  Future<void> openSettings() => system.AppSettings.openAppSettings(type: system.AppSettingsType.notification);
 
   @override
   Future<void> replace(List<PlannedReminder> plan, AppLocalizations l) async {
@@ -110,6 +132,10 @@ class NoReminderScheduler implements ReminderScheduler {
   @override
   Future<bool> requestPermission() async => false;
   @override
+  Future<bool?> enabled() async => null;
+  @override
+  Future<void> openSettings() async {}
+  @override
   Future<void> replace(List<PlannedReminder> plan, AppLocalizations l) async {}
   @override
   Future<String?> launchItem() async => null;
@@ -138,7 +164,7 @@ class ReminderSync {
   final Ref ref;
 
   static const debounce = Duration(milliseconds: 800);
-  static const _signatureKey = 'reminder_plan', _askedKey = 'reminders_asked';
+  static const _signatureKey = 'reminder_plan';
 
   Timer? _timer;
   bool _running = false, _again = false;
@@ -177,10 +203,6 @@ class ReminderSync {
     final scheduler = ref.read(reminderSchedulerProvider);
     final plan = settings.reminders ? planReminders(views, ref.read(clockProvider)()) : const <PlannedReminder>[];
 
-    if (plan.isNotEmpty && store.read(_askedKey) == null) {
-      await store.write(_askedKey, '1');
-      await scheduler.requestPermission();
-    }
     final l = lookupAppLocalizations(_locale(settings.language));
     final signature = '${l.localeName}#${planSignature(plan)}';
     if (store.read(_signatureKey) == signature) return;
@@ -196,4 +218,28 @@ class ReminderSync {
   }
 
   void dispose() => _timer?.cancel();
+}
+
+/// Where the phone stands on our notifications, as the screens need it:
+/// a reminder that silently never arrives is the one-star review we most
+/// want to avoid (Rafım Ar-Ge 24 Oct, yasin "yap").
+enum NotificationAccess { notAsked, granted, denied }
+
+/// Set once the system prompt has been shown; the prompt never returns.
+const remindersAskedKey = 'reminders_asked';
+
+/// Re-read when the app comes back to the foreground (the user may have
+/// just flipped the switch in the phone's settings) and after asking.
+final notificationAccessProvider = FutureProvider<NotificationAccess>((ref) async {
+  if (ref.watch(settingsStoreProvider).read(remindersAskedKey) == null) return NotificationAccess.notAsked;
+  final on = await ref.read(reminderSchedulerProvider).enabled();
+  return on == false ? NotificationAccess.denied : NotificationAccess.granted;
+});
+
+/// The system prompt, in context: after the user has said yes to our own
+/// one-line question (or tapped "Allow" in Settings), never cold.
+Future<void> askNotificationPermission(ProviderContainer c) async {
+  await c.read(settingsStoreProvider).write(remindersAskedKey, '1');
+  await c.read(reminderSchedulerProvider).requestPermission();
+  c.invalidate(notificationAccessProvider);
 }

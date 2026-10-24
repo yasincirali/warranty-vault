@@ -5,11 +5,14 @@ name: iOS — derleme kontrolü
 # build'i kırılınca görülürdü. Bu iş onu birleşmeden önce yakalar.
 # Maliyet kararı: yalnız ios/ değişince koşar (macOS dakikası pahalı) ve
 # simülatör + debug derler (imza yok, secret yok, release'den çok daha kısa).
+# pubspec.yaml da tetikler: yeni bir eklenti (ör. app_settings, 24 Eki)
+# ios/ altına dokunmadan yerel Swift kodu getirir.
 
 on:
   pull_request:
     paths:
       - 'ios/**'
+      - 'pubspec.yaml'
       - '.github/workflows/ios-derleme.yml'
 
 concurrency:

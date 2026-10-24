@@ -35,6 +35,12 @@ class _FakeScheduler implements ReminderScheduler {
   }
 
   @override
+  Future<bool?> enabled() async => true;
+
+  @override
+  Future<void> openSettings() async {}
+
+  @override
   Future<void> replace(List<PlannedReminder> plan, AppLocalizations l) async {
     replaced.add(plan);
     bodies
@@ -232,16 +238,17 @@ void main() {
   });
 
   group('reminders', () {
-    testWidgets('the cabinet is planned after a short pause, permission asked once, moves send nothing', (t) async {
+    testWidgets('the cabinet is planned after a short pause, never a cold permission prompt, moves send nothing', (t) async {
       final fake = _FakeScheduler();
       final (_, settings) = await _open(t, overrides: [reminderSchedulerProvider.overrideWithValue(fake)]);
       await t.pump(ReminderSync.debounce);
       await t.pumpAndSettle();
-      expect(fake.asked, 1);
+      // The system prompt only follows our own question after a save.
+      expect(fake.asked, 0);
       expect(fake.replaced, hasLength(1));
       expect(fake.replaced.single, isNotEmpty);
       expect(fake.bodies.first, contains('report it before the last day'));
-      expect(settings.read('reminders_asked'), '1');
+      expect(settings.read('reminders_asked'), isNull);
 
       // A change that does not touch any deadline reaches the platform as nothing.
       final c = ProviderScope.containerOf(t.element(find.byType(Scaffold).first));
@@ -250,7 +257,7 @@ void main() {
       await t.pump(ReminderSync.debounce);
       await t.pumpAndSettle();
       expect(fake.replaced, hasLength(1));
-      expect(fake.asked, 1);
+      expect(fake.asked, 0);
     });
 
     testWidgets('switching reminders off clears them; the choice is remembered', (t) async {

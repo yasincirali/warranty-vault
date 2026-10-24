@@ -7,6 +7,7 @@ import '../../../core/ui/widgets.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../cabinet/cabinet_view.dart';
 import '../../capture/add_item_screen.dart';
+import '../../capture/after_save.dart';
 import '../../search/search_screen.dart';
 import '../../settings/settings_screen.dart';
 import '../domain/item.dart';
@@ -175,10 +176,17 @@ class HomeScreen extends ConsumerWidget {
 void _openItem(BuildContext context, String id) => Navigator.of(context)
     .push(MaterialPageRoute(builder: (_) => ItemDetailScreen(itemId: id)));
 
-void _add(BuildContext context, [PhotoSource? source]) => Navigator.of(context).push(MaterialPageRoute(
-      fullscreenDialog: true,
-      builder: (_) => AddItemScreen(initialSource: source),
-    ));
+Future<void> _add(BuildContext context, [PhotoSource? source]) async {
+  // Held now: the empty cabinet that opened the add screen is gone once
+  // its first product lands, the navigator and the container are not.
+  final nav = Navigator.of(context);
+  final c = ProviderScope.containerOf(context, listen: false);
+  final id = await nav.push<String>(MaterialPageRoute(
+    fullscreenDialog: true,
+    builder: (_) => AddItemScreen(initialSource: source),
+  ));
+  if (id != null) await afterSave(nav, c, id);
+}
 
 class _AttentionRow extends StatelessWidget {
   const _AttentionRow({required this.view, required this.today, required this.last});

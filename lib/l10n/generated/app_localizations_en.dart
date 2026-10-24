@@ -944,4 +944,50 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get receiptAskTitle => 'Add its receipt too?';
+
+  @override
+  String get receiptAskBody =>
+      'The seller asks for proof of purchase. Paper receipts fade within months; a photo here doesn\'t.';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get notifyAskTitle => 'Remind you before it ends?';
+
+  @override
+  String get notifyAskBody =>
+      'A notification before a return window or warranty ends, and when it is time to report a fault. Nothing else.';
+
+  @override
+  String notifyAskFirst(String date) {
+    return 'First one for this product: $date';
+  }
+
+  @override
+  String get notifyAskYes => 'Yes, remind me';
+
+  @override
+  String get notNow => 'Not now';
+
+  @override
+  String get notifyOff =>
+      'Notifications are off in the phone\'s settings. Reminders won\'t arrive.';
+
+  @override
+  String get notifyNotAsked =>
+      'Notifications aren\'t allowed yet. Reminders won\'t arrive.';
+
+  @override
+  String get notifyOpenSettings => 'Open settings';
+
+  @override
+  String get notifyAllow => 'Allow';
+
+  @override
+  String get notifyOffItem =>
+      'Notifications are off, so this product\'s reminders won\'t arrive.';
 }

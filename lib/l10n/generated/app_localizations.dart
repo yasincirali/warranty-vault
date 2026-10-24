@@ -1591,6 +1591,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 product restored} other{{count} products restored}}'**
   String backupRestored(int count);
+
+  /// No description provided for @receiptAskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add its receipt too?'**
+  String get receiptAskTitle;
+
+  /// No description provided for @receiptAskBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The seller asks for proof of purchase. Paper receipts fade within months; a photo here doesn\'t.'**
+  String get receiptAskBody;
+
+  /// No description provided for @later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get later;
+
+  /// No description provided for @notifyAskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind you before it ends?'**
+  String get notifyAskTitle;
+
+  /// No description provided for @notifyAskBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A notification before a return window or warranty ends, and when it is time to report a fault. Nothing else.'**
+  String get notifyAskBody;
+
+  /// No description provided for @notifyAskFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'First one for this product: {date}'**
+  String notifyAskFirst(String date);
+
+  /// No description provided for @notifyAskYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, remind me'**
+  String get notifyAskYes;
+
+  /// No description provided for @notNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get notNow;
+
+  /// No description provided for @notifyOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are off in the phone\'s settings. Reminders won\'t arrive.'**
+  String get notifyOff;
+
+  /// No description provided for @notifyNotAsked.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications aren\'t allowed yet. Reminders won\'t arrive.'**
+  String get notifyNotAsked;
+
+  /// No description provided for @notifyOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get notifyOpenSettings;
+
+  /// No description provided for @notifyAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get notifyAllow;
+
+  /// No description provided for @notifyOffItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are off, so this product\'s reminders won\'t arrive.'**
+  String get notifyOffItem;
 }
 
 class _AppLocalizationsDelegate
