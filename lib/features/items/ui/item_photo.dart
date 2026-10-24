@@ -26,7 +26,7 @@ class ItemPhoto extends ConsumerWidget {
         clipBehavior: Clip.antiAlias,
         padding: item.photoCutout ? EdgeInsets.all(size * .08) : null,
         child: Image(
-          image: ref.watch(vaultStoreProvider).photo(path),
+          image: decodedAt(ref.watch(vaultStoreProvider).photo(path), Size.square(size), MediaQuery.devicePixelRatioOf(context)),
           fit: item.photoCutout ? BoxFit.contain : BoxFit.cover,
           gaplessPlayback: true,
           errorBuilder: (_, _, _) => ItemThumb(item.category, size: size),

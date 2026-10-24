@@ -645,12 +645,14 @@ class _Product extends StatelessWidget {
   Widget build(BuildContext context) {
     final path = item.photoPath;
     if (path != null) {
-      final image = Image(
-        image: store.photo(path),
-        fit: item.photoCutout ? BoxFit.contain : BoxFit.cover,
-        gaplessPlayback: true,
-        filterQuality: FilterQuality.medium,
-        errorBuilder: (_, _, _) => _Drawn(item: item),
+      final image = LayoutBuilder(
+        builder: (context, box) => Image(
+          image: decodedAt(store.photo(path), box.biggest, MediaQuery.devicePixelRatioOf(context)),
+          fit: item.photoCutout ? BoxFit.contain : BoxFit.cover,
+          gaplessPlayback: true,
+          filterQuality: FilterQuality.medium,
+          errorBuilder: (_, _, _) => _Drawn(item: item),
+        ),
       );
       return item.photoCutout ? image : ClipRRect(borderRadius: BorderRadius.circular(VRadius.sm), child: image);
     }
@@ -777,12 +779,14 @@ class _Silhouette extends StatelessWidget {
       ),
     );
     if (path == null || !item.photoCutout) return box;
-    return Image(
-      image: store.photo(path),
-      fit: BoxFit.contain,
-      gaplessPlayback: true,
-      filterQuality: FilterQuality.low,
-      errorBuilder: (_, _, _) => box,
+    return LayoutBuilder(
+      builder: (context, size) => Image(
+        image: decodedAt(store.photo(path), size.biggest, MediaQuery.devicePixelRatioOf(context)),
+        fit: BoxFit.contain,
+        gaplessPlayback: true,
+        filterQuality: FilterQuality.low,
+        errorBuilder: (_, _, _) => box,
+      ),
     );
   }
 }

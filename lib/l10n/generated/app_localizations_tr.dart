@@ -200,19 +200,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'Bu eşyanın koruması bitti. Ücretli tamir ya da üreticinin iyi niyeti kalan yollar.';
 
   @override
-  String get stepDocsReady => 'Fatura ve seri no hazır';
-
-  @override
-  String get stepAddEvidence => 'Sorunun fotoğrafını ya da videosunu ekle';
-
-  @override
-  String get stepWeDraft =>
-      'Mesajı satıcının dilinde biz yazarız; Türkçesini görüp sen gönderirsin';
-
-  @override
-  String get continueButton => 'Devam et';
-
-  @override
   String get isItRight => 'Doğru mu?';
 
   @override
@@ -311,7 +298,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get adviceIfRefused =>
-      'Satıcı reddederse başvuracağın resmi kurumu gösterir, şikâyet metnini biz hazırlarız.';
+      'Satıcı reddederse ülkenin resmi tüketici kurumuna başvurabilirsin; fişin ve fotoğrafların burada hazır.';
 
   @override
   String get notVerifiedWhy =>
@@ -953,4 +940,22 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get notifyOffItem =>
       'Bildirimler kapalı; bu ürünün hatırlatmaları gelmez.';
+
+  @override
+  String get editTitle => 'Ürünü düzenle';
+
+  @override
+  String sourcesBody(String region) {
+    return 'Bu süre $region tüketici kurallarından geliyor. Kaynak:';
+  }
+
+  @override
+  String get stepEvidence => 'Sorunun fotoğrafını çek, ürünün belgelerine ekle';
+
+  @override
+  String get stepShowProof =>
+      'Fişini \"Kasada göster\" ile aç ve satıcıya göster';
+
+  @override
+  String get sourceOpenFailed => 'Bağlantı açılamadı.';
 }

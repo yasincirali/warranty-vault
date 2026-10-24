@@ -368,30 +368,6 @@ abstract class AppLocalizations {
   /// **'This item isn\'t covered anymore. A paid repair or the manufacturer\'s goodwill are the remaining options.'**
   String get adviceNotCovered;
 
-  /// No description provided for @stepDocsReady.
-  ///
-  /// In en, this message translates to:
-  /// **'Invoice and serial number are ready'**
-  String get stepDocsReady;
-
-  /// No description provided for @stepAddEvidence.
-  ///
-  /// In en, this message translates to:
-  /// **'Add a photo or video of the problem'**
-  String get stepAddEvidence;
-
-  /// No description provided for @stepWeDraft.
-  ///
-  /// In en, this message translates to:
-  /// **'We write it in the seller\'s language; you read it in yours and send it'**
-  String get stepWeDraft;
-
-  /// No description provided for @continueButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue'**
-  String get continueButton;
-
   /// No description provided for @isItRight.
   ///
   /// In en, this message translates to:
@@ -569,7 +545,7 @@ abstract class AppLocalizations {
   /// No description provided for @adviceIfRefused.
   ///
   /// In en, this message translates to:
-  /// **'If the seller refuses, we point you to the official consumer body and draft the complaint.'**
+  /// **'If the seller refuses, you can turn to your country\'s official consumer body; your receipt and photos are ready here.'**
   String get adviceIfRefused;
 
   /// No description provided for @notVerifiedWhy.
@@ -1669,6 +1645,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notifications are off, so this product\'s reminders won\'t arrive.'**
   String get notifyOffItem;
+
+  /// No description provided for @editTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit product'**
+  String get editTitle;
+
+  /// No description provided for @sourcesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This period comes from the consumer rules of {region}. Source:'**
+  String sourcesBody(String region);
+
+  /// No description provided for @stepEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Photograph the problem and keep it with the product\'s papers'**
+  String get stepEvidence;
+
+  /// No description provided for @stepShowProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Open your receipt with \"Show at the counter\" and show it to the seller'**
+  String get stepShowProof;
+
+  /// No description provided for @sourceOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the link.'**
+  String get sourceOpenFailed;
 }
 
 class _AppLocalizationsDelegate

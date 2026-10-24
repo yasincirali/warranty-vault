@@ -207,19 +207,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'This item isn\'t covered anymore. A paid repair or the manufacturer\'s goodwill are the remaining options.';
 
   @override
-  String get stepDocsReady => 'Invoice and serial number are ready';
-
-  @override
-  String get stepAddEvidence => 'Add a photo or video of the problem';
-
-  @override
-  String get stepWeDraft =>
-      'We write it in the seller\'s language; you read it in yours and send it';
-
-  @override
-  String get continueButton => 'Continue';
-
-  @override
   String get isItRight => 'Is this right?';
 
   @override
@@ -319,7 +306,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adviceIfRefused =>
-      'If the seller refuses, we point you to the official consumer body and draft the complaint.';
+      'If the seller refuses, you can turn to your country\'s official consumer body; your receipt and photos are ready here.';
 
   @override
   String get notVerifiedWhy =>
@@ -990,4 +977,23 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notifyOffItem =>
       'Notifications are off, so this product\'s reminders won\'t arrive.';
+
+  @override
+  String get editTitle => 'Edit product';
+
+  @override
+  String sourcesBody(String region) {
+    return 'This period comes from the consumer rules of $region. Source:';
+  }
+
+  @override
+  String get stepEvidence =>
+      'Photograph the problem and keep it with the product\'s papers';
+
+  @override
+  String get stepShowProof =>
+      'Open your receipt with \"Show at the counter\" and show it to the seller';
+
+  @override
+  String get sourceOpenFailed => 'Couldn\'t open the link.';
 }

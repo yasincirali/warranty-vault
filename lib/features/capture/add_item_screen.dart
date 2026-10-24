@@ -16,6 +16,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../rights/rights_engine.dart';
 import '../items/domain/item.dart';
 import '../items/providers.dart';
+import '../items/ui/item_photo.dart';
 import '../settings/settings.dart';
 import 'category_guess.dart';
 import 'subject_lift.dart';
@@ -119,6 +120,9 @@ final platformDecodeProvider = Provider<Future<RawPhoto?> Function(Uint8List)>(
 const _currencies = ['TRY', 'EUR', 'GBP', 'USD', 'AUD'];
 const _warrantyMonths = [0, 6, 12, 24, 36, 60];
 
+/// The menu's stand-in for a lifetime warranty (no month count).
+const lifetimeWarranty = -1;
+
 String _currencyFor(String region) => switch (region) {
   'TR' => 'TRY',
   'GB' => 'GBP',
@@ -131,10 +135,15 @@ String _currencyFor(String region) => switch (region) {
 /// has a sensible default, and the rights engine works from date, country
 /// and channel, which are prefilled.
 class AddItemScreen extends ConsumerStatefulWidget {
-  const AddItemScreen({super.key, this.initialSource});
+  const AddItemScreen({super.key, this.initialSource, this.editing});
 
   /// Opens the camera/gallery right away (from the empty-state rows).
   final PhotoSource? initialSource;
+
+  /// The product being corrected (Rafım Ar-Ge 24 Oct: the product page's
+  /// pencil did nothing, a wrong date could only be fixed by deleting).
+  /// The same form, filled in; one screen to learn, not two.
+  final Item? editing;
 
   @override
   ConsumerState<AddItemScreen> createState() => _AddItemScreenState();
@@ -179,6 +188,20 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
   @override
   void initState() {
     super.initState();
+    if (widget.editing case final e?) {
+      _name.text = e.name;
+      _store.text = e.store;
+      if (e.price case final p?) {
+        _price.text = p.amount == p.amount.truncate() ? '${p.amount.truncate()}' : '${p.amount}';
+        _currency = p.currency;
+      }
+      _date = e.purchase.date;
+      _channel = e.purchase.channel;
+      _region = e.purchase.region;
+      _warranty = e.purchase.manufacturer.lifetime ? lifetimeWarranty : e.purchase.manufacturer.months ?? 0;
+      _shelfId = e.shelfId;
+      _kind = e.category;
+    }
     _name.addListener(() => setState(() {}));
     _price.addListener(() => setState(() {}));
     if (widget.initialSource != null) {
@@ -267,9 +290,32 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
         date: DateTime.utc(_date.year, _date.month, _date.day),
         region: region,
         channel: _channel,
-        manufacturer: _warranty == 0 ? const ManufacturerWarranty.none() : ManufacturerWarranty.months(_warranty),
+        manufacturer: switch (_warranty) {
+          0 => const ManufacturerWarranty.none(),
+          lifetimeWarranty => const ManufacturerWarranty.lifetime(),
+          final m => ManufacturerWarranty.months(m),
+        },
       ),
     );
+    if (widget.editing case final e?) {
+      await ref.read(vaultProvider.notifier).edit(
+            Item(
+              id: e.id,
+              name: item.name,
+              category: item.category,
+              store: item.store,
+              price: item.price,
+              serial: e.serial,
+              shelfId: item.shelfId,
+              disposedAt: e.disposedAt,
+              purchase: item.purchase,
+            ),
+            photo: _chosen,
+          );
+      HapticFeedback.lightImpact();
+      if (mounted) Navigator.of(context).pop();
+      return;
+    }
     final id = await ref.read(vaultProvider.notifier).add(item, photo: _chosen);
     // No haptic here: the product's landing on its shelf gives it. The id
     // goes back so the cabinet can ask for the receipt (after_save.dart).
@@ -309,11 +355,18 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
     // Read above the Scaffold: its body sees the keyboard as already removed.
     final keyboardUp = MediaQuery.viewInsetsOf(context).bottom > 0;
 
-    String warrantyText(int m) => m == 0 ? l.warrantyNone : (m % 12 == 0 ? l.durYears(m ~/ 12) : l.durMonths(m));
+    String warrantyText(int m) => switch (m) {
+          0 => l.warrantyNone,
+          lifetimeWarranty => l.lifetime,
+          _ => m % 12 == 0 ? l.durYears(m ~/ 12) : l.durMonths(m),
+        };
+    // A stored length the list does not offer (18 months, lifetime from a
+    // backup) stays choosable instead of breaking the menu.
+    final warrantyOptions = [..._warrantyMonths, if (!_warrantyMonths.contains(_warranty)) _warranty];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.addTitle),
+        title: Text(widget.editing == null ? l.addTitle : l.editTitle),
         backgroundColor: context.c.background,
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
@@ -340,6 +393,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
                   noCutout: _photo != null && _photo!.cutout == null,
                   liftWhy: _liftWhy,
                   onPick: _pick,
+                  existing: widget.editing?.photoPath == null ? null : ItemPhoto(item: widget.editing!, size: 200),
                 ),
                 if (_photo?.cutout != null) ...[
                   const SizedBox(height: VSpace.md),
@@ -349,7 +403,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
                     onChanged: (v) => setState(() => _useCutout = v),
                   ),
                 ],
-                if (_photo != null) ...[
+                if (_photo != null || (widget.editing?.photoPath != null && !_lifting)) ...[
                   const SizedBox(height: VSpace.xs),
                   Align(
                     alignment: Alignment.centerLeft,
@@ -473,7 +527,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
                   initialValue: _warranty,
                   isExpanded: true,
                   decoration: InputDecoration(labelText: l.kindManufacturer),
-                  items: [for (final m in _warrantyMonths) DropdownMenuItem(value: m, child: Text(warrantyText(m)))],
+                  items: [for (final m in warrantyOptions) DropdownMenuItem(value: m, child: Text(warrantyText(m)))],
                   onChanged: (m) => setState(() => _warranty = m ?? 0),
                 ),
                 const SizedBox(height: VSpace.md),
@@ -491,7 +545,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
               ]),
             ),
           ),
-          _SaveBar(keyboardUp: keyboardUp, onSave: canSave ? _save : null, saving: _saving),
+          _SaveBar(keyboardUp: keyboardUp, onSave: canSave ? _save : null, saving: _saving, editing: widget.editing != null),
         ],
       ),
     );
@@ -502,8 +556,9 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
 /// button next to it: the one way to close a keyboard that has no return
 /// key, in the place the thumb already is.
 class _SaveBar extends StatelessWidget {
-  const _SaveBar({required this.keyboardUp, required this.onSave, required this.saving});
+  const _SaveBar({required this.keyboardUp, required this.onSave, required this.saving, this.editing = false});
   final bool keyboardUp;
+  final bool editing;
   final VoidCallback? onSave;
   final bool saving;
 
@@ -526,7 +581,7 @@ class _SaveBar extends StatelessWidget {
                 duration: VMotion.of(context, VMotion.quick),
                 child: saving
                     ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator.adaptive(strokeWidth: 2))
-                    : Text(l.putOnShelf),
+                    : Text(editing ? l.save : l.putOnShelf),
               ),
             ),
           ),
@@ -565,8 +620,12 @@ class _PhotoArea extends StatelessWidget {
     required this.noCutout,
     required this.onPick,
     this.liftWhy,
+    this.existing,
   });
   final LiftedPhoto? photo;
+
+  /// The stored photo of a product being edited, until a new one is picked.
+  final Widget? existing;
 
   /// The raw photo while its background is being lifted.
   final Uint8List? picked;
@@ -609,6 +668,8 @@ class _PhotoArea extends StatelessWidget {
                 ),
         ),
       );
+    } else if (existing != null) {
+      body = Padding(key: const ValueKey('existing'), padding: const EdgeInsets.all(VSpace.lg), child: existing);
     } else {
       body = Padding(
         key: const ValueKey('empty'),
@@ -651,7 +712,7 @@ class _PhotoArea extends StatelessWidget {
           decoration: BoxDecoration(color: context.c.tile, borderRadius: BorderRadius.circular(VRadius.lg)),
           alignment: Alignment.center,
           child: SizedBox(
-            height: (photo != null && !lifting) || (lifting && picked != null) ? 240 : null,
+            height: ((photo != null || existing != null) && !lifting) || (lifting && picked != null) ? 240 : null,
             // The cut-out product arrives with a small pop (scale .94 → 1 and
             // a fade): it is the moment the photo becomes "a thing".
             child: AnimatedSwitcher(

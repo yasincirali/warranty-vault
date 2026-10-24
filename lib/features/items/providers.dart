@@ -65,6 +65,33 @@ class VaultController extends AsyncNotifier<Vault> {
     return id;
   }
 
+  /// Replaces a product's own fields with [edited] (same id; papers, photo
+  /// and place come from the stored one unless a new [photo] is given).
+  /// A new photo gets a new file name: the old path may still sit in the
+  /// image cache, and the screen would keep showing the old picture.
+  Future<void> edit(Item edited, {LiftedPhoto? photo}) async {
+    final old = _v.items.firstWhere((i) => i.id == edited.id);
+    var item = edited.copyWith(documents: old.documents, sample: old.sample);
+    item = old.photoPath == null
+        ? item
+        : item.copyWith(photoPath: old.photoPath, photoAspect: old.photoAspect, photoCutout: old.photoCutout);
+    if (photo != null) {
+      final rel = await ref.read(vaultStoreProvider).savePhoto('${edited.id}-${_id('p')}.png', photo.png);
+      item = item.copyWith(photoPath: rel, photoAspect: photo.aspect, photoCutout: photo.cutout);
+    }
+    final moved = item.shelfId != old.shelfId;
+    final next = Vault(items: [for (final i in _v.items) i.id == item.id ? item : i], shelves: _v.shelves);
+    await _commit(moved ? normalize(next, newShelfId: _shelfId) : next);
+    final stale = old.photoPath;
+    if (photo != null && stale != null && !stale.startsWith('asset:')) {
+      try {
+        await ref.read(vaultStoreProvider).deleteFile(stale);
+      } catch (e, s) {
+        FlutterError.reportError(FlutterErrorDetails(exception: e, stack: s, library: 'vault'));
+      }
+    }
+  }
+
   /// Keeps a receipt / invoice / manual with the product. [extension] is
   /// `jpg` for photographed paper, `pdf` for e-invoices.
   Future<void> addDoc(String itemId, Uint8List bytes, {required String extension, required DocKind kind}) async {
