@@ -58,11 +58,14 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
-	<!-- Fotoğraf: eşya ve fiş görseli kullanıcının kendi seçimiyle alınır. -->
+	<!-- Fotoğraf: eşya ve fiş görseli kullanıcının kendi seçimiyle alınır.
+	     Uygulama global (yasin 2026-10-23): varsayılan İngilizce, Türkçesi
+	     tr.lproj/InfoPlist.strings'te. Yalnız Türkçe metin İngilizce telefonda
+	     anlaşılmaz ve App Review'da 5.1.1 reddi riskidir. -->
 	<key>NSCameraUsageDescription</key>
-	<string>Eşyanın ve fişinin fotoğrafını çekmek için.</string>
+	<string>To take a photo of your product and its receipt.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Eşyanın ya da fişinin fotoğrafını galeriden seçmek için.</string>
+	<string>To choose a photo of your product or its receipt from your library.</string>
 	<!-- Yalnız HTTPS; özel şifreleme yok → ihracat uyumu sorusu TestFlight'ta çıkmaz. -->
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>

@@ -1,3 +1,5 @@
 /* Name under the app icon. Global brand is Coverline (yasin 2026-10-23); the
    Turkish store and home screen keep Rafım. */
 "CFBundleDisplayName" = "Coverline";
+"NSCameraUsageDescription" = "To take a photo of your product and its receipt.";
+"NSPhotoLibraryUsageDescription" = "To choose a photo of your product or its receipt from your library.";
