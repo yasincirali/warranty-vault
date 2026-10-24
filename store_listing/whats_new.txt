@@ -1,5 +1,5 @@
 Bu sürümde:
-- Uygulama daha hızlı açılıyor. Logo animasyonu yalnız ilk açılışta baştan sona oynuyor; sonraki açılışlarda kasa hazır olur olmaz ekrana geliyor.
+- Kamera ve fotoğraf izni soruları artık telefonun dilinde çıkıyor. Türkçe telefonda eskisi gibi Türkçe, İngilizce telefonda İngilizce.
 
-Denemen için: Uygulamayı tamamen kapat (uygulama değiştiricide yukarı kaydır) ve yeniden aç. Logo kısa bir geçişle hemen kaybolmalı, kasan görünmeli. Bir hatırlatma bildirimine dokunduğunda da ürün beklemeden açılmalı.
+Denemen için: Uygulamayı silip yeniden kur, Ürün ekle > Fotoğraf çek'e dokun; izin sorusu Türkçe olmalı. Ayarlar > Rafım > Dil'den uygulamayı İngilizceye alıp yeniden kurarak dene; soru İngilizce olmalı.
 Geri bildirimini TestFlight'tan gönder.
