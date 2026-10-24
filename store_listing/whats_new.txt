@@ -1,6 +1,8 @@
 Bu sürümde:
-- Ürünü kaydedince fişini de eklemeni öneriyoruz. Termal fiş birkaç ayda siliniyor, fotoğrafı burada kalıyor.
-- Bildirim iznini artık önce kısaca neden istediğimizi söyleyerek soruyoruz. İzin kapalıysa Ayarlar'da ve ürün sayfasında "Ayarları aç" çıkıyor; eskiden hatırlatmalar sessizce gelmiyordu.
+- Ürünü artık düzenleyebilirsin: ürün sayfasında sağ üstteki kaleme dokun. Tarih, garanti süresi, mağaza ya da fotoğraf yanlışsa düzelt; fişin ve belgelerin yerinde kalır.
+- "Bu süre nereden geliyor?" artık kuralın kaynağını gösteriyor; bağlantıya dokununca tarayıcıda açılıyor.
+- "Bir sorun var"da alttaki düğme artık "Kasada göster": fişini satıcıya göstermeye hazır açar. Henüz olmayan "mesajı biz yazarız" adımı kaldırıldı.
+- Çok ürünlü dolap daha akıcı kayıyor, daha az bellek kullanıyor.
 
-Denemen için: Uygulamayı silip yeniden kur. Fotoğrafsız bir ürün ekle. Ürün rafa düştükten sonra "Fişini de ekleyelim mi?" sorusu gelmeli; bir fotoğraf seç ya da "Sonra" de. Ardından "Bitmeden haber verelim mi?" sorusu ve ilk hatırlatmanın tarihi çıkmalı. "Evet, haber ver"e dokun, telefonun izin penceresinde "İzin Verme" de. Ayarlar'a gir: hatırlatmaların altında "bildirimler kapalı" yazmalı, "Ayarları aç" seni telefonun bildirim ayarına götürmeli. Bildirimi orada açıp geri dön; yazı kaybolmalı.
+Denemen için: Bir ürünü aç, kaleme dokun, adını ya da tarihini değiştirip "Kaydet"e bas. Ürün sayfasında yeni bilgi ve yeni kalan süre görünmeli, fiş yerinde olmalı. Aynı sayfada "Bu süre nereden geliyor?"a dokun, açılan sayfadaki bağlantıya bas; tarayıcı açılmalı. "Bir sorun var"a gir, "Çalışmıyor ya da arıza var"ı seç, alttaki "Kasada göster"e dokun; fişin açılmalı.
 Geri bildirimini TestFlight'tan gönder.

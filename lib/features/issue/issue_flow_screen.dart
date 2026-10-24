@@ -6,6 +6,7 @@ import '../../core/theme/tokens.dart';
 import '../../core/ui/widgets.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../rights/advice.dart';
+import '../counter/counter_screen.dart';
 import '../items/providers.dart';
 
 /// "Bir sorun var": ask one question, give one recommended path.
@@ -103,7 +104,9 @@ class _IssueFlowScreenState extends ConsumerState<IssueFlowScreen> {
               ],
               if (claim) ...[
                 const SizedBox(height: VSpace.md),
-                for (final (n, s) in [l.stepDocsReady, l.stepAddEvidence, l.stepWeDraft].indexed)
+                // Only steps the app really does (Rafım Ar-Ge 24 Oct): "we write
+                // the message" waits for the claim assistant, it is not promised.
+                for (final (n, s) in [l.stepEvidence, l.stepShowProof].indexed)
                   Padding(
                     padding: const EdgeInsets.only(bottom: VSpace.xs),
                     child: Text('${n + 1}. $s', style: context.t.small),
@@ -123,7 +126,15 @@ class _IssueFlowScreenState extends ConsumerState<IssueFlowScreen> {
       bottomNavigationBar: claim
           ? SafeArea(
               minimum: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.md, VSpace.xl, VSpace.md),
-              child: FilledButton(onPressed: () {}, child: Text(l.continueButton)),
+              // The proof the seller asks for, ready to hand over the counter.
+              child: FilledButton.icon(
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                  fullscreenDialog: true,
+                  builder: (_) => CounterScreen(itemId: widget.itemId),
+                )),
+                icon: const Icon(Icons.storefront_outlined, size: 18),
+                label: Text(l.showAtCounter),
+              ),
             )
           : null,
     );

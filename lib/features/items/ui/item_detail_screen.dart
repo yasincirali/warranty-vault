@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/format.dart';
 import '../../../core/theme/tokens.dart';
@@ -8,6 +9,7 @@ import '../../../core/ui/time_rule.dart';
 import '../../../core/ui/widgets.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../rights/rights_engine.dart';
+import '../../capture/add_item_screen.dart';
 import '../../counter/counter_screen.dart';
 import '../../issue/issue_flow_screen.dart';
 import '../../reminders/notification_access_row.dart';
@@ -43,7 +45,14 @@ class ItemDetailScreen extends ConsumerWidget {
         backgroundColor: context.c.background,
         surfaceTintColor: Colors.transparent,
         actions: [
-          VIconButton(icon: Icons.edit_outlined, label: l.edit, onPressed: () {}),
+          VIconButton(
+            icon: Icons.edit_outlined,
+            label: l.edit,
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+              fullscreenDialog: true,
+              builder: (_) => AddItemScreen(editing: item),
+            )),
+          ),
           const SizedBox(width: VSpace.md),
         ],
       ),
@@ -193,7 +202,7 @@ class _AnswerCard extends StatelessWidget {
               minimumSize: const Size(0, VSize.minTap),
               alignment: Alignment.centerLeft,
             ),
-            onPressed: () {},
+            onPressed: () => _showSources(context, p, regionName(l, view.item.purchase.region)),
             child: Text(l.whereFrom),
           ),
       ]),
@@ -266,4 +275,59 @@ class _Chip extends StatelessWidget {
         ),
         child: Text(text, style: context.t.small.copyWith(fontSize: 12.5, fontWeight: FontWeight.w600, color: context.c.textSecondary)),
       );
+}
+
+/// Where a legal period comes from: the page the rule was verified against
+/// (`rules.json` sources). Shown as the address and opened in the browser,
+/// so our summary stays one tap away from its source. Called "source", not
+/// "official text": not every region's source is a statute yet.
+Future<void> _showSources(BuildContext context, Protection p, String region) {
+  final messenger = ScaffoldMessenger.of(context);
+  return showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    isScrollControlled: true,
+    builder: (sheet) {
+      final l = AppLocalizations.of(sheet);
+      return SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(VSpace.xl, 0, VSpace.xl, VSpace.lg),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Semantics(header: true, child: Text(l.whereFrom, style: sheet.t.title)),
+            const SizedBox(height: VSpace.sm),
+            Text(l.sourcesBody(region), style: sheet.t.body.copyWith(color: sheet.c.textSecondary)),
+            const SizedBox(height: VSpace.md),
+            for (final url in p.sources)
+              InkWell(
+                onTap: () async {
+                  final ok = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                  if (!ok) messenger.showSnackBar(SnackBar(content: Text(l.sourceOpenFailed)));
+                },
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: VSize.minTap),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: VSpace.sm),
+                    child: Row(children: [
+                      ExcludeSemantics(child: Icon(Icons.open_in_new, size: 18, color: sheet.c.textSecondary)),
+                      const SizedBox(width: VSpace.md),
+                      Expanded(
+                        child: Semantics(
+                          link: true,
+                          child: Text(
+                            Uri.parse(url).host,
+                            style: sheet.t.label.copyWith(decoration: TextDecoration.underline),
+                          ),
+                        ),
+                      ),
+                    ]),
+                  ),
+                ),
+              ),
+            const SizedBox(height: VSpace.md),
+            Text(l.disclaimer, style: sheet.t.small.copyWith(color: sheet.c.textSecondary)),
+          ]),
+        ),
+      );
+    },
+  );
 }

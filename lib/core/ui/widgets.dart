@@ -268,3 +268,14 @@ const formFieldsGroup = #formFields;
 /// says otherwise; every field in the app closes it this way (yasin, 16 Oct:
 /// "klavye kapatılabilir olmalı").
 void dismissKeyboard([PointerDownEvent? _]) => FocusManager.instance.primaryFocus?.unfocus();
+
+/// Product photos are stored at up to 900 px; drawn at 40–200 pt they would
+/// otherwise sit in memory at full size (≈3 MB each: past ~30 products the
+/// image cache overflows and the cabinet decodes again while it scrolls).
+/// Decoded at the drawn size instead, rounded up to 64 px steps so a small
+/// layout change reuses the cached copy (Rafım Ar-Ge 24 Oct).
+ImageProvider decodedAt(ImageProvider image, Size logical, double dpr) {
+  if (!logical.isFinite || logical.isEmpty) return image;
+  int step(double v) => ((v * dpr / 64).ceil() * 64).clamp(64, 2048);
+  return ResizeImage(image, width: step(logical.width), height: step(logical.height), policy: ResizeImagePolicy.fit);
+}

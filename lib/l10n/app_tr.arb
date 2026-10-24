@@ -45,10 +45,6 @@
   "adviceCheckLocal": "Ülkendeki tüketici kurumu haklarını söyleyebilir. Bu kuralları henüz doğrulamadık.",
   "adviceInsurance": "Garanti kayıp ve hırsızlığı kapsamaz. Konut ya da cihaz sigortana bak.",
   "adviceNotCovered": "Bu eşyanın koruması bitti. Ücretli tamir ya da üreticinin iyi niyeti kalan yollar.",
-  "stepDocsReady": "Fatura ve seri no hazır",
-  "stepAddEvidence": "Sorunun fotoğrafını ya da videosunu ekle",
-  "stepWeDraft": "Mesajı satıcının dilinde biz yazarız; Türkçesini görüp sen gönderirsin",
-  "continueButton": "Devam et",
   "isItRight": "Doğru mu?",
   "readFromInvoice": "Faturadan okuduk. Yanlışsa dokunup düzelt.",
   "fieldProduct": "Ürün",
@@ -78,7 +74,7 @@
   "counterRight": "{kind}: {date} tarihine kadar.",
   "counterAsk": "Ücretsiz tamir ya da değişim istiyorum.",
   "counterNoInvoice": "Henüz fatura fotoğrafı yok",
-  "adviceIfRefused": "Satıcı reddederse başvuracağın resmi kurumu gösterir, şikâyet metnini biz hazırlarız.",
+  "adviceIfRefused": "Satıcı reddederse ülkenin resmi tüketici kurumuna başvurabilirsin; fişin ve fotoğrafların burada hazır.",
   "notVerifiedWhy": "Bu ülkenin kuralını henüz resmi kaynaktan doğrulamadık, bu yüzden süre göstermiyoruz.",
   "daysLeft": "gün kaldı",
   "cabinetCount": "Raflarında {count, plural, =1{1 şey} other{{count} şey}} var",
@@ -261,5 +257,10 @@
   "notifyNotAsked": "Bildirimlere henüz izin verilmedi. Hatırlatmalar gelmez.",
   "notifyOpenSettings": "Ayarları aç",
   "notifyAllow": "İzin ver",
-  "notifyOffItem": "Bildirimler kapalı; bu ürünün hatırlatmaları gelmez."
+  "notifyOffItem": "Bildirimler kapalı; bu ürünün hatırlatmaları gelmez.",
+  "editTitle": "Ürünü düzenle",
+  "sourcesBody": "Bu süre {region} tüketici kurallarından geliyor. Kaynak:",
+  "stepEvidence": "Sorunun fotoğrafını çek, ürünün belgelerine ekle",
+  "stepShowProof": "Fişini \"Kasada göster\" ile aç ve satıcıya göster",
+  "sourceOpenFailed": "Bağlantı açılamadı."
 }

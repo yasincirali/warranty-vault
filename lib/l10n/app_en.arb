@@ -135,10 +135,6 @@
   "adviceCheckLocal": "Your country's consumer body can tell you what you're entitled to. We haven't verified these rules yet.",
   "adviceInsurance": "Guarantees don't cover loss or theft. Check your home or device insurance.",
   "adviceNotCovered": "This item isn't covered anymore. A paid repair or the manufacturer's goodwill are the remaining options.",
-  "stepDocsReady": "Invoice and serial number are ready",
-  "stepAddEvidence": "Add a photo or video of the problem",
-  "stepWeDraft": "We write it in the seller's language; you read it in yours and send it",
-  "continueButton": "Continue",
   "isItRight": "Is this right?",
   "readFromInvoice": "We read this from your invoice. Tap anything that's wrong.",
   "fieldProduct": "Product",
@@ -206,7 +202,7 @@
   },
   "counterAsk": "I'm asking for a free repair or replacement.",
   "counterNoInvoice": "No invoice photo yet",
-  "adviceIfRefused": "If the seller refuses, we point you to the official consumer body and draft the complaint.",
+  "adviceIfRefused": "If the seller refuses, you can turn to your country's official consumer body; your receipt and photos are ready here.",
   "notVerifiedWhy": "We haven't checked this country's rule against an official source yet, so we don't show a period.",
   "daysLeft": "{n, plural, =1{day left} other{days left}}",
   "@daysLeft": {
@@ -583,5 +579,17 @@
   "notifyNotAsked": "Notifications aren't allowed yet. Reminders won't arrive.",
   "notifyOpenSettings": "Open settings",
   "notifyAllow": "Allow",
-  "notifyOffItem": "Notifications are off, so this product's reminders won't arrive."
+  "notifyOffItem": "Notifications are off, so this product's reminders won't arrive.",
+  "editTitle": "Edit product",
+  "sourcesBody": "This period comes from the consumer rules of {region}. Source:",
+  "stepEvidence": "Photograph the problem and keep it with the product's papers",
+  "stepShowProof": "Open your receipt with \"Show at the counter\" and show it to the seller",
+  "sourceOpenFailed": "Couldn't open the link.",
+  "@sourcesBody": {
+    "placeholders": {
+      "region": {
+        "type": "String"
+      }
+    }
+  }
 }
