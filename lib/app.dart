@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'core/ui/brand_mark.dart';
 import 'core/ui/cover_observer.dart';
+import 'features/capture/after_save.dart';
 import 'features/items/providers.dart';
 import 'features/items/ui/home_screen.dart';
 import 'features/items/ui/item_detail_screen.dart';
@@ -41,6 +42,7 @@ class _WarrantyVaultAppState extends ConsumerState<WarrantyVaultApp> {
     requester: () => ref.read(reviewRequesterProvider),
     // Home is the root route; anything pushed on it means "not now".
     atHome: () => !(_navigator.currentState?.canPop() ?? true),
+    held: () => afterSaveBusy.value,
   );
 
   @override
@@ -48,7 +50,13 @@ class _WarrantyVaultAppState extends ConsumerState<WarrantyVaultApp> {
     super.initState();
     // Days pass while the app sleeps: coming back re-plans, and the plan's
     // signature check keeps that free when nothing moved.
-    _lifecycle = AppLifecycleListener(onResume: () => ref.read(reminderSyncProvider).schedule());
+    // Coming back may also mean coming back from the phone's notification
+    // settings: re-read whether reminders can arrive.
+    _lifecycle = AppLifecycleListener(onResume: () {
+      ref.read(reminderSyncProvider).schedule();
+      ref.invalidate(notificationAccessProvider);
+    });
+    afterSaveBusy.addListener(_review.resume);
     final scheduler = ref.read(reminderSchedulerProvider);
     _taps = scheduler.taps.listen(_openItem);
     scheduler.launchItem().then((id) {
@@ -69,6 +77,7 @@ class _WarrantyVaultAppState extends ConsumerState<WarrantyVaultApp> {
   void dispose() {
     _lifecycle.dispose();
     _taps?.cancel();
+    afterSaveBusy.removeListener(_review.resume);
     _review.dispose();
     super.dispose();
   }

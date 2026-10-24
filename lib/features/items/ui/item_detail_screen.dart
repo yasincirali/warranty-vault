@@ -10,6 +10,7 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../../../rights/rights_engine.dart';
 import '../../counter/counter_screen.dart';
 import '../../issue/issue_flow_screen.dart';
+import '../../reminders/notification_access_row.dart';
 import '../domain/item.dart';
 import '../providers.dart';
 import 'documents.dart';
@@ -82,6 +83,8 @@ class ItemDetailScreen extends ConsumerWidget {
                 ),
             ]),
           ),
+          // Right under the dates it would have warned about.
+          if (!item.sample && item.active && view.next != null) const NotificationAccessRow(onItem: true),
           const SizedBox(height: VSpace.lg),
           DocumentsSection(item: item),
           const SizedBox(height: VSpace.md),

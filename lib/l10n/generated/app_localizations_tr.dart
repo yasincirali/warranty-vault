@@ -907,4 +907,50 @@ class AppLocalizationsTr extends AppLocalizations {
   String backupRestored(int count) {
     return '$count ürün geri yüklendi';
   }
+
+  @override
+  String get receiptAskTitle => 'Fişini de ekleyelim mi?';
+
+  @override
+  String get receiptAskBody =>
+      'Satıcı satın alma kanıtı ister. Termal fiş birkaç ayda silinir, buradaki fotoğrafı silinmez.';
+
+  @override
+  String get later => 'Sonra';
+
+  @override
+  String get notifyAskTitle => 'Bitmeden haber verelim mi?';
+
+  @override
+  String get notifyAskBody =>
+      'İade ya da garanti süresi bitmeden ve arızayı bildirme zamanı gelince bildirim göndeririz. Başka bildirim yok.';
+
+  @override
+  String notifyAskFirst(String date) {
+    return 'Bu ürün için ilki: $date';
+  }
+
+  @override
+  String get notifyAskYes => 'Evet, haber ver';
+
+  @override
+  String get notNow => 'Şimdi değil';
+
+  @override
+  String get notifyOff =>
+      'Telefonun ayarlarında bildirimler kapalı. Hatırlatmalar gelmez.';
+
+  @override
+  String get notifyNotAsked =>
+      'Bildirimlere henüz izin verilmedi. Hatırlatmalar gelmez.';
+
+  @override
+  String get notifyOpenSettings => 'Ayarları aç';
+
+  @override
+  String get notifyAllow => 'İzin ver';
+
+  @override
+  String get notifyOffItem =>
+      'Bildirimler kapalı; bu ürünün hatırlatmaları gelmez.';
 }

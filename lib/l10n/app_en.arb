@@ -563,5 +563,25 @@
         "type": "int"
       }
     }
-  }
+  },
+  "receiptAskTitle": "Add its receipt too?",
+  "receiptAskBody": "The seller asks for proof of purchase. Paper receipts fade within months; a photo here doesn't.",
+  "later": "Later",
+  "notifyAskTitle": "Remind you before it ends?",
+  "notifyAskBody": "A notification before a return window or warranty ends, and when it is time to report a fault. Nothing else.",
+  "notifyAskFirst": "First one for this product: {date}",
+  "@notifyAskFirst": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "notifyAskYes": "Yes, remind me",
+  "notNow": "Not now",
+  "notifyOff": "Notifications are off in the phone's settings. Reminders won't arrive.",
+  "notifyNotAsked": "Notifications aren't allowed yet. Reminders won't arrive.",
+  "notifyOpenSettings": "Open settings",
+  "notifyAllow": "Allow",
+  "notifyOffItem": "Notifications are off, so this product's reminders won't arrive."
 }

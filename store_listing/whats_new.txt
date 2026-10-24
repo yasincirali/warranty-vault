@@ -1,5 +1,6 @@
 Bu sürümde:
-- Kamera ve fotoğraf izni soruları artık telefonun dilinde çıkıyor. Türkçe telefonda eskisi gibi Türkçe, İngilizce telefonda İngilizce.
+- Ürünü kaydedince fişini de eklemeni öneriyoruz. Termal fiş birkaç ayda siliniyor, fotoğrafı burada kalıyor.
+- Bildirim iznini artık önce kısaca neden istediğimizi söyleyerek soruyoruz. İzin kapalıysa Ayarlar'da ve ürün sayfasında "Ayarları aç" çıkıyor; eskiden hatırlatmalar sessizce gelmiyordu.
 
-Denemen için: Uygulamayı silip yeniden kur, Ürün ekle > Fotoğraf çek'e dokun; izin sorusu Türkçe olmalı. Ayarlar > Rafım > Dil'den uygulamayı İngilizceye alıp yeniden kurarak dene; soru İngilizce olmalı.
+Denemen için: Uygulamayı silip yeniden kur. Fotoğrafsız bir ürün ekle. Ürün rafa düştükten sonra "Fişini de ekleyelim mi?" sorusu gelmeli; bir fotoğraf seç ya da "Sonra" de. Ardından "Bitmeden haber verelim mi?" sorusu ve ilk hatırlatmanın tarihi çıkmalı. "Evet, haber ver"e dokun, telefonun izin penceresinde "İzin Verme" de. Ayarlar'a gir: hatırlatmaların altında "bildirimler kapalı" yazmalı, "Ayarları aç" seni telefonun bildirim ayarına götürmeli. Bildirimi orada açıp geri dön; yazı kaybolmalı.
 Geri bildirimini TestFlight'tan gönder.

@@ -270,9 +270,10 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
         manufacturer: _warranty == 0 ? const ManufacturerWarranty.none() : ManufacturerWarranty.months(_warranty),
       ),
     );
-    await ref.read(vaultProvider.notifier).add(item, photo: _chosen);
-    // No haptic here: the product's landing on its shelf gives it.
-    if (mounted) Navigator.of(context).pop();
+    final id = await ref.read(vaultProvider.notifier).add(item, photo: _chosen);
+    // No haptic here: the product's landing on its shelf gives it. The id
+    // goes back so the cabinet can ask for the receipt (after_save.dart).
+    if (mounted) Navigator.of(context).pop(id);
   }
 
   /// Rows rise 12 pt and fade in, 40 ms apart; spacers are not rows.

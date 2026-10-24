@@ -54,13 +54,17 @@ class NoReviewRequester implements ReviewRequester {
 final reviewRequesterProvider = Provider<ReviewRequester>((_) => NoReviewRequester());
 
 class ReviewPrompt {
-  ReviewPrompt({required this.store, required this.requester, required this.atHome});
+  ReviewPrompt({required this.store, required this.requester, required this.atHome, bool Function()? held})
+      : held = held ?? (() => false);
   final SettingsStore Function() store;
   final ReviewRequester Function() requester;
 
   /// True while the cabinet is the visible screen: the sheet never opens
   /// over the problem flow, the counter screen or a product page.
   final bool Function() atHome;
+
+  /// True while the after-save steps run; the ask waits for them.
+  final bool Function() held;
 
   /// The fall onto the shelf and its haptic finish inside this; the sheet
   /// comes after the product is seen standing there.
@@ -69,13 +73,29 @@ class ReviewPrompt {
 
   Timer? _timer;
 
+  /// Held back by the steps that follow a save (receipt, notifications):
+  /// those are ours and short, so the ask waits for them instead of being
+  /// lost. Anything the user opened themselves still drops it.
+  bool _held = false;
+
   void onVault(Vault? before, Vault after) {
     if (!shouldAskForReview(before: before, after: after, asked: store().read(askedKey) != null)) return;
     _timer?.cancel();
     _timer = Timer(settle, _ask);
   }
 
+  /// Called when the after-save steps finish (see [held]).
+  void resume() {
+    if (!_held || held()) return;
+    _held = false;
+    _ask();
+  }
+
   Future<void> _ask() async {
+    if (held()) {
+      _held = true;
+      return;
+    }
     // Not at home now (opened the new product, started a problem): skip
     // this one; the next own product tries again.
     if (!atHome()) return;

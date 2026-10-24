@@ -232,38 +232,57 @@ Future<void> _showAddSheet(BuildContext context, WidgetRef ref, Item item) async
               ),
             ),
             const SizedBox(height: VSpace.lg),
-            for (final (s, icon, label) in [
-              (DocSource.camera, Icons.photo_camera_outlined, l.docFromCamera),
-              (DocSource.gallery, Icons.photo_library_outlined, l.docFromGallery),
-              (DocSource.pdf, Icons.picture_as_pdf_outlined, l.docFromFile),
-            ]) ...[
-              OutlinedButton.icon(
-                onPressed: () => Navigator.of(sheet).pop(s),
-                icon: Icon(icon, size: 18),
-                label: Text(label),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(VSize.button),
-                  foregroundColor: sheet.c.text,
-                  backgroundColor: sheet.c.surface,
-                  side: BorderSide(color: sheet.c.border),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(VRadius.md)),
-                ),
-              ),
-              const SizedBox(height: VSpace.sm),
-            ],
+            ...docSourceButtons(sheet, l),
           ]),
         ),
       ),
     ),
   );
-  if (source == null) return;
+  if (source == null || !context.mounted) return;
+  await saveDoc(ProviderScope.containerOf(context, listen: false), messenger, l, item.id, kind, source);
+}
+
+/// The three places a paper comes from, each popping [sheet] with its
+/// source. Shared with the step right after a save, so both offer the same.
+List<Widget> docSourceButtons(BuildContext sheet, AppLocalizations l) => [
+      for (final (s, icon, label) in [
+        (DocSource.camera, Icons.photo_camera_outlined, l.docFromCamera),
+        (DocSource.gallery, Icons.photo_library_outlined, l.docFromGallery),
+        (DocSource.pdf, Icons.picture_as_pdf_outlined, l.docFromFile),
+      ]) ...[
+        OutlinedButton.icon(
+          onPressed: () => Navigator.of(sheet).pop(s),
+          icon: Icon(icon, size: 18),
+          label: Text(label),
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size.fromHeight(VSize.button),
+            foregroundColor: sheet.c.text,
+            backgroundColor: sheet.c.surface,
+            side: BorderSide(color: sheet.c.border),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(VRadius.md)),
+          ),
+        ),
+        const SizedBox(height: VSpace.sm),
+      ],
+    ];
+
+/// Picks and stores one paper and says how it went. Takes the container,
+/// not a widget's ref: after a save the screen that asked may be gone.
+Future<void> saveDoc(
+  ProviderContainer c,
+  ScaffoldMessengerState messenger,
+  AppLocalizations l,
+  String itemId,
+  DocKind kind,
+  DocSource source,
+) async {
   void say(String text) => messenger
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(content: Text(text)));
   try {
-    final picked = await ref.read(docPickerProvider)(source);
+    final picked = await c.read(docPickerProvider)(source);
     if (picked == null) return;
-    await ref.read(vaultProvider.notifier).addDoc(item.id, picked.bytes, extension: picked.extension, kind: kind);
+    await c.read(vaultProvider.notifier).addDoc(itemId, picked.bytes, extension: picked.extension, kind: kind);
     HapticFeedback.lightImpact();
     say(l.docAdded(docKindLabel(l, kind)));
   } on DocTooLarge {

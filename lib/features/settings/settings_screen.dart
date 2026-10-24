@@ -9,6 +9,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../backup/backup.dart';
 import '../backup/backup_rows.dart';
 import '../export/exporter.dart';
+import '../reminders/notification_access_row.dart';
 import 'settings.dart';
 
 /// Two decisions and one fact (yasin, 15 Oct: "ayarlar yok, İngilizce de
@@ -107,6 +108,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
           ),
+          if (s.reminders) const NotificationAccessRow(),
           const SizedBox(height: VSpace.xxl),
           SectionTitle(l.settingsExport),
           VCard(
