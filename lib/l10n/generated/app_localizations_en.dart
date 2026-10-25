@@ -525,6 +525,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAbout => 'About';
 
   @override
+  String get aboutLocalIos =>
+      'Your cabinet and photos are stored on this phone. No account needed. If your iPhone\'s iCloud Backup is on, your cabinet is backed up with it.';
+
+  @override
+  String backupLast(String date) {
+    return 'Last backup file: $date';
+  }
+
+  @override
+  String backupNever(int count) {
+    return 'You have $count products and no backup yet. If you change phones, this file is what brings them back.';
+  }
+
+  @override
   String get aboutLocal =>
       'Your cabinet and photos are stored on this phone. No account needed.';
 

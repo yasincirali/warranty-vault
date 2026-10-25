@@ -150,7 +150,14 @@ class SettingsScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l.aboutLocal, style: context.t.body),
+                // iOS backs Application Support up to iCloud with the phone (nothing
+                // here is excluded), so the honest answer to "and if I lose the
+                // phone?" is said. Android's auto backup stops at 25 MB, a cabinet
+                // of photos passes that, so no promise there.
+                Text(
+                  Theme.of(context).platform == TargetPlatform.iOS ? l.aboutLocalIos : l.aboutLocal,
+                  style: context.t.body,
+                ),
                 const SizedBox(height: VSpace.sm),
                 Text(l.disclaimer, style: context.t.small.copyWith(color: context.c.textSecondary)),
               ],

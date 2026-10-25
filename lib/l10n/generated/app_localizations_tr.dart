@@ -509,6 +509,20 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settingsAbout => 'Hakkında';
 
   @override
+  String get aboutLocalIos =>
+      'Dolabın ve fotoğrafların bu telefonda saklanır. Hesap açman gerekmez. iPhone\'unun iCloud yedeği açıksa dolabın da onunla yedeklenir.';
+
+  @override
+  String backupLast(String date) {
+    return 'Son yedek dosyası: $date';
+  }
+
+  @override
+  String backupNever(int count) {
+    return '$count ürünün var ve henüz yedek almadın. Telefon değişirse bu dosya işe yarar.';
+  }
+
+  @override
   String get aboutLocal =>
       'Dolabın ve fotoğrafların bu telefonda saklanır. Hesap açman gerekmez.';
 
