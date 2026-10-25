@@ -1,8 +1,6 @@
 Bu sürümde:
-- Ürünü artık düzenleyebilirsin: ürün sayfasında sağ üstteki kaleme dokun. Tarih, garanti süresi, mağaza ya da fotoğraf yanlışsa düzelt; fişin ve belgelerin yerinde kalır.
-- "Bu süre nereden geliyor?" artık kuralın kaynağını gösteriyor; bağlantıya dokununca tarayıcıda açılıyor.
-- "Bir sorun var"da alttaki düğme artık "Kasada göster": fişini satıcıya göstermeye hazır açar. Henüz olmayan "mesajı biz yazarız" adımı kaldırıldı.
-- Çok ürünlü dolap daha akıcı kayıyor, daha az bellek kullanıyor.
+- Ayarlar'da yedek kartı artık son yedek dosyanın tarihini gösteriyor. 10'dan fazla ürünün varsa ve hiç yedek almadıysan bunu tek satırla söylüyor (bildirim göndermez).
+- "Hakkında" bölümü iPhone'da dolabın iCloud yedeğiyle birlikte yedeklendiğini söylüyor.
 
-Denemen için: Bir ürünü aç, kaleme dokun, adını ya da tarihini değiştirip "Kaydet"e bas. Ürün sayfasında yeni bilgi ve yeni kalan süre görünmeli, fiş yerinde olmalı. Aynı sayfada "Bu süre nereden geliyor?"a dokun, açılan sayfadaki bağlantıya bas; tarayıcı açılmalı. "Bir sorun var"a gir, "Çalışmıyor ya da arıza var"ı seç, alttaki "Kasada göster"e dokun; fişin açılmalı.
+Denemen için: Ayarlar > Yedek'e in. Hiç yedek almadıysan ve 10'dan fazla ürünün varsa "henüz yedek almadın" satırını görmelisin (az ürünün varsa satır çıkmaz). "Dolabı yedekle"ye dokun, dosyayı kaydet; Ayarlar'a dönünce "Son yedek dosyası: bugünün tarihi" yazmalı. En altta "Hakkında" bölümünde iCloud cümlesini oku.
 Geri bildirimini TestFlight'tan gönder.

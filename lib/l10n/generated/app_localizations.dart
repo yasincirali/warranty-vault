@@ -908,6 +908,24 @@ abstract class AppLocalizations {
   /// **'About'**
   String get settingsAbout;
 
+  /// No description provided for @aboutLocalIos.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cabinet and photos are stored on this phone. No account needed. If your iPhone\'s iCloud Backup is on, your cabinet is backed up with it.'**
+  String get aboutLocalIos;
+
+  /// No description provided for @backupLast.
+  ///
+  /// In en, this message translates to:
+  /// **'Last backup file: {date}'**
+  String backupLast(String date);
+
+  /// No description provided for @backupNever.
+  ///
+  /// In en, this message translates to:
+  /// **'You have {count} products and no backup yet. If you change phones, this file is what brings them back.'**
+  String backupNever(int count);
+
   /// No description provided for @aboutLocal.
   ///
   /// In en, this message translates to:
