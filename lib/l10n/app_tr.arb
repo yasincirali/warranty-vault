@@ -138,6 +138,7 @@
   "aboutLocalIos": "Dolabın ve fotoğrafların bu telefonda saklanır. Hesap açman gerekmez. iPhone'unun iCloud yedeği açıksa dolabın da onunla yedeklenir.",
   "backupLast": "Son yedek dosyası: {date}",
   "backupNever": "{count} ürünün var ve henüz yedek almadın. Telefon değişirse bu dosya işe yarar.",
+  "nameMissing": "Ürünün adını yaz.",
   "aboutLocal": "Dolabın ve fotoğrafların bu telefonda saklanır. Hesap açman gerekmez.",
   "amountPreview": "Kaydedilecek: {amount}",
   "amountUnreadable": "Tutar okunamadı; rakamla yaz.",

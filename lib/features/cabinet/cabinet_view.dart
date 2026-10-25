@@ -18,6 +18,7 @@ import '../items/data/vault_store.dart';
 import '../items/domain/item.dart';
 import '../items/domain/vault.dart';
 import '../items/providers.dart';
+import '../items/ui/item_photo.dart';
 import 'bend.dart';
 import 'shelf_physics.dart';
 
@@ -493,6 +494,11 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
     final lift = ((plankTop - b.bottom) / 80).clamp(0.0, 1.0);
     final sink = _standDepth * (1 - lift);
     final product = _Product(item: view.item, store: store, lifted: b.held);
+    // Every protection over: the product greys and fades on its shelf, so
+    // the cabinet answers "what is still covered" at a glance (Rafım Ar-Ge
+    // 25 Oct). Muted = ended is the design language's rule; the label
+    // already says "protection ended" in words.
+    final spent = view.protections.isNotEmpty && view.protections.every((p) => p.status == ProtectionStatus.ended);
 
     return [
       // Cast shadow on the back wall: the product's own silhouette, up and
@@ -562,7 +568,7 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
           child: Transform.rotate(
             angle: b.angle,
             child: Opacity(
-              opacity: b.appear,
+              opacity: b.appear * (spent ? .55 : 1),
               child: Semantics(
                 button: true,
                 label: l.itemA11y(
@@ -583,10 +589,22 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
                   onUp: _up,
                   onCancel: _cancel,
                   child: ExcludeSemantics(
-                    // Light outside the bend: Bend paints its child once per band, which
-                    // only works for a child that draws without its own layers.
-                    child: _Lit(
-                      child: Bend(bend: b.bend, feel: b.feel, child: product),
+                    // Lifts off the shelf into the product page (itemHeroTag);
+                    // with reduce motion the page just opens.
+                    child: HeroMode(
+                      enabled: !MediaQuery.disableAnimationsOf(context),
+                      child: Hero(
+                        tag: itemHeroTag(b.id),
+                        flightShuttleBuilder: itemHeroShuttle,
+                        // Light outside the bend: Bend paints its child once per band, which
+                        // only works for a child that draws without its own layers.
+                        child: _Faded(
+                          on: spent,
+                          child: _Lit(
+                            child: Bend(bend: b.bend, feel: b.feel, child: product),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -795,6 +813,24 @@ class _Silhouette extends StatelessWidget {
 /// shade towards the base. Drawn only on the product's own pixels (srcATop),
 /// so a cut-out photo keeps its outline. Gives a flat photo some volume
 /// without pretending to be a 3D model.
+/// Greyscale for a product whose protections are all over. Outside the
+/// Bend, like the light: a colour filter is a layer of its own.
+class _Faded extends StatelessWidget {
+  const _Faded({required this.on, required this.child});
+  final bool on;
+  final Widget child;
+
+  static const _grey = ColorFilter.matrix([
+    .2126, .7152, .0722, 0, 0, //
+    .2126, .7152, .0722, 0, 0,
+    .2126, .7152, .0722, 0, 0,
+    0, 0, 0, 1, 0,
+  ]);
+
+  @override
+  Widget build(BuildContext context) => on ? ColorFiltered(colorFilter: _grey, child: child) : child;
+}
+
 class _Lit extends StatelessWidget {
   const _Lit({required this.child});
   final Widget child;
@@ -888,15 +924,18 @@ class _DymoLabelState extends State<_DymoLabel> {
     final empty = widget.shelf.label.isEmpty;
     // Round 6: smaller tape. At 13 pt bold the three black labels were the
     // loudest thing on the cabinet and the products came second.
+    // Rafım Ar-Ge 25 Oct (yasin "yap"): white tape with ink letters. Ink
+    // black is the primary action's colour ("Add a product"); three black
+    // strips competed with it. Still a label-maker strip, the white kind.
     final tape = TextStyle(
       fontSize: 11.5,
       fontWeight: FontWeight.w700,
       letterSpacing: 1.4,
-      color: empty && !_editing ? context.c.muted : context.c.background,
+      color: empty && !_editing ? context.c.muted : context.c.text,
     );
     final decoration = BoxDecoration(
-      color: empty && !_editing ? null : context.c.text,
-      border: empty && !_editing ? Border.all(color: context.c.border) : null,
+      color: empty && !_editing ? null : context.c.surface,
+      border: Border.all(color: context.c.border),
       borderRadius: BorderRadius.circular(3),
     );
 
@@ -913,7 +952,7 @@ class _DymoLabelState extends State<_DymoLabel> {
           autofocus: true,
           maxLength: 24,
           maxLines: 1,
-          cursorColor: context.c.background,
+          cursorColor: context.c.text,
           style: tape,
           textCapitalization: TextCapitalization.sentences,
           textInputAction: TextInputAction.done,

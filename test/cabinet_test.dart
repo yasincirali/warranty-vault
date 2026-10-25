@@ -252,12 +252,18 @@ void main() {
     expect(store.current.items.firstWhere((i) => i.name == 'Lamp').purchase.channel, SalesChannel.online);
   });
 
-  testWidgets('the save button waits for a name', (t) async {
-    await _open(t);
+  testWidgets('saving without a name says what is missing instead of a silent grey button', (t) async {
+    final store = await _open(t);
+    final before = store.current.items.length;
     await t.tap(find.text('Add a product'));
     await t.pumpAndSettle();
-    final button = t.widget<FilledButton>(find.widgetWithText(FilledButton, 'Put it on the shelf'));
-    expect(button.onPressed, isNull);
+    await t.tap(find.text('Put it on the shelf'));
+    await t.pumpAndSettle();
+    expect(find.text("Write the product's name."), findsOneWidget);
+    expect(store.current.items, hasLength(before));
+    await t.enterText(find.widgetWithText(TextField, 'Product'), 'Lamp');
+    await t.pump();
+    expect(find.text("Write the product's name."), findsNothing);
   });
 
   testWidgets('the kind picker fits at 3.1x text without overflow', (t) async {

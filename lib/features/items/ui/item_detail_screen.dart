@@ -60,7 +60,7 @@ class ItemDetailScreen extends ConsumerWidget {
         padding: const EdgeInsets.fromLTRB(VSpace.xl, 0, VSpace.xl, VSpace.xxl),
         children: [
           Row(children: [
-            ItemPhoto(item: item, size: 96),
+            Hero(tag: itemHeroTag(item.id), flightShuttleBuilder: itemHeroShuttle, child: ItemPhoto(item: item, size: 96)),
             const SizedBox(width: VSpace.lg - 2),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -87,6 +87,7 @@ class ItemDetailScreen extends ConsumerWidget {
                 _ProtectionRow(
                   p: view.protections[i],
                   today: today,
+                  axis: TimeBand.axisOf(view.protections),
                   urgent: identical(view.protections[i], view.next),
                   last: i == view.protections.length - 1,
                 ),
@@ -210,10 +211,19 @@ class _AnswerCard extends StatelessWidget {
   }
 }
 
+/// One protection: its name and end date, and under them its band on the
+/// time axis all the item's protections share ([TimeBand]).
 class _ProtectionRow extends StatelessWidget {
-  const _ProtectionRow({required this.p, required this.today, required this.urgent, required this.last});
+  const _ProtectionRow({
+    required this.p,
+    required this.today,
+    required this.axis,
+    required this.urgent,
+    required this.last,
+  });
   final Protection p;
   final DateTime today;
+  final (DateTime, DateTime)? axis;
   final bool urgent;
   final bool last;
 
@@ -236,28 +246,35 @@ class _ProtectionRow extends StatelessWidget {
       decoration: BoxDecoration(
         border: last ? null : Border(bottom: BorderSide(color: context.c.divider)),
       ),
-      child: Wrap(
-        alignment: WrapAlignment.spaceBetween,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: VSpace.md,
-        runSpacing: VSpace.xs,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: VSpace.md),
-            child: Text(kindLabel(l, p.kind),
-                style: active ? context.t.label : context.t.body.copyWith(color: context.c.textSecondary)),
-          ),
-          Text(right,
-              style: context.t.small.copyWith(color: color, fontWeight: urgent ? FontWeight.w600 : null)),
-          // Review round 2: an unverified rule says why there is no date,
-          // instead of leaving an empty cell the user reads as "no right".
-          if (p.status == ProtectionStatus.unverified)
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: VSpace.md,
+          runSpacing: VSpace.xs,
+          children: [
             Padding(
-              padding: const EdgeInsets.only(bottom: VSpace.md),
-              child: Text(l.notVerifiedWhy, style: context.t.small.copyWith(color: context.c.textSecondary)),
+              padding: const EdgeInsets.symmetric(vertical: VSpace.md),
+              child: Text(kindLabel(l, p.kind),
+                  style: active ? context.t.label : context.t.body.copyWith(color: context.c.textSecondary)),
             ),
-        ],
-      ),
+            Text(right,
+                style: context.t.small.copyWith(color: color, fontWeight: urgent ? FontWeight.w600 : null)),
+            // Review round 2: an unverified rule says why there is no date,
+            // instead of leaving an empty cell the user reads as "no right".
+            if (p.status == ProtectionStatus.unverified)
+              Padding(
+                padding: const EdgeInsets.only(bottom: VSpace.md),
+                child: Text(l.notVerifiedWhy, style: context.t.small.copyWith(color: context.c.textSecondary)),
+              ),
+          ],
+        ),
+        if (axis case (final from, final to) when p.end != null && p.status != ProtectionStatus.unverified)
+          Padding(
+            padding: const EdgeInsets.only(bottom: VSpace.md),
+            child: TimeBand(protection: p, today: today, axisStart: from, axisEnd: to, urgent: urgent),
+          ),
+      ]),
     );
   }
 }

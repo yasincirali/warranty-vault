@@ -926,6 +926,12 @@ abstract class AppLocalizations {
   /// **'You have {count} products and no backup yet. If you change phones, this file is what brings them back.'**
   String backupNever(int count);
 
+  /// No description provided for @nameMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Write the product\'s name.'**
+  String get nameMissing;
+
   /// No description provided for @aboutLocal.
   ///
   /// In en, this message translates to:
