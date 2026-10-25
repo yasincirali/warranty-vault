@@ -539,6 +539,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get nameMissing => 'Write the product\'s name.';
+
+  @override
   String get aboutLocal =>
       'Your cabinet and photos are stored on this phone. No account needed.';
 

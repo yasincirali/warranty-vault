@@ -523,6 +523,9 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get nameMissing => 'Ürünün adını yaz.';
+
+  @override
   String get aboutLocal =>
       'Dolabın ve fotoğrafların bu telefonda saklanır. Hesap açman gerekmez.';
 

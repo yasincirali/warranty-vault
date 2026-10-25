@@ -1,6 +1,9 @@
 Bu sürümde:
-- Ayarlar'da yedek kartı artık son yedek dosyanın tarihini gösteriyor. 10'dan fazla ürünün varsa ve hiç yedek almadıysan bunu tek satırla söylüyor (bildirim göndermez).
-- "Hakkında" bölümü iPhone'da dolabın iCloud yedeğiyle birlikte yedeklendiğini söylüyor.
+- Ürün sayfasında her koruma (iade, üretici garantisi, yasal hak) kendi satırında süre çizgisi olarak görünüyor. Hepsi aynı zaman ekseninde, bugün her çizgide aynı yerde; 30 gün içinde biten korumanın ucunda turuncu nokta var.
+- Rafta bir ürüne dokununca fotoğrafı raftan kalkıp ürün sayfasındaki yerine uçuyor, geri dönünce rafa iniyor. "Hareketi azalt" açıksa sayfa düz açılır.
+- Hiç koruması kalmamış ürünler rafta soluk ve gri duruyor.
+- Ürün eklerken adı yazmadan "Rafa koy"a basarsan düğme artık gri kalmıyor; ad alanı "Ürünün adını yaz" diyor.
+- Raf etiketleri beyaz şerit oldu, siyah yalnızca "Ürün ekle" düğmesinde.
 
-Denemen için: Ayarlar > Yedek'e in. Hiç yedek almadıysan ve 10'dan fazla ürünün varsa "henüz yedek almadın" satırını görmelisin (az ürünün varsa satır çıkmaz). "Dolabı yedekle"ye dokun, dosyayı kaydet; Ayarlar'a dönünce "Son yedek dosyası: bugünün tarihi" yazmalı. En altta "Hakkında" bölümünde iCloud cümlesini oku.
+Denemen için: Rafta bir ürüne dokun; fotoğrafın sayfaya uçtuğunu gör, geri dön. Ürün sayfasında aşağı in, korumaların altındaki çizgileri karşılaştır. Alış tarihi iki yıldan eski bir ürün ekle (ya da birini düzenle); rafta gri görünmeli. "Ürün ekle"ye bas, ad yazmadan "Rafa koy"a dokun; uyarı çıkmalı.
 Geri bildirimini TestFlight'tan gönder.

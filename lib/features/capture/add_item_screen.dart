@@ -151,6 +151,12 @@ class AddItemScreen extends ConsumerStatefulWidget {
 
 class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTickerProviderStateMixin {
   final _name = TextEditingController();
+  final _nameFocus = FocusNode();
+
+  /// Set by a tap on the save button with no name. The button used to be
+  /// grey until a name was typed and never said why (Rafım Ar-Ge 25 Oct);
+  /// now it is always tappable and the field says what is missing.
+  bool _nameMissing = false;
   final _store = TextEditingController();
   final _price = TextEditingController();
 
@@ -202,7 +208,9 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
       _shelfId = e.shelfId;
       _kind = e.category;
     }
-    _name.addListener(() => setState(() {}));
+    _name.addListener(() => setState(() {
+          if (_name.text.trim().isNotEmpty) _nameMissing = false;
+        }));
     _price.addListener(() => setState(() {}));
     if (widget.initialSource != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _pick(widget.initialSource!));
@@ -235,6 +243,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
     _route?.removeStatusListener(_onRoute);
     _intro.dispose();
     _name.dispose();
+    _nameFocus.dispose();
     _store.dispose();
     _price.dispose();
     super.dispose();
@@ -276,6 +285,13 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
       _photo == null ? null : (_useCutout ? _photo!.cutout ?? _photo!.original : _photo!.original);
 
   Future<void> _save() async {
+    if (_name.text.trim().isEmpty) {
+      HapticFeedback.lightImpact();
+      setState(() => _nameMissing = true);
+      // Focusing scrolls the field into view and brings the keyboard up.
+      _nameFocus.requestFocus();
+      return;
+    }
     final region = _region ?? ref.read<String>(defaultRegionProvider);
     final amount = parseAmount(_price.text);
     setState(() => _saving = true);
@@ -351,7 +367,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
     final region = _region ?? ref.read<String>(defaultRegionProvider);
     final currency = _currency ?? _currencyFor(region);
     final shelves = ref.watch(vaultProvider).value?.shelves ?? const [];
-    final canSave = _name.text.trim().isNotEmpty && !_saving && !_lifting;
+    final canSave = !_saving && !_lifting;
     // Read above the Scaffold: its body sees the keyboard as already removed.
     final keyboardUp = MediaQuery.viewInsetsOf(context).bottom > 0;
 
@@ -418,6 +434,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
                 VFieldLift(
                   child: TextField(
                     controller: _name,
+                    focusNode: _nameFocus,
                     textCapitalization: TextCapitalization.sentences,
                     textInputAction: TextInputAction.next,
                     groupId: formFieldsGroup,
@@ -425,6 +442,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
                     decoration: InputDecoration(
                       labelText: l.fieldProduct,
                       hintText: l.nameHint,
+                      errorText: _nameMissing ? l.nameMissing : null,
                       // The one required field says when it is done.
                       suffixIcon: VDoneTick(visible: _name.text.trim().isNotEmpty),
                     ),

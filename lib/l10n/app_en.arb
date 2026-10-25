@@ -333,6 +333,7 @@
   "backupNever": "You have {count} products and no backup yet. If you change phones, this file is what brings them back.",
   "@backupLast": {"placeholders": {"date": {"type": "String"}}},
   "@backupNever": {"placeholders": {"count": {"type": "int"}}},
+  "nameMissing": "Write the product's name.",
   "aboutLocal": "Your cabinet and photos are stored on this phone. No account needed.",
   "amountPreview": "Will be saved as {amount}",
   "amountUnreadable": "Couldn't read the amount; use digits.",
