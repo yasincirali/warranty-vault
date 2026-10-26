@@ -1,6 +1,6 @@
 Bu sürümde:
-- Uygulamayı ilk açtığında boş rafların olduğu dolabı görüyorsun. İlk rafta kesik çizgili bir yer var; ona ya da alttaki "Ürün ekle"ye dokununca ürün ekleme açılıyor. Örnek ürünleri görmek istersen dolabın altında "Örnek rafları dene" yazısı var.
-- Arama sayfası artık boş açılmıyor: bir şey yazmadan önce tüm ürünlerin, koruması en erken biten en üstte olacak şekilde listeleniyor. Yazmaya başlayınca liste arama sonuçlarına dönüyor.
+- Ürün sayfası sadeleşti: "Bugünkü durumun" kartı yalnız kalan süreyi ve ne anlama geldiğini söylüyor; süre çizgileri tek yerde, korumalar listesinde. Kartın anlattığı koruma orada kalın yazılı. Fiş ve "Kasada göster" artık kaydırmadan görünüyor.
+- Telefonda yazı boyutunu çok büyüttüğünde ana ekran başlığı ("Eşyalarım") artık kelimenin ortasından bölünmüyor; arama ve ayarlar düğmeleri başlığın altına iniyor.
 
-Denemen için: Ayarlar'dan tüm ürünleri silmeden denemek zorsa uygulamayı silip yeniden kur; ilk ekranda boş dolabı ve kesik çizgili yeri gör, ona dokun, ürün ekleme açılmalı. Geri çık, "Örnek rafları dene"ye bas; raflar dolmalı. Sağ üstteki büyüteçle aramayı aç; bir şey yazmadan listeyi gör, en üstte süresi en yakın biten ürün olmalı. Bir harf yaz; liste sonuçlara dönmeli.
+Denemen için: Rafta bir ürüne dokun; üstteki kartta süre çizgisi olmamalı, altındaki listede aynı koruma kalın yazılı ve çizgisiyle görünmeli. Fiş bölümü ve "Kasada göster" kaydırmadan görünmeli. Ayarlar > Erişilebilirlik > Ekran ve Metin Boyutu > Daha Büyük Metin'den yazıyı en büyüğe al, uygulamaya dön; "Eşyalarım" tek satırda olmalı, düğmeler altında durmalı.
 Geri bildirimini TestFlight'tan gönder.
