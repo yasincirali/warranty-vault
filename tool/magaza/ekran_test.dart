@@ -80,12 +80,31 @@ void main() {
     await t.pumpAndSettle();
     await settle();
     await shot(t, '1_dolap');
-    // 2: the rights timeline of the headphones (return ends in 3 days).
+    // 2: the rights of the headphones (return ends in 3 days).
+    // Name, today's status and the protection bands (every protection on
+    // one time axis) fit unscrolled: the picture that says what the app does.
     await t.tap(find.text('Sony WH-1000XM5').first);
     await t.pumpAndSettle();
     await settle();
     await shot(t, '2_haklar');
-    await t.tap(find.byIcon(Icons.arrow_back));
+    // 4: the receipt at the counter, the moment the app is for. The
+    // MacBook: it carries a receipt photo and a running legal right.
+    t.state<NavigatorState>(find.byType(Navigator).first).pop();
+    await t.pumpAndSettle();
+    await t.tap(find.text('MacBook Air 13"').first);
+    await t.pumpAndSettle();
+    await settle();
+    final counter = find.text(lang == 'tr' ? 'Kasada göster' : 'Show at the counter');
+    await t.dragUntilVisible(counter, find.byType(Scrollable).last, const Offset(0, -200));
+    await t.pumpAndSettle();
+    await t.tap(counter);
+    await t.pumpAndSettle();
+    await settle();
+    await shot(t, '4_kasada');
+    final nav = t.state<NavigatorState>(find.byType(Navigator).first);
+    nav.pop();
+    await t.pumpAndSettle();
+    nav.pop();
     await t.pumpAndSettle();
     // 3: adding a product from a photo: cut out, kind guessed.
     await t.tap(find.text(lang == 'tr' ? 'Ürün ekle' : 'Add a product'));

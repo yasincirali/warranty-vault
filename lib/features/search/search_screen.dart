@@ -67,7 +67,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         ),
       ),
       body: q.trim().isEmpty
-          ? const SizedBox.shrink()
+          ? _Soonest(views: soonestEnding(index), today: today)
           : hits.isEmpty
               ? Padding(
                   padding: const EdgeInsets.all(VSpace.xl),
@@ -79,6 +79,27 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   itemCount: hits.length,
                   itemBuilder: (context, i) => _Hit(view: hits[i], today: today, last: i == hits.length - 1),
                 ),
+    );
+  }
+}
+
+/// Before typing: every product, soonest end on top, in the same rows the
+/// results use, so the page is useful the moment it opens.
+class _Soonest extends StatelessWidget {
+  const _Soonest({required this.views, required this.today});
+  final List<ItemView> views;
+  final DateTime today;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return ListView.builder(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.sm, VSpace.xl, VSpace.xxl),
+      itemCount: views.length + 1,
+      itemBuilder: (context, i) => i == 0
+          ? SectionTitle(l.searchSoonest)
+          : _Hit(view: views[i - 1], today: today, last: i == views.length),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../rights/rights_engine.dart';
 import '../items/domain/item.dart';
 import '../items/providers.dart';
 
@@ -61,4 +62,32 @@ List<ItemView> searchItems(List<SearchEntry> index, String query) {
     return c != 0 ? c : a.$2.item.name.compareTo(b.$2.item.name);
   });
   return [for (final h in hits) h.$2];
+}
+
+/// What the search page lists before a letter is typed (UX defteri 26 Ekim):
+/// every product, the one whose protection runs out first on top. That is
+/// the question people most often open the app with ("what is about to
+/// end?"); no filters or chips, the order answers it. Products without a
+/// fixed end come next, products whose protections are all over last.
+List<ItemView> soonestEnding(List<SearchEntry> index) {
+  int rank(ItemView v) {
+    final p = v.primary;
+    if (p == null || p.status != ProtectionStatus.active) return 2;
+    return p.end == null ? 1 : 0;
+  }
+
+  final all = [for (final e in index) e.view];
+  // List.sort is not stable; the index position breaks ties so equal
+  // products keep the cabinet's order.
+  final pos = {for (final (i, v) in all.indexed) v: i};
+  return all
+    ..sort((a, b) {
+      final r = rank(a).compareTo(rank(b));
+      if (r != 0) return r;
+      if (rank(a) == 0) {
+        final e = a.primary!.end!.compareTo(b.primary!.end!);
+        if (e != 0) return e;
+      }
+      return pos[a]!.compareTo(pos[b]!);
+    });
 }

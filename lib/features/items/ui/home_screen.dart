@@ -176,14 +176,14 @@ class HomeScreen extends ConsumerWidget {
 void _openItem(BuildContext context, String id) => Navigator.of(context)
     .push(MaterialPageRoute(builder: (_) => ItemDetailScreen(itemId: id)));
 
-Future<void> _add(BuildContext context, [PhotoSource? source]) async {
+Future<void> _add(BuildContext context) async {
   // Held now: the empty cabinet that opened the add screen is gone once
   // its first product lands, the navigator and the container are not.
   final nav = Navigator.of(context);
   final c = ProviderScope.containerOf(context, listen: false);
   final id = await nav.push<String>(MaterialPageRoute(
     fullscreenDialog: true,
-    builder: (_) => AddItemScreen(initialSource: source),
+    builder: (_) => const AddItemScreen(),
   ));
   if (id != null) await afterSave(nav, c, id);
 }
@@ -276,64 +276,42 @@ class _DisposedRow extends ConsumerWidget {
   }
 }
 
-/// First run: the ways in, in the order people use them, plus a sample
-/// cabinet so a tester can try the shelves before photographing anything.
+/// First run: the empty cabinet itself, so the first screen already shows
+/// what the app is (UX defteri 26 Ekim). One way in, the "Add product"
+/// button below (the dashed place on the shelf does the same); the camera
+/// or gallery choice comes on the add screen, not here. The sample cabinet
+/// is a quiet link for someone who wants to try the shelves first.
 class _Empty extends ConsumerWidget {
   const _Empty({required this.l});
   final AppLocalizations l;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ways = [
-      (Icons.photo_camera_outlined, l.wayCamera, l.wayCameraWhy, () => _add(context, PhotoSource.camera)),
-      (Icons.photo_library_outlined, l.wayGallery, l.wayGalleryWhy, () => _add(context, PhotoSource.gallery)),
-      (
-        Icons.shelves,
-        l.waySample,
-        l.waySampleWhy,
-        () => ref.read(vaultProvider.notifier).loadSample(desk: l.sampleDesk, living: l.sampleLiving, kitchen: l.sampleKitchen),
-      ),
-    ];
     return Padding(
-      padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.xxl, VSpace.xl, 0),
+      padding: const EdgeInsets.only(top: VSpace.xxl),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Text(l.emptyCabinetTitle, style: context.t.title),
-        const SizedBox(height: VSpace.sm),
-        Text(l.emptyCabinetBody, style: context.t.body.copyWith(color: context.c.textSecondary)),
-        const SizedBox(height: VSpace.xl),
-        VCard(
-          padding: const EdgeInsets.symmetric(horizontal: VSpace.lg),
-          child: Column(children: [
-            for (final (i, w) in ways.indexed)
-              InkWell(
-                onTap: w.$4,
-                child: Container(
-                  constraints: const BoxConstraints(minHeight: 64),
-                  padding: const EdgeInsets.symmetric(vertical: VSpace.md),
-                  decoration: BoxDecoration(
-                    border: i == ways.length - 1 ? null : Border(bottom: BorderSide(color: context.c.divider)),
-                  ),
-                  child: Row(children: [
-                    ExcludeSemantics(
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(color: context.c.tile, borderRadius: BorderRadius.circular(VRadius.sm)),
-                        child: Icon(w.$1, size: 20, color: context.c.text),
-                      ),
-                    ),
-                    const SizedBox(width: VSpace.md),
-                    Expanded(
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text(w.$2, style: context.t.label),
-                        Text(w.$3, style: context.t.small.copyWith(color: context.c.textSecondary)),
-                      ]),
-                    ),
-                    Icon(Icons.chevron_right, color: context.c.muted, size: 20),
-                  ]),
-                ),
-              ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: VSpace.xl),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(l.emptyCabinetTitle, style: context.t.title),
+            const SizedBox(height: VSpace.sm),
+            Text(l.emptyCabinetBody, style: context.t.body.copyWith(color: context.c.textSecondary)),
           ]),
+        ),
+        const SizedBox(height: VSpace.xl),
+        LayoutBuilder(
+          builder: (context, box) {
+            final w = box.maxWidth > 560 ? 560.0 : box.maxWidth;
+            return Center(child: EmptyCabinet(width: w, onAdd: () => _add(context)));
+          },
+        ),
+        const SizedBox(height: VSpace.sm),
+        Center(
+          child: TextButton(
+            style: TextButton.styleFrom(minimumSize: const Size(44, 44)),
+            onPressed: () => ref.read(vaultProvider.notifier).loadSample(desk: l.sampleDesk, living: l.sampleLiving, kitchen: l.sampleKitchen),
+            child: Text(l.sampleTry),
+          ),
         ),
       ]),
     );

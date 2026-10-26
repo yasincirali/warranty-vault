@@ -376,24 +376,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get putBack => 'Rafa geri koy';
 
   @override
-  String get wayCamera => 'Ürünün fotoğrafını çek';
-
-  @override
-  String get wayCameraWhy => 'Arka planından ayırıp rafa koyarız.';
-
-  @override
-  String get wayGallery => 'Fotoğraflarından seç';
-
-  @override
-  String get wayGalleryWhy => 'Elindeki bir ürün fotoğrafı da olur.';
-
-  @override
-  String get waySample => 'Örnek kasayı yükle';
-
-  @override
-  String get waySampleWhy => 'Rafları önce altı örnek ürünle dene.';
-
-  @override
   String get samplesNote => 'Bunlar örnek ürünler. Hatırlatma göndermezler.';
 
   @override
@@ -401,6 +383,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get sampleTag => 'Örnek ürün · hatırlatma gelmez';
+
+  @override
+  String get sampleTry => 'Örnek rafları dene';
 
   @override
   String get emptyCabinetTitle => 'Aldığın şeyleri raflarına diz.';
@@ -767,6 +752,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get searchHint => 'Ürün, mağaza, seri no ya da raf';
+
+  @override
+  String get searchSoonest => 'Bitişi en yakın olanlar önce';
 
   @override
   String get searchClear => 'Aramayı temizle';

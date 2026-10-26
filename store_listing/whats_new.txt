@@ -1,9 +1,6 @@
 Bu sürümde:
-- Ürün sayfasında her koruma (iade, üretici garantisi, yasal hak) kendi satırında süre çizgisi olarak görünüyor. Hepsi aynı zaman ekseninde, bugün her çizgide aynı yerde; 30 gün içinde biten korumanın ucunda turuncu nokta var.
-- Rafta bir ürüne dokununca fotoğrafı raftan kalkıp ürün sayfasındaki yerine uçuyor, geri dönünce rafa iniyor. "Hareketi azalt" açıksa sayfa düz açılır.
-- Hiç koruması kalmamış ürünler rafta soluk ve gri duruyor.
-- Ürün eklerken adı yazmadan "Rafa koy"a basarsan düğme artık gri kalmıyor; ad alanı "Ürünün adını yaz" diyor.
-- Raf etiketleri beyaz şerit oldu, siyah yalnızca "Ürün ekle" düğmesinde.
+- Uygulamayı ilk açtığında boş rafların olduğu dolabı görüyorsun. İlk rafta kesik çizgili bir yer var; ona ya da alttaki "Ürün ekle"ye dokununca ürün ekleme açılıyor. Örnek ürünleri görmek istersen dolabın altında "Örnek rafları dene" yazısı var.
+- Arama sayfası artık boş açılmıyor: bir şey yazmadan önce tüm ürünlerin, koruması en erken biten en üstte olacak şekilde listeleniyor. Yazmaya başlayınca liste arama sonuçlarına dönüyor.
 
-Denemen için: Rafta bir ürüne dokun; fotoğrafın sayfaya uçtuğunu gör, geri dön. Ürün sayfasında aşağı in, korumaların altındaki çizgileri karşılaştır. Alış tarihi iki yıldan eski bir ürün ekle (ya da birini düzenle); rafta gri görünmeli. "Ürün ekle"ye bas, ad yazmadan "Rafa koy"a dokun; uyarı çıkmalı.
+Denemen için: Ayarlar'dan tüm ürünleri silmeden denemek zorsa uygulamayı silip yeniden kur; ilk ekranda boş dolabı ve kesik çizgili yeri gör, ona dokun, ürün ekleme açılmalı. Geri çık, "Örnek rafları dene"ye bas; raflar dolmalı. Sağ üstteki büyüteçle aramayı aç; bir şey yazmadan listeyi gör, en üstte süresi en yakın biten ürün olmalı. Bir harf yaz; liste sonuçlara dönmeli.
 Geri bildirimini TestFlight'tan gönder.

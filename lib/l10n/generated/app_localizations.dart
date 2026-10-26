@@ -650,42 +650,6 @@ abstract class AppLocalizations {
   /// **'Put back'**
   String get putBack;
 
-  /// No description provided for @wayCamera.
-  ///
-  /// In en, this message translates to:
-  /// **'Photograph the product'**
-  String get wayCamera;
-
-  /// No description provided for @wayCameraWhy.
-  ///
-  /// In en, this message translates to:
-  /// **'We lift it off the background and stand it on a shelf.'**
-  String get wayCameraWhy;
-
-  /// No description provided for @wayGallery.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose from your photos'**
-  String get wayGallery;
-
-  /// No description provided for @wayGalleryWhy.
-  ///
-  /// In en, this message translates to:
-  /// **'A product photo you already have works too.'**
-  String get wayGalleryWhy;
-
-  /// No description provided for @waySample.
-  ///
-  /// In en, this message translates to:
-  /// **'Load a sample cabinet'**
-  String get waySample;
-
-  /// No description provided for @waySampleWhy.
-  ///
-  /// In en, this message translates to:
-  /// **'Try the shelves with six sample products first.'**
-  String get waySampleWhy;
-
   /// No description provided for @samplesNote.
   ///
   /// In en, this message translates to:
@@ -703,6 +667,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sample product · no reminders'**
   String get sampleTag;
+
+  /// No description provided for @sampleTry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try the sample shelves'**
+  String get sampleTry;
 
   /// No description provided for @emptyCabinetTitle.
   ///
@@ -1351,6 +1321,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Product, store, serial or shelf'**
   String get searchHint;
+
+  /// No description provided for @searchSoonest.
+  ///
+  /// In en, this message translates to:
+  /// **'Ending soonest first'**
+  String get searchSoonest;
 
   /// No description provided for @searchClear.
   ///

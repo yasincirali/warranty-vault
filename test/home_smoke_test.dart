@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:warranty_vault/app.dart';
+import 'package:warranty_vault/features/cabinet/cabinet_view.dart';
 import 'package:warranty_vault/features/items/data/demo_vault.dart';
 import 'package:warranty_vault/features/items/data/vault_store.dart';
 import 'package:warranty_vault/features/items/domain/vault.dart';
@@ -100,12 +101,14 @@ void main() {
     });
   }
 
-  testWidgets('first run shows the ways in and a sample cabinet', (t) async {
+  testWidgets('first run shows the empty cabinet and a sample cabinet', (t) async {
     final store = MemoryVaultStore();
     await t.pumpWidget(app(store: store));
     await t.pumpAndSettle();
-    expect(find.text('Photograph the product'), findsOneWidget);
-    await t.tap(find.text('Load a sample cabinet'));
+    expect(find.byType(EmptyCabinet), findsOneWidget);
+    await t.ensureVisible(find.text('Try the sample shelves'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Try the sample shelves'));
     await t.pumpAndSettle();
     expect(store.current.active, hasLength(6));
     expect(find.text('Needs attention · 2'), findsOneWidget);
@@ -118,7 +121,7 @@ void main() {
     await t.pumpAndSettle();
     expect(store.current.items, isEmpty);
     expect(store.current.disposed, isEmpty);
-    expect(find.text('Load a sample cabinet'), findsOneWidget);
+    expect(find.text('Try the sample shelves'), findsOneWidget);
   });
 
   testWidgets('time rule appears instantly with reduce motion', (t) async {

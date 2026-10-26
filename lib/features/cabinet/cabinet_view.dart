@@ -1007,3 +1007,92 @@ class _DymoLabelState extends State<_DymoLabel> {
     );
   }
 }
+
+/// The cabinet before anything stands in it (UX defteri 26 Ekim): the same
+/// wall and planks as a full one, so the first screen already shows what
+/// the app is, and one dashed place on the top shelf where the first product
+/// goes. Tapping that place does what the "Add product" button does; there
+/// is no second way in to choose between.
+class EmptyCabinet extends StatelessWidget {
+  const EmptyCabinet({super.key, required this.width, required this.onAdd});
+  final double width;
+  final VoidCallback onAdd;
+
+  static const shelves = 2;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final geo = CabinetGeometry(width: width, shelves: shelves);
+    final slotW = geo.slotWidth - 8;
+    return SizedBox(
+      width: width,
+      height: geo.height,
+      child: Stack(children: [
+        Positioned.fill(
+          left: _wallInset,
+          right: _wallInset,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: context.c.wall,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(VRadius.md)),
+            ),
+          ),
+        ),
+        for (var s = 0; s < shelves; s++)
+          Positioned(
+            left: _wallInset,
+            right: _wallInset,
+            top: geo.plankTop(s),
+            height: CabinetGeometry.plank,
+            child: const _Plank(),
+          ),
+        Positioned(
+          left: geo.slotX(0) - slotW / 2,
+          top: geo.plankTop(0) + _standDepth - CabinetGeometry.maxItemHeight + 8,
+          width: slotW,
+          height: CabinetGeometry.maxItemHeight - 8,
+          child: Semantics(
+            button: true,
+            label: l.addItem,
+            excludeSemantics: true,
+            child: InkWell(
+              onTap: onAdd,
+              borderRadius: BorderRadius.circular(VRadius.sm),
+              child: CustomPaint(
+                painter: _DashedBox(color: context.c.textSecondary, radius: VRadius.sm),
+                child: Center(child: Icon(Icons.add, size: 28, color: context.c.textSecondary)),
+              ),
+            ),
+          ),
+        ),
+      ]),
+    );
+  }
+}
+
+/// A rounded outline drawn in dashes: "something goes here", the way a
+/// placeholder is marked on paper.
+class _DashedBox extends CustomPainter {
+  const _DashedBox({required this.color, required this.radius});
+  final Color color;
+  final double radius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    final outline = Path()
+      ..addRRect(RRect.fromRectAndRadius(Offset.zero & size, Radius.circular(radius)).deflate(.75));
+    for (final metric in outline.computeMetrics()) {
+      for (var d = 0.0; d < metric.length; d += 10) {
+        canvas.drawPath(metric.extractPath(d, math.min(d + 6, metric.length)), paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedBox old) => old.color != color || old.radius != radius;
+}
