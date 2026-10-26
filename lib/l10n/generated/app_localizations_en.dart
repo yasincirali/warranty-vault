@@ -390,25 +390,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get putBack => 'Put back';
 
   @override
-  String get wayCamera => 'Photograph the product';
-
-  @override
-  String get wayCameraWhy =>
-      'We lift it off the background and stand it on a shelf.';
-
-  @override
-  String get wayGallery => 'Choose from your photos';
-
-  @override
-  String get wayGalleryWhy => 'A product photo you already have works too.';
-
-  @override
-  String get waySample => 'Load a sample cabinet';
-
-  @override
-  String get waySampleWhy => 'Try the shelves with six sample products first.';
-
-  @override
   String get samplesNote =>
       'These are sample products. They send no reminders.';
 
@@ -417,6 +398,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sampleTag => 'Sample product · no reminders';
+
+  @override
+  String get sampleTry => 'Try the sample shelves';
 
   @override
   String get emptyCabinetTitle => 'Put the things you bought on your shelves.';
@@ -791,6 +775,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchHint => 'Product, store, serial or shelf';
+
+  @override
+  String get searchSoonest => 'Ending soonest first';
 
   @override
   String get searchClear => 'Clear search';
