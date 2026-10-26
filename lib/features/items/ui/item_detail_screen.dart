@@ -89,6 +89,7 @@ class ItemDetailScreen extends ConsumerWidget {
                   today: today,
                   axis: TimeBand.axisOf(view.protections),
                   urgent: identical(view.protections[i], view.next),
+                  primary: identical(view.protections[i], view.primary),
                   last: i == view.protections.length - 1,
                 ),
             ]),
@@ -188,11 +189,11 @@ class _AnswerCard extends StatelessWidget {
                 child: Text(unit, style: context.t.bigUnit.copyWith(color: urgent ? context.c.deadline : context.c.text)),
               ),
           ]),
+          // No time rule here (Rafım Ar-Ge 26 Oct 22:20, yasin "yap"): the
+          // same protection is drawn once, in the bands below, where it is
+          // the bold row. Two pictures of one period made the page longer
+          // and pushed the receipt below the first screen.
           Text(kindLabel(l, p!.kind), style: context.t.label),
-          if (p.end != null) ...[
-            const SizedBox(height: VSpace.lg),
-            TimeRule(protection: p, today: today, urgent: urgent),
-          ],
         ],
         const SizedBox(height: VSpace.sm),
         Text(body, style: context.t.body),
@@ -219,12 +220,19 @@ class _ProtectionRow extends StatelessWidget {
     required this.today,
     required this.axis,
     required this.urgent,
+    required this.primary,
     required this.last,
   });
   final Protection p;
   final DateTime today;
   final (DateTime, DateTime)? axis;
   final bool urgent;
+
+  /// The protection the answer card above talks about: its name is bold
+  /// (weight, not colour, so it reads without colour vision) and it keeps
+  /// what that card's rule used to say, the proof month and, for screen
+  /// readers, how much of the period has passed.
+  final bool primary;
   final bool last;
 
   @override
@@ -237,6 +245,12 @@ class _ProtectionRow extends StatelessWidget {
       ProtectionStatus.active =>
         p.end == null ? l.noFixedEnd : l.endsOn(fmtDate(context, p.end!)),
     };
+    final end = p.presumptionEnd;
+    // The month the burden of proof moves, while it is still ahead: after
+    // it the sentence would describe the past.
+    final proofMonth = primary && active && end != null && end.isAfter(today)
+        ? (end.year - p.start.year) * 12 + end.month - p.start.month
+        : null;
     final color = urgent
         ? context.c.deadline
         : (active ? context.c.text : context.c.textSecondary);
@@ -256,7 +270,11 @@ class _ProtectionRow extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: VSpace.md),
               child: Text(kindLabel(l, p.kind),
-                  style: active ? context.t.label : context.t.body.copyWith(color: context.c.textSecondary)),
+                  style: !active
+                      ? context.t.body.copyWith(color: context.c.textSecondary)
+                      : primary
+                          ? context.t.label.copyWith(fontWeight: FontWeight.w700)
+                          : context.t.label),
             ),
             Text(right,
                 style: context.t.small.copyWith(color: color, fontWeight: urgent ? FontWeight.w600 : null)),
@@ -271,12 +289,27 @@ class _ProtectionRow extends StatelessWidget {
         ),
         if (axis case (final from, final to) when p.end != null && p.status != ProtectionStatus.unverified)
           Padding(
+            padding: EdgeInsets.only(bottom: proofMonth == null ? VSpace.md : VSpace.xs),
+            child: Semantics(
+              label: primary ? l.ruleSemantics(_passedPercent(p, today)) : null,
+              child: TimeBand(protection: p, today: today, axisStart: from, axisEnd: to, urgent: urgent),
+            ),
+          ),
+        if (proofMonth != null)
+          Padding(
             padding: const EdgeInsets.only(bottom: VSpace.md),
-            child: TimeBand(protection: p, today: today, axisStart: from, axisEnd: to, urgent: urgent),
+            child: Text(l.ruleProofMonth(proofMonth), style: context.t.small.copyWith(color: context.c.textSecondary)),
           ),
       ]),
     );
   }
+}
+
+int _passedPercent(Protection p, DateTime today) {
+  if (p.status == ProtectionStatus.ended) return 100;
+  final total = p.end!.difference(p.start).inDays;
+  if (total <= 0) return 100;
+  return (today.difference(p.start).inDays / total * 100).clamp(0, 100).round();
 }
 
 class _Chip extends StatelessWidget {

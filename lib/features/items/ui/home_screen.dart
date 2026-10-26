@@ -62,31 +62,40 @@ class HomeScreen extends ConsumerWidget {
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.lg, VSpace.xl, 0),
             sliver: SliverToBoxAdapter(
-              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Semantics(header: true, child: Text(l.appTitle, style: context.t.display)),
-                    if (active.isNotEmpty)
-                      Text(l.cabinetCount(active.length),
-                          style: context.t.small.copyWith(color: context.c.textSecondary)),
-                  ]),
-                ),
-                if (active.isNotEmpty) ...[
-                  VIconButton(
-                    icon: Icons.search,
-                    label: l.searchTitle,
-                    onPressed: () => Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (_) => const SearchScreen())),
+              child: _Header(
+                title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Semantics(
+                    header: true,
+                    child: MediaQuery.withClampedTextScaling(
+                      // A large title grows to about twice its size, like iOS
+                      // large titles; past that one word ("Eşyalarım") no
+                      // longer fits a phone and broke mid-word at 3.1×.
+                      maxScaleFactor: 2,
+                      child: Text(l.appTitle, style: context.t.display),
+                    ),
                   ),
-                  const SizedBox(width: VSpace.sm),
+                  if (active.isNotEmpty)
+                    Text(l.cabinetCount(active.length),
+                        style: context.t.small.copyWith(color: context.c.textSecondary)),
+                ]),
+                buttons: [
+                  if (active.isNotEmpty) ...[
+                    VIconButton(
+                      icon: Icons.search,
+                      label: l.searchTitle,
+                      onPressed: () => Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (_) => const SearchScreen())),
+                    ),
+                    const SizedBox(width: VSpace.sm),
+                  ],
+                  VIconButton(
+                    icon: Icons.settings_outlined,
+                    label: l.settingsTitle,
+                    onPressed: () => Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
+                  ),
                 ],
-                VIconButton(
-                  icon: Icons.settings_outlined,
-                  label: l.settingsTitle,
-                  onPressed: () => Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
-                ),
-              ]),
+              ),
             ),
           ),
           if (active.isEmpty && disposed.isEmpty)
@@ -170,6 +179,27 @@ class HomeScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+/// Title beside its buttons; at large text sizes the buttons move to a row
+/// of their own under the title, so the title keeps the whole width instead
+/// of breaking a word to make room for two icons.
+class _Header extends StatelessWidget {
+  const _Header({required this.title, required this.buttons});
+  final Widget title;
+  final List<Widget> buttons;
+
+  @override
+  Widget build(BuildContext context) {
+    if (MediaQuery.textScalerOf(context).scale(1) < 1.6) {
+      return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: title), ...buttons]);
+    }
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      title,
+      const SizedBox(height: VSpace.sm),
+      Row(mainAxisAlignment: MainAxisAlignment.end, children: buttons),
+    ]);
   }
 }
 
