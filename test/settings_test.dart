@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:warranty_vault/app.dart';
 import 'package:warranty_vault/features/capture/add_item_screen.dart';
+import 'package:warranty_vault/features/backup/backup.dart';
 import 'package:warranty_vault/features/export/exporter.dart';
 import 'package:warranty_vault/features/items/domain/vault.dart';
 import 'package:warranty_vault/features/items/data/demo_vault.dart';
@@ -54,15 +55,34 @@ void main() {
     expect(find.text('My things'), findsOneWidget);
     await t.tap(find.byTooltip('Settings'));
     await t.pumpAndSettle();
+    await t.tap(find.text('Language'));
+    await t.pumpAndSettle();
     await t.tap(find.text('Türkçe'));
     await t.pumpAndSettle();
-    expect(find.text('Ayarlar'), findsOneWidget, reason: 'the settings screen itself is now Turkish');
+    expect(find.text('Dil'), findsOneWidget, reason: 'the choice page itself is now Turkish');
     expect(settings.read('language'), 'tr');
 
     await t.tap(find.text('Telefonun dili'));
     await t.pumpAndSettle();
-    expect(find.text('Settings'), findsOneWidget);
+    expect(find.text('Language'), findsOneWidget);
     expect(settings.read('language'), isNull, reason: 'following the phone stores nothing');
+    await t.pageBack();
+    await t.pumpAndSettle();
+    expect(find.text('Settings'), findsOneWidget);
+  });
+
+  testWidgets('language and country are one row each, saying the current value', (t) async {
+    await _open(t, saved: {'region': 'DE'}, overrides: [backupDirProvider.overrideWithValue(Directory.systemTemp)]);
+    await t.tap(find.byTooltip('Settings'));
+    await t.pumpAndSettle();
+    expect(find.text('Germany'), findsOneWidget);
+    // The country list lives one page further: reminders and backup are on
+    // the first screen (852 pt tall phone).
+    expect(find.text('United Kingdom'), findsNothing);
+    expect(find.text('Remind me before rights end'), findsOneWidget);
+    final backup = find.text('Backup');
+    expect(backup, findsOneWidget);
+    expect(t.getBottomLeft(backup).dy, lessThan(852));
   });
 
   testWidgets('a saved language is used from the first frame', (t) async {
@@ -79,9 +99,13 @@ void main() {
     final (vault, _) = await _open(t);
     await t.tap(find.byTooltip('Settings'));
     await t.pumpAndSettle();
-    await t.scrollUntilVisible(find.text('United Kingdom'), 200);
+    await t.tap(find.text('Country'));
+    await t.pumpAndSettle();
     await t.tap(find.text('United Kingdom'));
     await t.pumpAndSettle();
+    await t.pageBack();
+    await t.pumpAndSettle();
+    expect(find.text('United Kingdom'), findsOneWidget, reason: 'the row now says the choice');
     await t.pageBack();
     await t.pumpAndSettle();
 

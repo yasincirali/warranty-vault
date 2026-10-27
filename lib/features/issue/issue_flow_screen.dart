@@ -7,7 +7,9 @@ import '../../core/ui/widgets.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../rights/advice.dart';
 import '../counter/counter_screen.dart';
+import '../items/domain/item.dart';
 import '../items/providers.dart';
+import '../items/ui/documents.dart';
 
 /// "Bir sorun var": ask one question, give one recommended path.
 /// The user never has to learn consumer law; the engine picks the
@@ -23,12 +25,42 @@ class IssueFlowScreen extends ConsumerStatefulWidget {
 class _IssueFlowScreenState extends ConsumerState<IssueFlowScreen> {
   IssueType _issue = IssueType.defect;
 
+  /// Papers the product had when the flow opened; what is added here on top
+  /// is the evidence step done.
+  int? _docsAtOpen;
+
+  Future<void> _addEvidence() async {
+    final l = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final c = ProviderScope.containerOf(context, listen: false);
+    final source = await showModalBottomSheet<DocSource>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheet) => SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(VSpace.xl, 0, VSpace.xl, VSpace.lg),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            SectionTitle(l.stepEvidenceAdd),
+            Text(l.stepEvidence, style: sheet.t.small.copyWith(color: sheet.c.textSecondary)),
+            const SizedBox(height: VSpace.lg),
+            ...docSourceButtons(sheet, l, pdf: false),
+          ]),
+        ),
+      ),
+    );
+    if (source == null || !mounted) return;
+    await saveDoc(c, messenger, l, widget.itemId, DocKind.other, source, announce: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final view = ref.watch(itemViewProvider(widget.itemId)).value;
     final today = ref.watch(clockProvider)();
     if (view == null) return const Scaffold();
+    _docsAtOpen ??= view.item.documents.length;
+    final added = view.item.documents.length - _docsAtOpen!;
 
     final advice = adviseFor(_issue, view.protections, today);
     final store = view.item.store;
@@ -106,11 +138,14 @@ class _IssueFlowScreenState extends ConsumerState<IssueFlowScreen> {
                 const SizedBox(height: VSpace.md),
                 // Only steps the app really does (Rafım Ar-Ge 24 Oct): "we write
                 // the message" waits for the claim assistant, it is not promised.
-                for (final (n, s) in [l.stepEvidence, l.stepShowProof].indexed)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: VSpace.xs),
-                    child: Text('${n + 1}. $s', style: context.t.small),
-                  ),
+                // The first step is done here, not described (27 Oct, yasin
+                // "yap"): the photo lands in the product's papers; the second
+                // is the button below.
+                _EvidenceStep(added: added, onTap: _addEvidence),
+                Padding(
+                  padding: const EdgeInsets.only(top: VSpace.sm, bottom: VSpace.xs),
+                  child: Text('2. ${l.stepShowProof}', style: context.t.small),
+                ),
                 // Review round 1: "what if they say no?" answered up front.
                 Container(
                   margin: const EdgeInsets.only(top: VSpace.sm),
@@ -178,4 +213,56 @@ class _RadioRow extends StatelessWidget {
           ),
         ),
       );
+}
+
+/// Step 1 as a row the user acts on. Done is said in words and with a
+/// check, not only by colour.
+class _EvidenceStep extends StatelessWidget {
+  const _EvidenceStep({required this.added, required this.onTap});
+  final int added;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final done = added > 0;
+    return Semantics(
+      button: true,
+      label: done ? '${l.stepEvidenceAdd}. ${l.stepEvidenceDone(added)}' : l.stepEvidenceAdd,
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(VRadius.sm),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: VSize.minTap + 4),
+          padding: const EdgeInsets.symmetric(horizontal: VSpace.md, vertical: VSpace.sm),
+          decoration: BoxDecoration(
+            color: context.c.surface,
+            border: Border.all(color: context.c.border),
+            borderRadius: BorderRadius.circular(VRadius.sm),
+          ),
+          child: Row(children: [
+            Container(
+              width: 26,
+              height: 26,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(color: context.c.tile, borderRadius: BorderRadius.circular(VRadius.sm - 2)),
+              child: done
+                  ? Icon(Icons.check, size: 16, color: context.c.text)
+                  : Text('1', style: context.t.small.copyWith(fontWeight: FontWeight.w700)),
+            ),
+            const SizedBox(width: VSpace.md),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(l.stepEvidenceAdd, style: context.t.label),
+                if (done) Text(l.stepEvidenceDone(added), style: context.t.small.copyWith(color: context.c.textSecondary)),
+              ]),
+            ),
+            const SizedBox(width: VSpace.sm),
+            Text(l.stepEvidenceButton, style: context.t.label.copyWith(decoration: TextDecoration.underline)),
+          ]),
+        ),
+      ),
+    );
+  }
 }

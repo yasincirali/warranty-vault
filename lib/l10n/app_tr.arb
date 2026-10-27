@@ -261,6 +261,9 @@
   "editTitle": "Ürünü düzenle",
   "sourcesBody": "Bu süre {region} tüketici kurallarından geliyor. Kaynak:",
   "stepEvidence": "Sorunun fotoğrafını çek, ürünün belgelerine ekle",
+  "stepEvidenceAdd": "Sorunun fotoğrafını ekle",
+  "stepEvidenceButton": "Ekle",
+  "stepEvidenceDone": "{n, plural, =1{1 fotoğraf eklendi} other{{n} fotoğraf eklendi}}",
   "stepShowProof": "Fişini \"Kasada göster\" ile aç ve satıcıya göster",
   "sourceOpenFailed": "Bağlantı açılamadı."
 }

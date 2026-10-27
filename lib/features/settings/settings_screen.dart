@@ -20,8 +20,8 @@ import 'settings.dart';
 /// - taking it all out as a file (yasin, 16 Oct: PDF and Excel export);
 /// - reminders and a whole-cabinet backup (benchmark, 17 Oct: every
 ///   compared app reminds; a new phone must not mean an empty cabinet).
-/// Choices are checkmark lists, the iOS Settings pattern, not dropdowns:
-/// every option is visible and one tap away.
+/// Choices are checkmark lists, the iOS Settings pattern, not dropdowns,
+/// one page behind a row that names the current value (27 Oct).
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -42,32 +42,53 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.sm, VSpace.xl, VSpace.xxl),
         children: [
-          SectionTitle(l.settingsLanguage),
-          _Choices(
-            children: [
-              _Choice(
-                label: l.languageSystem,
-                detail: phoneLanguage,
-                selected: s.language == null,
-                onTap: () => ctl.setLanguage(null),
-              ),
-              _Choice(label: l.langTr, selected: s.language == 'tr', onTap: () => ctl.setLanguage('tr')),
-              _Choice(label: l.langEn, selected: s.language == 'en', onTap: () => ctl.setLanguage('en')),
-            ],
-          ),
-          const SizedBox(height: VSpace.xxl),
-          SectionTitle(l.settingsRegion),
-          _Choices(
-            children: [
-              _Choice(
-                label: l.regionSystem,
-                detail: regionName(l, deviceRegion()),
-                selected: s.region == null,
-                onTap: () => ctl.setRegion(null),
-              ),
-              for (final r in kRegions)
-                _Choice(label: regionName(l, r), selected: s.region == r, onTap: () => ctl.setRegion(r)),
-            ],
+          // One row each, the choice behind it (Rafım Ar-Ge 27 Oct, yasin
+          // "yap"): ten checkmark rows filled the first screen and pushed
+          // reminders and backup below it, and "phone's country · US" stood
+          // right above "US". The value is said on the row.
+          VCard(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(VRadius.lg - 1),
+              child: Column(children: [
+                _PickRow(
+                  label: l.settingsLanguage,
+                  value: switch (s.language) { 'tr' => l.langTr, 'en' => l.langEn, _ => phoneLanguage },
+                  onTap: () => _pick(context, (l) => l.settingsLanguage, (context, ref, l) {
+                    final s = ref.watch(settingsProvider);
+                    final ctl = ref.read(settingsProvider.notifier);
+                    return [
+                      _Choice(
+                        label: l.languageSystem,
+                        detail: phoneLanguage,
+                        selected: s.language == null,
+                        onTap: () => ctl.setLanguage(null),
+                      ),
+                      _Choice(label: l.langTr, selected: s.language == 'tr', onTap: () => ctl.setLanguage('tr')),
+                      _Choice(label: l.langEn, selected: s.language == 'en', onTap: () => ctl.setLanguage('en')),
+                    ];
+                  }),
+                ),
+                Divider(height: 1, indent: VSpace.lg, color: context.c.divider),
+                _PickRow(
+                  label: l.settingsRegion,
+                  value: regionName(l, s.region ?? deviceRegion()),
+                  onTap: () => _pick(context, (l) => l.settingsRegion, (context, ref, l) {
+                    final s = ref.watch(settingsProvider);
+                    final ctl = ref.read(settingsProvider.notifier);
+                    return [
+                      _Choice(
+                        label: l.regionSystem,
+                        detail: regionName(l, deviceRegion()),
+                        selected: s.region == null,
+                        onTap: () => ctl.setRegion(null),
+                      ),
+                      for (final r in kRegions)
+                        _Choice(label: regionName(l, r), selected: s.region == r, onTap: () => ctl.setRegion(r)),
+                    ];
+                  }),
+                ),
+              ]),
+            ),
           ),
           const SizedBox(height: VSpace.sm),
           Text(l.settingsRegionHint, style: context.t.small.copyWith(color: context.c.textSecondary)),
@@ -109,6 +130,16 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           if (s.reminders) const NotificationAccessRow(),
+          // Backup before export (27 Oct): with language and country one row
+          // each, it now sits on the first screen; a new phone must not mean
+          // an empty cabinet, and that is the row people come here for.
+          if (vaultDir != null) ...[
+            const SizedBox(height: VSpace.xxl),
+            SectionTitle(l.settingsBackup),
+            BackupCard(vaultDir: vaultDir),
+            const SizedBox(height: VSpace.sm),
+            Text(l.backupHint, style: context.t.small.copyWith(color: context.c.textSecondary)),
+          ],
           const SizedBox(height: VSpace.xxl),
           SectionTitle(l.settingsExport),
           VCard(
@@ -136,13 +167,6 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: VSpace.sm),
           Text(l.exportHint, style: context.t.small.copyWith(color: context.c.textSecondary)),
-          if (vaultDir != null) ...[
-            const SizedBox(height: VSpace.xxl),
-            SectionTitle(l.settingsBackup),
-            BackupCard(vaultDir: vaultDir),
-            const SizedBox(height: VSpace.sm),
-            Text(l.backupHint, style: context.t.small.copyWith(color: context.c.textSecondary)),
-          ],
           const SizedBox(height: VSpace.xxl),
           SectionTitle(l.settingsAbout),
           VCard(
@@ -188,6 +212,76 @@ class _Choices extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// A setting and its current value; the choices are one page further, the
+/// iOS Settings pattern (standard back, swipe back).
+class _PickRow extends StatelessWidget {
+  const _PickRow({required this.label, required this.value, required this.onTap});
+  final String label;
+  final String value;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    child: InkWell(
+      onTap: onTap,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: VSize.button),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: VSpace.lg, vertical: VSpace.sm),
+          // Wrap: at large text the value drops under the label instead of
+          // squeezing it.
+          child: Row(children: [
+            Expanded(
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: VSpace.md,
+                children: [
+                  Text(label, style: context.t.label),
+                  Text(value, style: context.t.body.copyWith(color: context.c.textSecondary)),
+                ],
+              ),
+            ),
+            const SizedBox(width: VSpace.xs),
+            Icon(Icons.chevron_right, color: context.c.muted, size: 20),
+          ]),
+        ),
+      ),
+    ),
+  );
+}
+
+/// The checkmark list for one setting. Built with the live settings so the
+/// mark moves (and, for language, the page itself changes language) as the
+/// user taps; back returns, nothing to confirm.
+void _pick(
+  BuildContext context,
+  String Function(AppLocalizations l) title,
+  List<_Choice> Function(BuildContext context, WidgetRef ref, AppLocalizations l) choices,
+) {
+  Navigator.of(context).push(MaterialPageRoute(
+    builder: (_) => Consumer(
+      builder: (context, ref, _) {
+        final l = AppLocalizations.of(context);
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(title(l)),
+            backgroundColor: context.c.background,
+            surfaceTintColor: Colors.transparent,
+          ),
+          body: ListView(
+            padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.sm, VSpace.xl, VSpace.xxl),
+            children: [
+              _Choices(children: choices(context, ref, l)),
+            ],
+          ),
+        );
+      },
+    ),
+  ));
 }
 
 class _Choice extends StatelessWidget {

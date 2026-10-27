@@ -995,6 +995,23 @@ class AppLocalizationsEn extends AppLocalizations {
       'Photograph the problem and keep it with the product\'s papers';
 
   @override
+  String get stepEvidenceAdd => 'Add a photo of the problem';
+
+  @override
+  String get stepEvidenceButton => 'Add';
+
+  @override
+  String stepEvidenceDone(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n photos added',
+      one: '1 photo added',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get stepShowProof =>
       'Open your receipt with \"Show at the counter\" and show it to the seller';
 

@@ -244,11 +244,12 @@ Future<void> _showAddSheet(BuildContext context, WidgetRef ref, Item item) async
 
 /// The three places a paper comes from, each popping [sheet] with its
 /// source. Shared with the step right after a save, so both offer the same.
-List<Widget> docSourceButtons(BuildContext sheet, AppLocalizations l) => [
+/// [pdf] false where only a picture makes sense (a photo of the defect).
+List<Widget> docSourceButtons(BuildContext sheet, AppLocalizations l, {bool pdf = true}) => [
       for (final (s, icon, label) in [
         (DocSource.camera, Icons.photo_camera_outlined, l.docFromCamera),
         (DocSource.gallery, Icons.photo_library_outlined, l.docFromGallery),
-        (DocSource.pdf, Icons.picture_as_pdf_outlined, l.docFromFile),
+        if (pdf) (DocSource.pdf, Icons.picture_as_pdf_outlined, l.docFromFile),
       ]) ...[
         OutlinedButton.icon(
           onPressed: () => Navigator.of(sheet).pop(s),
@@ -274,8 +275,10 @@ Future<void> saveDoc(
   AppLocalizations l,
   String itemId,
   DocKind kind,
-  DocSource source,
-) async {
+  DocSource source, {
+  // False where the screen itself shows the result (the claim step).
+  bool announce = true,
+}) async {
   void say(String text) => messenger
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(content: Text(text)));
@@ -284,7 +287,7 @@ Future<void> saveDoc(
     if (picked == null) return;
     await c.read(vaultProvider.notifier).addDoc(itemId, picked.bytes, extension: picked.extension, kind: kind);
     HapticFeedback.lightImpact();
-    say(l.docAdded(docKindLabel(l, kind)));
+    if (announce) say(l.docAdded(docKindLabel(l, kind)));
   } on DocTooLarge {
     say(l.docTooLarge);
   } catch (e, s) {

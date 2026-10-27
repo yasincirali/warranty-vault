@@ -1664,6 +1664,24 @@ abstract class AppLocalizations {
   /// **'Photograph the problem and keep it with the product\'s papers'**
   String get stepEvidence;
 
+  /// No description provided for @stepEvidenceAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a photo of the problem'**
+  String get stepEvidenceAdd;
+
+  /// No description provided for @stepEvidenceButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get stepEvidenceButton;
+
+  /// No description provided for @stepEvidenceDone.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 photo added} other{{n} photos added}}'**
+  String stepEvidenceDone(int n);
+
   /// No description provided for @stepShowProof.
   ///
   /// In en, this message translates to:

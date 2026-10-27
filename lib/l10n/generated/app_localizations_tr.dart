@@ -958,6 +958,23 @@ class AppLocalizationsTr extends AppLocalizations {
   String get stepEvidence => 'Sorunun fotoğrafını çek, ürünün belgelerine ekle';
 
   @override
+  String get stepEvidenceAdd => 'Sorunun fotoğrafını ekle';
+
+  @override
+  String get stepEvidenceButton => 'Ekle';
+
+  @override
+  String stepEvidenceDone(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n fotoğraf eklendi',
+      one: '1 fotoğraf eklendi',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get stepShowProof =>
       'Fişini \"Kasada göster\" ile aç ve satıcıya göster';
 
