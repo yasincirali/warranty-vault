@@ -585,6 +585,10 @@
   "editTitle": "Edit product",
   "sourcesBody": "This period comes from the consumer rules of {region}. Source:",
   "stepEvidence": "Photograph the problem and keep it with the product's papers",
+  "stepEvidenceAdd": "Add a photo of the problem",
+  "stepEvidenceButton": "Add",
+  "stepEvidenceDone": "{n, plural, =1{1 photo added} other{{n} photos added}}",
+  "@stepEvidenceDone": {"placeholders": {"n": {"type": "int"}}},
   "stepShowProof": "Open your receipt with \"Show at the counter\" and show it to the seller",
   "sourceOpenFailed": "Couldn't open the link.",
   "@sourcesBody": {

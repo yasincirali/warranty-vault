@@ -1,6 +1,6 @@
 Bu sürümde:
-- Ürün sayfası sadeleşti: "Bugünkü durumun" kartı yalnız kalan süreyi ve ne anlama geldiğini söylüyor; süre çizgileri tek yerde, korumalar listesinde. Kartın anlattığı koruma orada kalın yazılı. Fiş ve "Kasada göster" artık kaydırmadan görünüyor.
-- Telefonda yazı boyutunu çok büyüttüğünde ana ekran başlığı ("Eşyalarım") artık kelimenin ortasından bölünmüyor; arama ve ayarlar düğmeleri başlığın altına iniyor.
+- "Bir sorun var" ekranında ilk adım artık bir düğme: "Sorunun fotoğrafını ekle"ye dokun, fotoğrafı çek ya da seç; fotoğraf doğrudan ürünün belgelerine eklenir ve satırda "1 fotoğraf eklendi" yazar.
+- Ayarlar sadeleşti: dil ve ülke birer satır, sağında seçili olan yazıyor; dokununca seçim listesi açılıyor. Hatırlatmalar ve yedek artık ilk ekranda.
 
-Denemen için: Rafta bir ürüne dokun; üstteki kartta süre çizgisi olmamalı, altındaki listede aynı koruma kalın yazılı ve çizgisiyle görünmeli. Fiş bölümü ve "Kasada göster" kaydırmadan görünmeli. Ayarlar > Erişilebilirlik > Ekran ve Metin Boyutu > Daha Büyük Metin'den yazıyı en büyüğe al, uygulamaya dön; "Eşyalarım" tek satırda olmalı, düğmeler altında durmalı.
+Denemen için: Rafta bir ürüne dokun, "Bir sorun var"a bas. "Sorunun fotoğrafını ekle"ye dokun, bir fotoğraf çek ya da seç; satırda onay işareti ve "1 fotoğraf eklendi" görünmeli. Geri çık, ürün sayfasındaki belgelerde fotoğrafı gör. Sonra Ayarlar'ı aç: Dil ve Ülke birer satır olmalı, "Yedek" kaydırmadan görünmeli; Ülke'ye dokunup başka bir ülke seç, geri dön; satırda yeni ülke yazmalı.
 Geri bildirimini TestFlight'tan gönder.
