@@ -121,10 +121,19 @@ class HomeScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.xl, VSpace.xl, VSpace.xs),
               sliver: SliverToBoxAdapter(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  SectionTitle(l.allHeader(active.length)),
+                  // No visible "All · 6" title (29 Oct): the header above
+                  // already says how many things stand on the shelves. The
+                  // count stays a heading for screen readers, merged into the
+                  // hint so the rotor still finds where the cabinet starts.
                   // The two gestures, said once in plain words; there is no
                   // tutorial to dismiss.
-                  Text(l.cabinetHint, style: context.t.small.copyWith(color: context.c.textSecondary)),
+                  MergeSemantics(
+                    child: Semantics(
+                      header: true,
+                      label: l.allHeader(active.length),
+                      child: Text(l.cabinetHint, style: context.t.small.copyWith(color: context.c.textSecondary)),
+                    ),
+                  ),
                   // One quiet line while samples stand on the shelves; no
                   // dialog when the first own product arrives (it would
                   // interrupt the moment the user came for). Wrap, not Row:

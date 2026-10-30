@@ -16,6 +16,7 @@ import 'package:warranty_vault/features/capture/add_item_screen.dart';
 import 'package:warranty_vault/features/items/data/demo_vault.dart';
 import 'package:warranty_vault/features/items/data/vault_store.dart';
 import 'package:warranty_vault/features/items/providers.dart';
+import 'package:warranty_vault/features/items/ui/documents.dart';
 import 'package:warranty_vault/features/settings/settings.dart';
 import 'package:warranty_vault/rights/rule_set.dart';
 
@@ -74,6 +75,7 @@ void main() {
         photoPickerProvider.overrideWithValue((_) async => File('assets/kategori/headphones.png').readAsBytesSync()),
         systemLiftProvider.overrideWithValue((b) async => (png: b, why: null)),
         photoLabelsProvider.overrideWithValue((_) async => [('headphones', .8)]),
+        docPickerProvider.overrideWithValue((_) async => (bytes: File('assets/demo/fis_macbook.jpg').readAsBytesSync(), extension: 'jpg')),
       ],
       child: const WarrantyVaultApp(),
     ));
@@ -102,6 +104,27 @@ void main() {
     await settle();
     await shot(t, '4_kasada');
     final nav = t.state<NavigatorState>(find.byType(Navigator).first);
+    nav.pop();
+    await t.pumpAndSettle();
+    // 5: "Something's wrong" (Rafım Ar-Ge 29 Oct): what sets the app apart
+    // from a reminder list. The broken laptop, whom to ask, and step 1 done
+    // in the app (a photo of the problem added).
+    await t.tap(find.text(lang == 'tr' ? 'Bir sorun var' : "Something's wrong"));
+    await t.pumpAndSettle();
+    final evidence = find.text(lang == 'tr' ? 'Sorunun fotoğrafını ekle' : 'Add a photo of the problem');
+    await t.ensureVisible(evidence);
+    await t.pumpAndSettle();
+    await t.tap(evidence);
+    await t.pumpAndSettle();
+    await t.runAsync(() async {
+      await t.tap(find.byIcon(Icons.photo_library_outlined).last);
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+    });
+    await t.pumpAndSettle();
+    await t.drag(find.byType(Scrollable).last, const Offset(0, 2000));
+    await t.pumpAndSettle();
+    await settle();
+    await shot(t, '5_sorun');
     nav.pop();
     await t.pumpAndSettle();
     nav.pop();

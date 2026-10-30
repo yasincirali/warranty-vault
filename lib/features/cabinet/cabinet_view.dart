@@ -424,6 +424,26 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
               ),
             ),
           for (var s = 0; s < geo.shelves; s++) ...[
+            // Light down the wall from the top of the bay (dark theme only;
+            // transparent in light), under the shade line below.
+            Positioned(
+              left: _wallInset,
+              right: _wallInset,
+              top: geo.bandTop(s),
+              height: geo.plankTop(s) - geo.bandTop(s),
+              child: IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: s == 0 ? const BorderRadius.vertical(top: Radius.circular(VRadius.md)) : null,
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [context.c.wallLight, context.c.wallLight.withValues(alpha: 0)],
+                    ),
+                  ),
+                ),
+              ),
+            ),
             // Shade cast on the wall by the cabinet top or the plank above.
             Positioned(
               left: _wallInset,

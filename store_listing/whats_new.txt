@@ -1,6 +1,6 @@
 Bu sürümde:
-- "Bir sorun var" ekranında ilk adım artık bir düğme: "Sorunun fotoğrafını ekle"ye dokun, fotoğrafı çek ya da seç; fotoğraf doğrudan ürünün belgelerine eklenir ve satırda "1 fotoğraf eklendi" yazar.
-- Ayarlar sadeleşti: dil ve ülke birer satır, sağında seçili olan yazıyor; dokununca seçim listesi açılıyor. Hatırlatmalar ve yedek artık ilk ekranda.
+- Karanlık modda dolap daha aydınlık: arka duvar biraz açıldı ve her rafa yukarıdan hafif bir ışık düşüyor. Siyah kulaklık, telefon ve televizyon artık duvarın önünde kaybolmuyor.
+- Ana ekranda dolabın üstündeki "Tümü · 6" başlığı kalktı; ürün sayısı zaten en üstte yazıyor. Dolap bir satır yukarıdan başlıyor.
 
-Denemen için: Rafta bir ürüne dokun, "Bir sorun var"a bas. "Sorunun fotoğrafını ekle"ye dokun, bir fotoğraf çek ya da seç; satırda onay işareti ve "1 fotoğraf eklendi" görünmeli. Geri çık, ürün sayfasındaki belgelerde fotoğrafı gör. Sonra Ayarlar'ı aç: Dil ve Ülke birer satır olmalı, "Yedek" kaydırmadan görünmeli; Ülke'ye dokunup başka bir ülke seç, geri dön; satırda yeni ülke yazmalı.
+Denemen için: Telefonu karanlık moda al (Ayarlar > Ekran ve Parlaklık > Koyu) ve uygulamayı aç. Raftaki koyu renkli ürünlerin (kulaklık, telefon, televizyon) kenarları duvardan ayırt edilmeli. Açık moda dön: dolap önceki gibi görünmeli. Ana ekranda "Tümü" yazısı olmamalı; ürün sayısı başlığın altında bir kez yazmalı.
 Geri bildirimini TestFlight'tan gönder.
