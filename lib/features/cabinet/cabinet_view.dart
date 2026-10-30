@@ -737,7 +737,7 @@ class _Drawn extends StatelessWidget {
             // The product is a fixed-size physical object; its tag is a
             // hint, the full name is in the accessibility label and detail.
             textScaler: TextScaler.noScaling,
-            style: context.t.small.copyWith(fontSize: 10, height: 1.2, fontWeight: FontWeight.w600),
+            style: context.t.micro,
           ),
         ),
       ),
@@ -889,7 +889,7 @@ class _DeadlineTag extends StatelessWidget {
         text,
         maxLines: 1,
         textScaler: TextScaler.noScaling,
-        style: context.t.small.copyWith(fontSize: 11.5, fontWeight: FontWeight.w700, color: context.c.deadline),
+        style: context.t.tag.copyWith(color: context.c.deadline),
       ),
     ),
   );
@@ -947,9 +947,7 @@ class _DymoLabelState extends State<_DymoLabel> {
     // Rafım Ar-Ge 25 Oct (yasin "yap"): white tape with ink letters. Ink
     // black is the primary action's colour ("Add a product"); three black
     // strips competed with it. Still a label-maker strip, the white kind.
-    final tape = TextStyle(
-      fontSize: 11.5,
-      fontWeight: FontWeight.w700,
+    final tape = context.t.tag.copyWith(
       letterSpacing: 1.4,
       color: empty && !_editing ? context.c.muted : context.c.text,
     );

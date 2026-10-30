@@ -1,6 +1,9 @@
 Bu sürümde:
-- Karanlık modda dolap daha aydınlık: arka duvar biraz açıldı ve her rafa yukarıdan hafif bir ışık düşüyor. Siyah kulaklık, telefon ve televizyon artık duvarın önünde kaybolmuyor.
-- Ana ekranda dolabın üstündeki "Tümü · 6" başlığı kalktı; ürün sayısı zaten en üstte yazıyor. Dolap bir satır yukarıdan başlıyor.
+- "Kasada göster" fişi olmayan üründe boş kutu göstermiyor: "Fişi ya da faturayı ekle" var. Fotoğraflardan seç, fotoğraf çek ya da PDF ekle; fiş aynı ekranda hemen görünür. Fiş yoksa başlık "Alış bilgisi" diyor.
+- Ürün sayfasında kısa süreler (14 günlük iade gibi) artık çizgide görünür bir parça; sonunda "3 gün" gibi kalan gün yazıyor.
+- Ürün eklerken "Mağaza" alanına dokununca en çok kullandığın üç mağaza çıkıyor; dokununca yazılıyor.
+- Ürün sayfasında "Almanya kuralları" hapı yerine "Almanya kurallarıyla hesaplandı" satırı (basılabilir gibi görünmüyor).
+- Alt sayfalar (belge ekle, "Bu süre nereden geliyor?") uygulamanın kâğıt renginde.
 
-Denemen için: Telefonu karanlık moda al (Ayarlar > Ekran ve Parlaklık > Koyu) ve uygulamayı aç. Raftaki koyu renkli ürünlerin (kulaklık, telefon, televizyon) kenarları duvardan ayırt edilmeli. Açık moda dön: dolap önceki gibi görünmeli. Ana ekranda "Tümü" yazısı olmamalı; ürün sayısı başlığın altında bir kez yazmalı.
+Denemen için: Fişi olmayan bir ürünü aç (örnek raflarda Sony kulaklık), "Kasada göster"e bas; kesikli çerçevede "Fişi ya da faturayı ekle" olmalı. "Fotoğraflardan seç" ile bir görsel seç; fiş aynı yerde görünmeli, başlık "Satın alma kanıtı" olmalı. Ürün sayfasına dön: "İade süresi" çizgisinde kısa turuncu uçlu parça ve "3 gün" yazısı görünmeli. Sonra "Ürün ekle"ye bas, "Mağaza" alanına dokun: altında daha önce kullandığın mağazalar çıkmalı; birine dokun, alana yazılmalı ve imleç tutara geçmeli.
 Geri bildirimini TestFlight'tan gönder.

@@ -62,7 +62,7 @@
   "left": "kaldı",
   "ruleSemantics": "Sürenin yüzde {p} kadarı geçti",
   "ruleProofMonth": "{n}. ay · ispat sana geçer",
-  "rulesOf": "{country} kuralları",
+  "rulesOf": "{country} kurallarıyla hesaplandı",
   "regionDE": "Almanya",
   "regionEU": "AB",
   "regionGB": "Birleşik Krallık",
@@ -73,7 +73,6 @@
   "counterTitle": "Satın alma kanıtı",
   "counterRight": "{kind}: {date} tarihine kadar.",
   "counterAsk": "Ücretsiz tamir ya da değişim istiyorum.",
-  "counterNoInvoice": "Henüz fatura fotoğrafı yok",
   "adviceIfRefused": "Satıcı reddederse ülkenin resmi tüketici kurumuna başvurabilirsin; fişin ve fotoğrafların burada hazır.",
   "notVerifiedWhy": "Bu ülkenin kuralını henüz resmi kaynaktan doğrulamadık, bu yüzden süre göstermiyoruz.",
   "daysLeft": "gün kaldı",
@@ -104,7 +103,6 @@
   "addTitle": "Yeni ürün",
   "photoCamera": "Kamera",
   "photoGallery": "Fotoğraflar",
-  "photoOptional": "Fotoğraf şart değil ama rafta onu fotoğrafından tanırsın.",
   "loading": "Yükleniyor",
   "lifting": "Arka plandan ayırıyorum…",
   "photoCutout": "Dekupe",
@@ -265,5 +263,9 @@
   "stepEvidenceButton": "Ekle",
   "stepEvidenceDone": "{n, plural, =1{1 fotoğraf eklendi} other{{n} fotoğraf eklendi}}",
   "stepShowProof": "Fişini \"Kasada göster\" ile aç ve satıcıya göster",
-  "sourceOpenFailed": "Bağlantı açılamadı."
+  "sourceOpenFailed": "Bağlantı açılamadı.",
+  "counterTitleNoProof": "Alış bilgisi",
+  "counterAddProof": "Fişi ya da faturayı ekle",
+  "counterProofHint": "Fiş yoksa banka ekstresi ya da sipariş e-postası da alış kanıtıdır.",
+  "storeSuggestion": "Mağaza önerisi: {store}"
 }

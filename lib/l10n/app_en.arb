@@ -173,7 +173,7 @@
       }
     }
   },
-  "rulesOf": "Rules: {country}",
+  "rulesOf": "Worked out with {country} rules",
   "@rulesOf": {
     "placeholders": {
       "country": {
@@ -201,7 +201,6 @@
     }
   },
   "counterAsk": "I'm asking for a free repair or replacement.",
-  "counterNoInvoice": "No invoice photo yet",
   "adviceIfRefused": "If the seller refuses, you can turn to your country's official consumer body; your receipt and photos are ready here.",
   "notVerifiedWhy": "We haven't checked this country's rule against an official source yet, so we don't show a period.",
   "daysLeft": "{n, plural, =1{day left} other{days left}}",
@@ -297,7 +296,6 @@
   "addTitle": "New product",
   "photoCamera": "Camera",
   "photoGallery": "Photos",
-  "photoOptional": "A photo is optional, but it is how you will spot it on the shelf.",
   "loading": "Loading",
   "lifting": "Lifting it off the background…",
   "photoCutout": "Cut out",
@@ -326,8 +324,20 @@
   "aboutLocalIos": "Your cabinet and photos are stored on this phone. No account needed. If your iPhone's iCloud Backup is on, your cabinet is backed up with it.",
   "backupLast": "Last backup file: {date}",
   "backupNever": "You have {count} products and no backup yet. If you change phones, this file is what brings them back.",
-  "@backupLast": {"placeholders": {"date": {"type": "String"}}},
-  "@backupNever": {"placeholders": {"count": {"type": "int"}}},
+  "@backupLast": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@backupNever": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "nameMissing": "Write the product's name.",
   "aboutLocal": "Your cabinet and photos are stored on this phone. No account needed.",
   "amountPreview": "Will be saved as {amount}",
@@ -588,12 +598,29 @@
   "stepEvidenceAdd": "Add a photo of the problem",
   "stepEvidenceButton": "Add",
   "stepEvidenceDone": "{n, plural, =1{1 photo added} other{{n} photos added}}",
-  "@stepEvidenceDone": {"placeholders": {"n": {"type": "int"}}},
+  "@stepEvidenceDone": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "stepShowProof": "Open your receipt with \"Show at the counter\" and show it to the seller",
   "sourceOpenFailed": "Couldn't open the link.",
   "@sourcesBody": {
     "placeholders": {
       "region": {
+        "type": "String"
+      }
+    }
+  },
+  "counterTitleNoProof": "Purchase details",
+  "counterAddProof": "Add the receipt or invoice",
+  "counterProofHint": "No receipt? A bank statement or an order email also shows the purchase.",
+  "storeSuggestion": "Store suggestion: {store}",
+  "@storeSuggestion": {
+    "placeholders": {
+      "store": {
         "type": "String"
       }
     }

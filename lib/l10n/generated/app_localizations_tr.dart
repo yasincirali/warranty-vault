@@ -258,7 +258,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String rulesOf(String country) {
-    return '$country kuralları';
+    return '$country kurallarıyla hesaplandı';
   }
 
   @override
@@ -292,9 +292,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get counterAsk => 'Ücretsiz tamir ya da değişim istiyorum.';
-
-  @override
-  String get counterNoInvoice => 'Henüz fatura fotoğrafı yok';
 
   @override
   String get adviceIfRefused =>
@@ -411,10 +408,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get photoGallery => 'Fotoğraflar';
-
-  @override
-  String get photoOptional =>
-      'Fotoğraf şart değil ama rafta onu fotoğrafından tanırsın.';
 
   @override
   String get loading => 'Yükleniyor';
@@ -980,4 +973,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get sourceOpenFailed => 'Bağlantı açılamadı.';
+
+  @override
+  String get counterTitleNoProof => 'Alış bilgisi';
+
+  @override
+  String get counterAddProof => 'Fişi ya da faturayı ekle';
+
+  @override
+  String get counterProofHint =>
+      'Fiş yoksa banka ekstresi ya da sipariş e-postası da alış kanıtıdır.';
+
+  @override
+  String storeSuggestion(String store) {
+    return 'Mağaza önerisi: $store';
+  }
 }

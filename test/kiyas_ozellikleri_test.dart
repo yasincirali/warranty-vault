@@ -206,7 +206,7 @@ void main() {
       await t.tap(find.text('Show at the counter'));
       await t.pumpAndSettle();
       expect(find.bySemanticsLabel('Receipt, opens full screen'), findsOneWidget);
-      expect(find.text('No invoice photo yet'), findsNothing);
+      expect(find.text('Add the receipt or invoice'), findsNothing);
     });
 
     test('an older build’s single invoicePath is read as the receipt', () {

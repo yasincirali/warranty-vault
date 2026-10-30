@@ -158,6 +158,8 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
   /// now it is always tappable and the field says what is missing.
   bool _nameMissing = false;
   final _store = TextEditingController();
+  final _storeFocus = FocusNode();
+  final _priceFocus = FocusNode();
   final _price = TextEditingController();
 
   /// Form rows rise in one after another once the sheet has arrived.
@@ -245,6 +247,8 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
     _name.dispose();
     _nameFocus.dispose();
     _store.dispose();
+    _storeFocus.dispose();
+    _priceFocus.dispose();
     _price.dispose();
     super.dispose();
   }
@@ -463,12 +467,23 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
                 VFieldLift(
                   child: TextField(
                     controller: _store,
+                    focusNode: _storeFocus,
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
+                    // Named, not reading order: with the store chips open the
+                    // amount can sit under the save bar, and reading order
+                    // then jumped to the button.
+                    onEditingComplete: _priceFocus.requestFocus,
                     groupId: formFieldsGroup,
                     onTapOutside: dismissKeyboard,
                     decoration: InputDecoration(labelText: l.fieldStore),
                   ),
+                ),
+                _StoreSuggestions(
+                  controller: _store,
+                  focus: _storeFocus,
+                  stores: frequentStores(ref.watch(vaultProvider).value?.items ?? const []),
+                  onPicked: _priceFocus.requestFocus,
                 ),
                 const SizedBox(height: VSpace.md),
                 Row(
@@ -478,6 +493,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> with SingleTicker
                       child: VFieldLift(
                         child: TextField(
                           controller: _price,
+                          focusNode: _priceFocus,
                           keyboardType: const TextInputType.numberWithOptions(decimal: true),
                           // Android shows a done key; iOS's decimal pad has none,
                           // so the bar above the keyboard carries "hide keyboard".
@@ -713,11 +729,15 @@ class _PhotoArea extends StatelessWidget {
               ],
             ),
             const SizedBox(height: VSpace.md),
-            Text(
-              failed ? l.photoFailed : l.photoOptional,
-              textAlign: TextAlign.center,
-              style: context.t.small.copyWith(color: failed ? context.c.deadline : context.c.textSecondary),
-            ),
+            // Only a failure is said here. "A photo is optional" was said
+            // twice (here and under the kinds); it stays where the drawing
+            // it falls back to is shown (Rafım Ar-Ge 29 Oct).
+            if (failed)
+              Text(
+                l.photoFailed,
+                textAlign: TextAlign.center,
+                style: context.t.small.copyWith(color: context.c.deadline),
+              ),
           ],
         ),
       );
@@ -1040,6 +1060,84 @@ class _ScanningState extends State<_Scanning> with SingleTickerProviderStateMixi
           ),
         ),
       ),
+    );
+  }
+}
+
+/// The stores you buy from most, at most three: the second product on is
+/// usually from a shop already typed once (Rafım Ar-Ge 29 Oct). Your own
+/// products only; the samples' "Saturn Berlin" would read as someone
+/// else's. Ties go to the shop used last.
+List<String> frequentStores(List<Item> items) {
+  final counts = <String, int>{};
+  final names = <String, String>{};
+  final last = <String, DateTime>{};
+  for (final i in items) {
+    final name = i.store.trim();
+    if (i.sample || name.isEmpty) continue;
+    final key = name.toLowerCase();
+    counts[key] = (counts[key] ?? 0) + 1;
+    names.putIfAbsent(key, () => name);
+    final d = i.purchase.date;
+    if (last[key] == null || d.isAfter(last[key]!)) last[key] = d;
+  }
+  final keys = counts.keys.toList()
+    ..sort((a, b) {
+      final c = counts[b]!.compareTo(counts[a]!);
+      return c != 0 ? c : last[b]!.compareTo(last[a]!);
+    });
+  return [for (final k in keys.take(3)) names[k]!];
+}
+
+/// Chips under the store field while it has focus; typing filters them,
+/// a tap fills the field and moves on to the amount.
+class _StoreSuggestions extends StatelessWidget {
+  const _StoreSuggestions({required this.controller, required this.focus, required this.stores, required this.onPicked});
+  final TextEditingController controller;
+  final FocusNode focus;
+  final List<String> stores;
+  final VoidCallback onPicked;
+
+  @override
+  Widget build(BuildContext context) {
+    if (stores.isEmpty) return const SizedBox.shrink();
+    final l = AppLocalizations.of(context);
+    return ListenableBuilder(
+      listenable: Listenable.merge([controller, focus]),
+      builder: (context, _) {
+        final typed = controller.text.trim().toLowerCase();
+        final shown = [
+          for (final s in stores)
+            if (s.toLowerCase().startsWith(typed) && s.toLowerCase() != typed) s,
+        ];
+        if (!focus.hasFocus || shown.isEmpty) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(top: VSpace.sm),
+          // Out of the focus order: the keyboard's "next" goes from the
+          // store straight to the amount, as before; the chips are taps.
+          child: ExcludeFocus(child: Wrap(spacing: VSpace.sm, runSpacing: VSpace.sm, children: [
+            for (final s in shown)
+              Semantics(
+                button: true,
+                label: l.storeSuggestion(s),
+                excludeSemantics: true,
+                child: ActionChip(
+                  label: Text(s),
+                  onPressed: () {
+                    HapticFeedback.selectionClick();
+                    controller.value = TextEditingValue(text: s, selection: TextSelection.collapsed(offset: s.length));
+                    onPicked();
+                  },
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                  backgroundColor: context.c.surface,
+                  side: BorderSide(color: context.c.border),
+                  shape: const StadiumBorder(),
+                  labelStyle: context.t.small.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ),
+          ])),
+        );
+      },
     );
   }
 }
