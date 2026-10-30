@@ -32,6 +32,7 @@ class VColors extends ThemeExtension<VColors> {
     required this.plankTop,
     required this.plankFront,
     required this.shade,
+    required this.wallLight,
   });
 
   final Color background;
@@ -67,6 +68,13 @@ class VColors extends ThemeExtension<VColors> {
   final Color plankFront;
   final Color shade;
 
+  /// Light falling down the back wall under each plank. Only the dark theme
+  /// has it (Rafım Ar-Ge 29 Oct): there the wall sat a hair off the page and
+  /// black headphones, phones and TVs melted into it. A little light from
+  /// above gives their silhouettes an edge; in the light theme the page
+  /// already does that, so it stays transparent.
+  final Color wallLight;
+
   // Text colours were picked for ≥4.5:1 on their surface in each theme.
   //
   // Review round 3 (2026-10-14): the accent is ink, not blue. With a blue
@@ -98,6 +106,7 @@ class VColors extends ThemeExtension<VColors> {
     plankTop: Color(0xFFFBFAF6),
     plankFront: Color(0xFFE2DCCF),
     shade: Color(0xFF2A2418),
+    wallLight: Color(0x00FFFFFF),
   );
 
   static const dark = VColors(
@@ -118,10 +127,13 @@ class VColors extends ThemeExtension<VColors> {
     adviceBorder: Color(0xFFF2F1EE),
     adviceTitle: Color(0xFFF2F1EE),
     lift: Color(0x8C000000),
-    wall: Color(0xFF17181B),
+    // A step lighter than it was (#17181B, 29 Oct): dark products need a
+    // wall they can stand out against.
+    wall: Color(0xFF212328),
     plankTop: Color(0xFF34363C),
     plankFront: Color(0xFF26282D),
     shade: Color(0xFF000000),
+    wallLight: Color(0x14FFFFFF),
   );
 
   @override
