@@ -580,12 +580,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportTotal => 'Total paid';
 
   @override
-  String get exportSoon => 'Ending within 30 days';
-
-  @override
-  String get exportNone => 'None';
-
-  @override
   String get exportAttention => 'Needs attention';
 
   @override
@@ -628,7 +622,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportLegend =>
-      'Bar: time since purchase. Ring: today. Tick: the day the burden of proof moves to you. Amber: ends within 30 days.';
+      'Bars: all of a product\'s protections on one timeline, from purchase to the latest end. Dark part: time passed. Ring: today. Tick: the day the burden of proof moves to you. Amber: ends within 30 days.';
 
   @override
   String get colShelf => 'Shelf';

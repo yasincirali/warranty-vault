@@ -377,8 +377,6 @@
   },
   "exportItems": "Products",
   "exportTotal": "Total paid",
-  "exportSoon": "Ending within 30 days",
-  "exportNone": "None",
   "exportAttention": "Needs attention",
   "exportAttentionWhy": "These protections end within 30 days. Act before the date if something is wrong.",
   "exportUnlabelled": "Unlabelled shelf",
@@ -412,7 +410,7 @@
     }
   },
   "exportNoProtection": "No protection on record",
-  "exportLegend": "Bar: time since purchase. Ring: today. Tick: the day the burden of proof moves to you. Amber: ends within 30 days.",
+  "exportLegend": "Bars: all of a product's protections on one timeline, from purchase to the latest end. Dark part: time passed. Ring: today. Tick: the day the burden of proof moves to you. Amber: ends within 30 days.",
   "colShelf": "Shelf",
   "colProduct": "Product",
   "colCategory": "Category",

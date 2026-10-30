@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart' show AssetBundle;
@@ -7,6 +8,7 @@ import 'package:pdf/widgets.dart' as pw;
 
 import '../../core/format.dart';
 import '../../core/theme/tokens.dart';
+import '../../core/ui/time_rule.dart' show TimeBand;
 import '../../l10n/generated/app_localizations.dart';
 import '../../rights/rights_engine.dart';
 import '../items/domain/item.dart';
@@ -140,6 +142,9 @@ Future<Uint8List> inventoryPdf(
         pw.SizedBox(height: 18),
         _numbers(r, l, s, locale),
         if (r.due.isNotEmpty) ...[pw.SizedBox(height: 22), ..._attention(r, l, s, date)],
+        // Before the first bars, not after the last one (Rafım Ar-Ge 30 Oct):
+        // on page 2 nobody reading page 1 found it.
+        if (r.active.isNotEmpty) ...[pw.SizedBox(height: 10), pw.Text(l.exportLegend, style: s.caption)],
         for (final g in r.shelves) ...[
           pw.SizedBox(height: 22),
           // The label travels with its first item so a shelf name never sits
@@ -156,7 +161,6 @@ Future<Uint8List> inventoryPdf(
           ),
           for (final v in g.items.skip(1)) ...[pw.SizedBox(height: 8), _itemCard(v, r, l, s, photos, date)],
         ],
-        if (r.active.isNotEmpty) ...[pw.SizedBox(height: 10), pw.Text(l.exportLegend, style: s.caption)],
         if (r.disposed.isNotEmpty) ...[pw.SizedBox(height: 22), _disposed(r, l, s, locale, date)],
       ],
     ),
@@ -212,16 +216,16 @@ pw.Widget _cover(InventoryReport r, AppLocalizations l, _Styles s, String mark, 
 }
 
 pw.Widget _numbers(InventoryReport r, AppLocalizations l, _Styles s, String locale) {
-  pw.Widget cell({required pw.Widget value, required String label, bool due = false}) => pw.Expanded(
+  pw.Widget cell({required pw.Widget value, required String label}) => pw.Expanded(
     child: pw.Container(
       padding: const pw.EdgeInsets.fromLTRB(14, 12, 14, 12),
-      decoration: pw.BoxDecoration(color: due ? _dueSurface : _paper, borderRadius: pw.BorderRadius.circular(10)),
+      decoration: pw.BoxDecoration(color: _paper, borderRadius: pw.BorderRadius.circular(10)),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           value,
           pw.SizedBox(height: 4),
-          pw.Text(label, style: s.label.copyWith(color: due ? _due : _secondary)),
+          pw.Text(label, style: s.label.copyWith(color: _secondary)),
         ],
       ),
     ),
@@ -250,15 +254,9 @@ pw.Widget _numbers(InventoryReport r, AppLocalizations l, _Styles s, String loca
               ),
         label: l.exportTotal,
       ),
-      pw.SizedBox(width: 8),
-      cell(
-        value: pw.Text(
-          r.dueItems == 0 ? l.exportNone : '${r.dueItems}',
-          style: s.big.copyWith(color: r.dueItems == 0 ? _ink : _due),
-        ),
-        label: l.exportSoon,
-        due: r.dueItems > 0,
-      ),
+      // No third "ending within 30 days" tile (Rafım Ar-Ge 30 Oct): the
+      // "Needs attention" list right below names the same products with
+      // their dates; the count spent the page's one colour on a repeat.
     ],
   );
 }
@@ -424,13 +422,20 @@ pw.Widget _itemCard(
         if (v.protections.isEmpty)
           pw.Text(l.exportNoProtection, style: s.label)
         else
-          for (final p in v.protections) _protectionRow(p, r.today, l, s, date),
+          for (final p in v.protections) _protectionRow(p, r.today, l, s, date, TimeBand.axisOf(v.protections)),
       ],
     ),
   );
 }
 
-pw.Widget _protectionRow(Protection p, DateTime today, AppLocalizations l, _Styles s, String Function(DateTime) date) {
+pw.Widget _protectionRow(
+  Protection p,
+  DateTime today,
+  AppLocalizations l,
+  _Styles s,
+  String Function(DateTime) date,
+  (DateTime, DateTime)? axis,
+) {
   final days = p.daysLeft(today);
   final active = p.status == ProtectionStatus.active;
   final urgent = active && days != null && days >= 0 && days <= InventoryReport.soonDays;
@@ -485,7 +490,7 @@ pw.Widget _protectionRow(Protection p, DateTime today, AppLocalizations l, _Styl
               width: 118,
               child: pw.Text(kindLabel(l, p.kind), style: s.body.copyWith(color: ended ? _muted : _ink)),
             ),
-            pw.Expanded(child: _rule(p, today, urgent)),
+            pw.Expanded(child: _rule(p, today, urgent, axis)),
             pw.SizedBox(width: 12),
             pw.SizedBox(
               width: 150,
@@ -503,54 +508,63 @@ pw.Widget _protectionRow(Protection p, DateTime today, AppLocalizations l, _Styl
   );
 }
 
-/// [TimeRule] on paper: track, the part that has passed, a ring at today
-/// (amber when urgent) and a tick where the burden of proof moves.
-pw.Widget _rule(Protection p, DateTime today, bool urgent) {
-  double? fraction(DateTime at) {
-    if (p.end == null) return null;
-    final total = p.end!.difference(p.start).inDays;
-    if (total <= 0) return 1;
-    return (at.difference(p.start).inDays / total).clamp(0.0, 1.0);
-  }
-
+/// [TimeRule] on paper. One axis per product, as on its page in the app
+/// (#29; Rafım Ar-Ge 30 Oct): a 14-day return window is a short piece next
+/// to a two-year right, not a bar of the same length. On that axis, the protection's own
+/// piece of track, the part that has passed, a ring at today (amber when
+/// urgent) and a tick where the burden of proof moves. Without an axis
+/// (open-ended or unverified) only the empty track is drawn.
+pw.Widget _rule(Protection p, DateTime today, bool urgent, (DateTime, DateTime)? axis) {
   final ended = p.status == ProtectionStatus.ended;
   final unverified = p.status == ProtectionStatus.unverified;
-  final f = ended ? 1.0 : fraction(today);
-  final proof = p.presumptionEnd == null ? null : fraction(p.presumptionEnd!);
 
   return pw.SizedBox(
     height: 10,
     child: pw.CustomPaint(
       painter: (canvas, size) {
         const h = 4.0;
+        // A short window stays a visible piece (the app's minSpan, scaled
+        // to paper).
+        const minPiece = 10.0;
         final y = (size.y - h) / 2;
-        canvas
-          ..setFillColor(_track)
-          ..drawRRect(0, y, size.x, h, h / 2, h / 2)
-          ..fillPath();
-        // No fixed end or not verified: nothing honest to fill.
-        if (f == null || unverified) return;
-        if (f > 0) {
+        if (axis == null || p.end == null || unverified) {
           canvas
-            ..setFillColor(ended ? _ended : _passed)
-            ..drawRRect(0, y, size.x * f, h, h / 2, h / 2)
+            ..setFillColor(_track)
+            ..drawRRect(0, y, size.x, h, h / 2, h / 2)
+            ..fillPath();
+          return;
+        }
+        final total = axis.$2.difference(axis.$1).inDays.toDouble();
+        double x(DateTime d) => size.x * (d.difference(axis.$1).inDays / total).clamp(0.0, 1.0);
+        final from = x(p.start);
+        final to = math.min(size.x, math.max(x(p.end!), from + minPiece));
+        final now = x(today).clamp(from, to);
+        canvas
+          ..setFillColor(ended ? _ended : _track)
+          ..drawRRect(from, y, to - from, h, h / 2, h / 2)
+          ..fillPath();
+        if (!ended && now > from) {
+          canvas
+            ..setFillColor(_passed)
+            ..drawRRect(from, y, now - from, h, h / 2, h / 2)
             ..fillPath();
         }
-        if (proof != null && proof > 0 && proof < 1 && !ended) {
+        final proof = p.presumptionEnd == null ? null : x(p.presumptionEnd!);
+        if (proof != null && proof > from && proof < to && !ended) {
           canvas
             ..setFillColor(_ink)
-            ..drawRect(size.x * proof - .5, 0, 1, size.y)
+            ..drawRect(proof - .5, 0, 1, size.y)
             ..fillPath();
         }
         if (!ended) {
-          final x = (size.x * f).clamp(4.0, size.x - 4.0);
+          final cx = now.clamp(4.0, size.x - 4.0);
           canvas
             ..setFillColor(_white)
-            ..drawEllipse(x, size.y / 2, 4, 4)
+            ..drawEllipse(cx, size.y / 2, 4, 4)
             ..fillPath()
             ..setStrokeColor(urgent ? _due : _ink)
             ..setLineWidth(1.6)
-            ..drawEllipse(x, size.y / 2, 3.6, 3.6)
+            ..drawEllipse(cx, size.y / 2, 3.6, 3.6)
             ..strokePath();
         }
       },

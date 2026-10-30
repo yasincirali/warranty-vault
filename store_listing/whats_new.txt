@@ -1,9 +1,7 @@
 Bu sürümde:
-- "Kasada göster" fişi olmayan üründe boş kutu göstermiyor: "Fişi ya da faturayı ekle" var. Fotoğraflardan seç, fotoğraf çek ya da PDF ekle; fiş aynı ekranda hemen görünür. Fiş yoksa başlık "Alış bilgisi" diyor.
-- Ürün sayfasında kısa süreler (14 günlük iade gibi) artık çizgide görünür bir parça; sonunda "3 gün" gibi kalan gün yazıyor.
-- Ürün eklerken "Mağaza" alanına dokununca en çok kullandığın üç mağaza çıkıyor; dokununca yazılıyor.
-- Ürün sayfasında "Almanya kuralları" hapı yerine "Almanya kurallarıyla hesaplandı" satırı (basılabilir gibi görünmüyor).
-- Alt sayfalar (belge ekle, "Bu süre nereden geliyor?") uygulamanın kâğıt renginde.
+- PDF envanter raporu uygulamayla aynı süre çizgisini kullanıyor: bir ürünün tüm korumaları tek zaman çizgisinde, 14 günlük iade kısa bir parça, 2 yıllık hak uzun.
+- Çizgileri açıklayan satır artık ilk sayfada, "İlgilen" listesinin altında.
+- Kapaktaki turuncu "30 gün içinde biten" kutusu kalktı; aynı ürünler hemen altındaki "İlgilen" listesinde tarihleriyle yazıyor.
 
-Denemen için: Fişi olmayan bir ürünü aç (örnek raflarda Sony kulaklık), "Kasada göster"e bas; kesikli çerçevede "Fişi ya da faturayı ekle" olmalı. "Fotoğraflardan seç" ile bir görsel seç; fiş aynı yerde görünmeli, başlık "Satın alma kanıtı" olmalı. Ürün sayfasına dön: "İade süresi" çizgisinde kısa turuncu uçlu parça ve "3 gün" yazısı görünmeli. Sonra "Ürün ekle"ye bas, "Mağaza" alanına dokun: altında daha önce kullandığın mağazalar çıkmalı; birine dokun, alana yazılmalı ve imleç tutara geçmeli.
+Denemen için: Ayarlar > Dışa aktar > PDF raporu oluştur ve aç. Kapakta iki kutu (ürün sayısı, toplam) olmalı. "İlgilen" listesinin altında çizgi açıklaması görünmeli. Bir ürün kartında iade süresi kısa, yasal hak uzun çizgi olmalı; bugünü gösteren halka her satırda aynı hizada olmalı.
 Geri bildirimini TestFlight'tan gönder.
