@@ -565,12 +565,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get exportTotal => 'Toplam ödenen';
 
   @override
-  String get exportSoon => '30 gün içinde biten';
-
-  @override
-  String get exportNone => 'Yok';
-
-  @override
   String get exportAttention => 'İlgilen';
 
   @override
@@ -612,7 +606,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get exportLegend =>
-      'Çubuk: alıştan bu yana geçen süre. Halka: bugün. Dik çizgi: ispat yükünün sana geçtiği gün. Turuncu: 30 gün içinde bitiyor.';
+      'Çubuk: bir ürünün tüm korumaları aynı zaman çizgisinde, alıştan en geç bitişe. Koyu kısım: geçen süre. Halka: bugün. Dik çizgi: ispat yükünün sana geçtiği gün. Turuncu: 30 gün içinde bitiyor.';
 
   @override
   String get colShelf => 'Raf';

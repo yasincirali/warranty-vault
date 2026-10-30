@@ -992,18 +992,6 @@ abstract class AppLocalizations {
   /// **'Total paid'**
   String get exportTotal;
 
-  /// No description provided for @exportSoon.
-  ///
-  /// In en, this message translates to:
-  /// **'Ending within 30 days'**
-  String get exportSoon;
-
-  /// No description provided for @exportNone.
-  ///
-  /// In en, this message translates to:
-  /// **'None'**
-  String get exportNone;
-
   /// No description provided for @exportAttention.
   ///
   /// In en, this message translates to:
@@ -1061,7 +1049,7 @@ abstract class AppLocalizations {
   /// No description provided for @exportLegend.
   ///
   /// In en, this message translates to:
-  /// **'Bar: time since purchase. Ring: today. Tick: the day the burden of proof moves to you. Amber: ends within 30 days.'**
+  /// **'Bars: all of a product\'s protections on one timeline, from purchase to the latest end. Dark part: time passed. Ring: today. Tick: the day the burden of proof moves to you. Amber: ends within 30 days.'**
   String get exportLegend;
 
   /// No description provided for @colShelf.
