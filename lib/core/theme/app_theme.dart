@@ -61,6 +61,16 @@ ThemeData buildTheme(Brightness brightness) {
         borderSide: BorderSide(color: c.accent, width: 2),
       ),
     ),
+    // Sheets on the app's paper, not Material's seed-tinted grey-blue
+    // (Rafım Ar-Ge 30 Oct): every sheet (add a paper, "where does this
+    // come from", the claim photo) read as another app.
+    bottomSheetTheme: BottomSheetThemeData(
+      backgroundColor: c.background,
+      modalBackgroundColor: c.background,
+      surfaceTintColor: Colors.transparent,
+      dragHandleColor: c.muted,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(VRadius.sheet))),
+    ),
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
         TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),

@@ -67,13 +67,12 @@ class ItemDetailScreen extends ConsumerWidget {
                 Semantics(header: true, child: Text(item.name, style: context.t.title)),
                 Text(meta, style: context.t.small.copyWith(color: context.c.textSecondary)),
                 // Review round 2: people move and buy abroad; say whose rules apply.
-                const SizedBox(height: VSpace.xs + 2),
-                _Chip(l.rulesOf(regionName(l, item.purchase.region))),
+                // A line, not a bordered pill (Rafım Ar-Ge 30 Oct): pills are
+                // tappable everywhere else in the app and this one was not.
+                const SizedBox(height: VSpace.xs),
+                _Note(Icons.public, l.rulesOf(regionName(l, item.purchase.region))),
                 // Said in words, not only by a colour: why no reminder comes.
-                if (item.sample) ...[
-                  const SizedBox(height: VSpace.xs),
-                  _Chip(l.sampleTag),
-                ],
+                if (item.sample) _Note(Icons.science_outlined, l.sampleTag),
               ]),
             ),
           ]),
@@ -292,7 +291,14 @@ class _ProtectionRow extends StatelessWidget {
             padding: EdgeInsets.only(bottom: proofMonth == null ? VSpace.md : VSpace.xs),
             child: Semantics(
               label: primary ? l.ruleSemantics(_passedPercent(p, today)) : null,
-              child: TimeBand(protection: p, today: today, axisStart: from, axisEnd: to, urgent: urgent),
+              child: TimeBand(
+                protection: p,
+                today: today,
+                axisStart: from,
+                axisEnd: to,
+                urgent: urgent,
+                label: p.end == null ? null : l.durDays(dateOnly(p.end!).difference(dateOnly(today)).inDays.clamp(0, 99999)),
+              ),
             ),
           ),
         if (proofMonth != null)
@@ -312,18 +318,22 @@ int _passedPercent(Protection p, DateTime today) {
   return (today.difference(p.start).inDays / total * 100).clamp(0, 100).round();
 }
 
-class _Chip extends StatelessWidget {
-  const _Chip(this.text);
+class _Note extends StatelessWidget {
+  const _Note(this.icon, this.text);
+  final IconData icon;
   final String text;
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: VSpace.sm + 1, vertical: VSpace.xs),
-        decoration: BoxDecoration(
-          border: Border.all(color: context.c.border),
-          borderRadius: BorderRadius.circular(VRadius.sm - 1),
-        ),
-        child: Text(text, style: context.t.small.copyWith(fontSize: 12.5, fontWeight: FontWeight.w600, color: context.c.textSecondary)),
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(top: VSpace.xs),
+        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: ExcludeSemantics(child: Icon(icon, size: 14, color: context.c.textSecondary)),
+          ),
+          const SizedBox(width: VSpace.xs + 2),
+          Expanded(child: Text(text, style: context.t.caption.copyWith(color: context.c.textSecondary))),
+        ]),
       );
 }
 

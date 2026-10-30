@@ -473,7 +473,7 @@ abstract class AppLocalizations {
   /// No description provided for @rulesOf.
   ///
   /// In en, this message translates to:
-  /// **'Rules: {country}'**
+  /// **'Worked out with {country} rules'**
   String rulesOf(String country);
 
   /// No description provided for @regionDE.
@@ -535,12 +535,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'I\'m asking for a free repair or replacement.'**
   String get counterAsk;
-
-  /// No description provided for @counterNoInvoice.
-  ///
-  /// In en, this message translates to:
-  /// **'No invoice photo yet'**
-  String get counterNoInvoice;
 
   /// No description provided for @adviceIfRefused.
   ///
@@ -721,12 +715,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Photos'**
   String get photoGallery;
-
-  /// No description provided for @photoOptional.
-  ///
-  /// In en, this message translates to:
-  /// **'A photo is optional, but it is how you will spot it on the shelf.'**
-  String get photoOptional;
 
   /// No description provided for @loading.
   ///
@@ -1693,6 +1681,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t open the link.'**
   String get sourceOpenFailed;
+
+  /// No description provided for @counterTitleNoProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase details'**
+  String get counterTitleNoProof;
+
+  /// No description provided for @counterAddProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the receipt or invoice'**
+  String get counterAddProof;
+
+  /// No description provided for @counterProofHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No receipt? A bank statement or an order email also shows the purchase.'**
+  String get counterProofHint;
+
+  /// No description provided for @storeSuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Store suggestion: {store}'**
+  String storeSuggestion(String store);
 }
 
 class _AppLocalizationsDelegate

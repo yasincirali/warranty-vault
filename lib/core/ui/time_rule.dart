@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../l10n/generated/app_localizations.dart';
@@ -88,7 +90,7 @@ class TimeRule extends StatelessWidget {
     final months = p.presumptionEnd == null
         ? null
         : (p.presumptionEnd!.year - p.start.year) * 12 + p.presumptionEnd!.month - p.start.month;
-    final small = context.t.small.copyWith(fontSize: 12.5, color: context.c.textSecondary);
+    final small = context.t.caption.copyWith(color: context.c.textSecondary);
     return Semantics(
       label: semantics,
       excludeSemantics: true,
@@ -126,6 +128,7 @@ class TimeBand extends StatelessWidget {
     required this.axisStart,
     required this.axisEnd,
     this.urgent = false,
+    this.label,
   });
 
   final Protection protection;
@@ -133,6 +136,16 @@ class TimeBand extends StatelessWidget {
   final DateTime axisStart;
   final DateTime axisEnd;
   final bool urgent;
+
+  /// Said at the end of an urgent band ("3 days"), when it fits there: a
+  /// short window on a long axis is a few points wide, and the number in
+  /// words is what says it is the urgent one, not only the colour.
+  final String? label;
+
+  /// The shortest band drawn (Rafım Ar-Ge 28 Oct). A 14-day return window
+  /// on a six-year axis was 3 px: the most urgent protection was the least
+  /// visible line. The axis keeps its scale; only the floor rises.
+  static const minSpan = 28.0;
 
   /// The axis for [protections]: purchase to the latest fixed end. null when
   /// there is nothing to draw (no fixed ends, or all on one day).
@@ -164,11 +177,23 @@ class TimeBand extends StatelessWidget {
         builder: (context, v, _) => LayoutBuilder(
           builder: (context, box) {
             final w = box.maxWidth;
-            // At least the bar's own height, so a 14-day window on a two-year
-            // axis is still a visible sliver rather than nothing.
-            final spanW = ((to - from) * w).clamp(h, w);
+            // At least [minSpan] (and never past the right edge), so a
+            // 14-day window on a two-year axis is still a visible piece.
+            final left = from * w;
+            final spanW = ((to - from) * w).clamp(math.min(minSpan, w - left), w - left).toDouble();
+            final tag = urgent && !ended ? label : null;
+            final tagStyle = context.t.caption.copyWith(color: context.c.deadline, fontWeight: FontWeight.w700);
+            final tagW = tag == null
+                ? 0.0
+                : (TextPainter(
+                    text: TextSpan(text: tag, style: tagStyle),
+                    textDirection: Directionality.of(context),
+                    textScaler: MediaQuery.textScalerOf(context),
+                  )..layout())
+                    .width;
+            final showTag = tag != null && left + spanW + VSpace.sm + tagW <= w;
             return SizedBox(
-              height: 14,
+              height: showTag ? math.max(14.0, tagStyle.fontSize! * MediaQuery.textScalerOf(context).scale(1) * 1.35) : 14,
               child: Stack(
                 clipBehavior: Clip.none,
                 alignment: Alignment.centerLeft,
@@ -209,6 +234,11 @@ class TimeBand extends StatelessWidget {
                         height: 10,
                         decoration: BoxDecoration(color: context.c.deadline, shape: BoxShape.circle),
                       ),
+                    ),
+                  if (showTag)
+                    Positioned(
+                      left: left + spanW + VSpace.sm,
+                      child: Text(tag, style: tagStyle),
                     ),
                   // Today: the same x on every band, so the rows read as one line.
                   if (now > 0 && now < 1)

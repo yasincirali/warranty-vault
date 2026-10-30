@@ -36,7 +36,7 @@ class CounterScreen extends ConsumerWidget {
       if (item.price != null) (l.fieldAmount, fmtMoney(context, item.price!)),
       if (item.serial != null) (l.fieldSerial, item.serial!),
     ];
-    final big = context.t.label.copyWith(fontSize: 19, fontWeight: FontWeight.w700, fontFeatures: const [FontFeature.tabularFigures()]);
+    final big = context.t.counterFact;
 
     return Scaffold(
       appBar: AppBar(
@@ -50,9 +50,9 @@ class CounterScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.sm, VSpace.xl, VSpace.xxl),
         children: [
-          Text('${l.counterTitle} · ${item.store}', style: context.t.section.copyWith(color: context.c.textSecondary)),
+          Text('${item.receipt == null ? l.counterTitleNoProof : l.counterTitle} · ${item.store}', style: context.t.section.copyWith(color: context.c.textSecondary)),
           const SizedBox(height: VSpace.xs),
-          Semantics(header: true, child: Text(item.name, style: context.t.display.copyWith(fontSize: 28))),
+          Semantics(header: true, child: Text(item.name, style: context.t.counterName)),
           const SizedBox(height: VSpace.lg),
           VCard(
             padding: const EdgeInsets.symmetric(horizontal: VSpace.lg),
@@ -91,7 +91,7 @@ class CounterScreen extends ConsumerWidget {
                   ),
                   TextSpan(text: ' ${l.counterAsk}'),
                 ]),
-                style: context.t.body.copyWith(fontSize: 16),
+                style: context.t.bodyLarge,
               ),
             ),
           ],
@@ -114,22 +114,22 @@ class _Receipt extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
     final doc = item.receipt;
-    if (doc == null || doc.isPdf) {
+    if (doc == null) return _AddProof(itemId: item.id);
+    if (doc.isPdf) {
       return Semantics(
-        button: doc != null,
+        button: true,
         child: InkWell(
           borderRadius: BorderRadius.circular(VRadius.lg),
-          onTap: doc == null ? null : () => openDoc(context, ref, item, doc),
+          onTap: () => openDoc(context, ref, item, doc),
           child: Container(
             height: 150,
             decoration: BoxDecoration(color: context.c.tile, borderRadius: BorderRadius.circular(VRadius.lg)),
             alignment: Alignment.center,
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Icon(doc == null ? Icons.description_outlined : Icons.picture_as_pdf_outlined,
-                  size: 18, color: context.c.textSecondary),
+              Icon(Icons.picture_as_pdf_outlined, size: 18, color: context.c.textSecondary),
               const SizedBox(width: VSpace.sm),
               Flexible(
-                child: Text(doc == null ? l.counterNoInvoice : l.counterOpenPdf,
+                child: Text(l.counterOpenPdf,
                     style: context.t.label.copyWith(color: context.c.textSecondary)),
               ),
             ]),
@@ -156,4 +156,85 @@ class _Receipt extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// No receipt yet (Rafım Ar-Ge 28 Oct): a dashed frame that adds one,
+/// instead of a grey box that only said so. At the counter people mostly
+/// have a screenshot or an order email already, so the gallery comes first.
+/// Saved as the receipt; the screen rebuilds with it in this same place.
+class _AddProof extends ConsumerWidget {
+  const _AddProof({required this.itemId});
+  final String itemId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
+    Future<void> add(DocSource source) => saveDoc(
+          ProviderScope.containerOf(context, listen: false),
+          ScaffoldMessenger.of(context),
+          l,
+          itemId,
+          DocKind.receipt,
+          source,
+          announce: false,
+        );
+    return CustomPaint(
+      painter: _Dashed(context.c.muted),
+      child: Padding(
+        padding: const EdgeInsets.all(VSpace.lg),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Semantics(header: true, child: Text(l.counterAddProof, style: context.t.label, textAlign: TextAlign.center)),
+          const SizedBox(height: VSpace.xs),
+          Text(l.counterProofHint, style: context.t.small.copyWith(color: context.c.textSecondary), textAlign: TextAlign.center),
+          const SizedBox(height: VSpace.md),
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: VSpace.sm,
+            runSpacing: VSpace.sm,
+            children: [
+              for (final (s, icon, label) in [
+                (DocSource.gallery, Icons.photo_library_outlined, l.docFromGallery),
+                (DocSource.camera, Icons.photo_camera_outlined, l.docFromCamera),
+                (DocSource.pdf, Icons.picture_as_pdf_outlined, l.docFromFile),
+              ])
+                OutlinedButton.icon(
+                  onPressed: () => add(s),
+                  icon: Icon(icon, size: 18),
+                  label: Text(label),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(VSize.minTap, VSize.minTap),
+                    foregroundColor: context.c.text,
+                    backgroundColor: context.c.surface,
+                    side: BorderSide(color: context.c.border),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(VRadius.md)),
+                  ),
+                ),
+            ],
+          ),
+        ]),
+      ),
+    );
+  }
+}
+
+class _Dashed extends CustomPainter {
+  const _Dashed(this.color);
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    final path = Path()..addRRect(RRect.fromRectAndRadius(Offset.zero & size, const Radius.circular(VRadius.lg)));
+    for (final m in path.computeMetrics()) {
+      for (var d = 0.0; d < m.length; d += 10) {
+        canvas.drawPath(m.extractPath(d, d + 5), paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_Dashed old) => old.color != color;
 }

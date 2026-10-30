@@ -203,6 +203,32 @@ class VText extends ThemeExtension<VText> {
   TextStyle get small => TextStyle(fontSize: 14, height: 1.35, color: base);
   TextStyle get section => TextStyle(fontSize: 13, fontWeight: FontWeight.w600, letterSpacing: .1, color: base);
 
+  // Sizes that screens used to write by hand (Rafım Ar-Ge 28 Oct): named
+  // here so Dynamic Type and any later type change happen in one file.
+  // `ham_yazi_boyu_test` keeps raw `fontSize:` out of lib/ screens.
+
+  /// "Kasada göster": the product name read across a counter.
+  TextStyle get counterName => display.copyWith(fontSize: 28);
+
+  /// "Kasada göster": a fact (date, amount, serial) the clerk checks.
+  TextStyle get counterFact => label.copyWith(
+    fontSize: 19,
+    fontWeight: FontWeight.w700,
+    fontFeatures: const [FontFeature.tabularFigures()],
+  );
+
+  /// One sentence that must be read, a step above body.
+  TextStyle get bodyLarge => body.copyWith(fontSize: 16);
+
+  /// Captions under a time rule or a list row.
+  TextStyle get caption => small.copyWith(fontSize: 12.5);
+
+  /// Deadline tag on a plank and the label-maker tape.
+  TextStyle get tag => TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: base);
+
+  /// A product's name tag on its shelf (fixed size, not scaled).
+  TextStyle get micro => small.copyWith(fontSize: 10, height: 1.2, fontWeight: FontWeight.w600);
+
   @override
   VText copyWith() => this;
 

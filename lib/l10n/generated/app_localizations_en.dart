@@ -266,7 +266,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String rulesOf(String country) {
-    return 'Rules: $country';
+    return 'Worked out with $country rules';
   }
 
   @override
@@ -300,9 +300,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get counterAsk => 'I\'m asking for a free repair or replacement.';
-
-  @override
-  String get counterNoInvoice => 'No invoice photo yet';
 
   @override
   String get adviceIfRefused =>
@@ -426,10 +423,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get photoGallery => 'Photos';
-
-  @override
-  String get photoOptional =>
-      'A photo is optional, but it is how you will spot it on the shelf.';
 
   @override
   String get loading => 'Loading';
@@ -1017,4 +1010,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sourceOpenFailed => 'Couldn\'t open the link.';
+
+  @override
+  String get counterTitleNoProof => 'Purchase details';
+
+  @override
+  String get counterAddProof => 'Add the receipt or invoice';
+
+  @override
+  String get counterProofHint =>
+      'No receipt? A bank statement or an order email also shows the purchase.';
+
+  @override
+  String storeSuggestion(String store) {
+    return 'Store suggestion: $store';
+  }
 }
