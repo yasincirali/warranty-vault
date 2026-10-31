@@ -69,18 +69,12 @@
 	<!-- Yalnız HTTPS; özel şifreleme yok → ihracat uyumu sorusu TestFlight'ta çıkmaz. -->
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<!-- v1: yalnız iPhone, yalnız dikey (Rafım Ar-Ge 31 Eki). Yatayda dolap
+	     ekrandan taşıyordu; iPad yerleşimi yarımdı ve App Store iPad ekran
+	     görüntüsü isterdi. iPad desteği sonradan eklenebilir, kaldırılamaz. -->
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 </dict>
 </plist>

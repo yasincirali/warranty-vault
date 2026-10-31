@@ -1,7 +1,6 @@
 Bu sürümde:
-- Aynı gün aynı süresi biten birden çok ürün için artık tek bildirim geliyor ("4 ürün: İade süresi 3 gün sonra bitiyor" ve ürün adları). Dokununca bitişi en yakın ürünler listesi açılır. Tek ürünse bildirim eskisi gibi ürünün adıyla gelir ve ürün sayfasını açar.
-- İade süresi hatırlatması artık "Vazgeçtiysen iadeyi son güne bırakma" diyor; garanti hatırlatmaları "bir sorun varsa bildir" demeye devam ediyor.
-- Ayarlar > Hakkında'nın altında uygulamanın sürüm numarası yazıyor.
+- Uygulama artık yalnız dikey ekranda çalışıyor. Telefonu yan çevirince ekran dönmüyor; dolap hep tam görünüyor.
+- Uygulama yalnız iPhone için yayınlanıyor (iPad'de iPhone uygulaması olarak açılır).
 
-Denemen için: Aynı gün, aynı mağazadan (online) iki ürün ekle; alış tarihini 10 gün önce seç. Ertesi sabah 10:00'da iki ayrı bildirim yerine "2 ürün: İade süresi 3 gün sonra bitiyor" diye tek bildirim gelmeli. Ona dokununca bitişi en yakın ürünler listesi açılmalı, klavye açılmamalı. Ayarlar'ın en altında "Sürüm …" satırı görünmeli.
+Denemen için: Uygulamayı aç ve telefonu yan çevir. Ekran dönmemeli, dolap dikey kalmalı. Ürün sayfası ve ekleme formunda da aynısını dene.
 Geri bildirimini TestFlight'tan gönder.
