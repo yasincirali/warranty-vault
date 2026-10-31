@@ -11,8 +11,10 @@ import 'features/capture/after_save.dart';
 import 'features/items/providers.dart';
 import 'features/items/ui/home_screen.dart';
 import 'features/items/ui/item_detail_screen.dart';
+import 'features/reminders/reminder_plan.dart';
 import 'features/reminders/reminders.dart';
 import 'features/review/review_prompt.dart';
+import 'features/search/search_screen.dart';
 import 'features/settings/settings.dart';
 import 'l10n/generated/app_localizations.dart';
 
@@ -65,8 +67,13 @@ class _WarrantyVaultAppState extends ConsumerState<WarrantyVaultApp> {
   }
 
   /// A tapped reminder lands on the product's page, the one that says what
-  /// is left and what to do; after the cabinet has loaded.
+  /// is left and what to do; after the cabinet has loaded. A grouped one
+  /// (several products, same deadline) lands on the soonest-first list.
   Future<void> _openItem(String id) async {
+    if (id == soonestPayload) {
+      _navigator.currentState?.push(MaterialPageRoute(builder: (_) => const SearchScreen(autofocus: false)));
+      return;
+    }
     final view = await ref.read(itemViewProvider(id).future);
     final nav = _navigator.currentState;
     if (view == null || nav == null) return;

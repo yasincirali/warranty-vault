@@ -10,6 +10,7 @@ import '../../core/format.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../items/providers.dart';
 import '../settings/settings.dart';
+import '../../rights/rights_engine.dart';
 import 'reminder_plan.dart';
 
 /// The platform side of reminders. Everything it receives is already
@@ -86,14 +87,17 @@ class LocalReminderScheduler implements ReminderScheduler {
   Future<void> replace(List<PlannedReminder> plan, AppLocalizations l) async {
     await _init();
     await _plugin.cancelAll();
+    // One thread/group: the system stacks Rafım's reminders instead of
+    // listing them one by one.
     const details = NotificationDetails(
-      iOS: DarwinNotificationDetails(),
-      android: AndroidNotificationDetails('reminders', 'Reminders', importance: Importance.defaultImportance),
+      iOS: DarwinNotificationDetails(threadIdentifier: 'reminders'),
+      android: AndroidNotificationDetails('reminders', 'Reminders',
+          importance: Importance.defaultImportance, groupKey: 'reminders'),
     );
     for (final r in plan) {
       await _plugin.zonedSchedule(
         id: r.id,
-        title: r.itemName,
+        title: reminderTitle(l, r),
         body: reminderBody(l, r),
         // An absolute instant: the plan is in local time already, and UTC
         // needs no time-zone database (≈400 KB) in the app.
@@ -102,7 +106,7 @@ class LocalReminderScheduler implements ReminderScheduler {
         // Exact alarms need a special Android permission; a reminder
         // about a date may arrive a few minutes late.
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        payload: r.itemId,
+        payload: r.payload,
       );
     }
   }
@@ -119,10 +123,37 @@ class LocalReminderScheduler implements ReminderScheduler {
   Stream<String> get taps => _taps.stream;
 }
 
-String reminderBody(AppLocalizations l, PlannedReminder r) => switch (r.reason) {
-      ReminderReason.ends => l.reminderEndsBody(l.endsIn(kindLabel(l, r.kind), r.daysBefore)),
-      ReminderReason.proofShifts => l.reminderProofBody(r.daysBefore),
-    };
+String reminderTitle(AppLocalizations l, PlannedReminder r) {
+  if (!r.grouped) return r.itemName;
+  final n = r.itemNames.length;
+  return switch (r.reason) {
+    ReminderReason.ends => l.reminderGroupTitle(n, l.endsIn(kindLabel(l, r.kind), r.daysBefore)),
+    ReminderReason.proofShifts => l.reminderGroupProofTitle(n, r.daysBefore),
+  };
+}
+
+String reminderBody(AppLocalizations l, PlannedReminder r) {
+  // A return window is for changing your mind, not for faults: its
+  // reminder asks that question. The short-term right to reject (UK) is
+  // about faulty goods, so it keeps the fault sentence.
+  final act = switch (r.reason) {
+    ReminderReason.ends when r.kind == ProtectionKind.returnWindow => l.reminderActReturn,
+    ReminderReason.ends => l.reminderActIssue,
+    ReminderReason.proofShifts => l.reminderActProof,
+  };
+  if (r.grouped) return l.reminderGroupBody(reminderNames(l, r.itemNames), act);
+  return switch (r.reason) {
+    ReminderReason.ends => l.reminderEndsBody(l.endsIn(kindLabel(l, r.kind), r.daysBefore), act),
+    ReminderReason.proofShifts => l.reminderProofBody(r.daysBefore),
+  };
+}
+
+/// At most three names fit a lock-screen line; the rest are counted.
+String reminderNames(AppLocalizations l, List<String> names) {
+  const shown = 3;
+  if (names.length <= shown) return names.join(', ');
+  return l.reminderNamesMore(names.take(shown).join(', '), names.length - shown);
+}
 
 /// main() overrides this on iOS/Android; tests and the web preview keep
 /// a scheduler that does nothing.

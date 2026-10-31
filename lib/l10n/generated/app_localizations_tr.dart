@@ -244,6 +244,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get privacyPolicy => 'Gizlilik politikası';
 
   @override
+  String appVersion(String version, String build) {
+    return 'Sürüm $version ($build)';
+  }
+
+  @override
   String get disclaimer => 'Bilgi amaçlıdır, hukuki tavsiye değildir.';
 
   @override
@@ -725,8 +730,38 @@ class AppLocalizationsTr extends AppLocalizations {
   String get hideKeyboard => 'Klavyeyi kapat';
 
   @override
-  String reminderEndsBody(String what) {
-    return '$what. Bir sorun varsa son günü bekleme, şimdi bildir.';
+  String reminderEndsBody(String what, String act) {
+    return '$what. $act';
+  }
+
+  @override
+  String get reminderActReturn => 'Vazgeçtiysen iadeyi son güne bırakma.';
+
+  @override
+  String get reminderActIssue =>
+      'Bir sorun varsa son günü bekleme, şimdi bildir.';
+
+  @override
+  String get reminderActProof => 'Bir sorun varsa şimdi bildir.';
+
+  @override
+  String reminderGroupTitle(int count, String what) {
+    return '$count ürün: $what';
+  }
+
+  @override
+  String reminderGroupProofTitle(int count, int days) {
+    return '$count ürün: arızayı ispat yükü $days gün sonra sana geçiyor';
+  }
+
+  @override
+  String reminderGroupBody(String names, String act) {
+    return '$names. $act';
+  }
+
+  @override
+  String reminderNamesMore(String names, int more) {
+    return '$names ve $more ürün daha';
   }
 
   @override

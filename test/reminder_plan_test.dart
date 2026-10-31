@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'package:flutter/widgets.dart';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:warranty_vault/features/reminders/reminders.dart';
+import 'package:warranty_vault/l10n/generated/app_localizations.dart';
 import 'package:warranty_vault/features/items/domain/item.dart';
 import 'package:warranty_vault/features/reminders/reminder_plan.dart';
 import 'package:warranty_vault/rights/advice.dart';
@@ -102,5 +105,44 @@ void main() {
     final plan = planReminders([own, sample], today);
     expect(plan, isNotEmpty);
     expect(plan.every((r) => r.itemId == 'kettle'), isTrue);
+  });
+
+  group('same-day reminders share one notification (31 Oct, Black Friday haul)', () {
+    final bought = DateTime.utc(2026, 10, 15);
+    final haul = [for (final n in ['airfryer', 'kindle', 'sony', 'switch']) _view(n, bought, today)];
+
+    test('four products bought together: one return reminder per lead day, not four', () {
+      final plan = planReminders(haul, today);
+      final ret = plan.where((r) => r.kind == ProtectionKind.returnWindow).toList();
+      expect([for (final r in ret) r.daysBefore], [3, 1]);
+      expect(ret.first.itemNames, ['airfryer', 'kindle', 'sony', 'switch']);
+      expect(ret.first.grouped, isTrue);
+      expect(ret.first.payload, soonestPayload);
+      expect(plan.map((r) => r.id).toSet(), hasLength(plan.length));
+    });
+
+    test('a lone product keeps its id and opens its own page', () {
+      final one = planReminders([haul.first], today);
+      expect(one.every((r) => !r.grouped && r.payload == 'airfryer'), isTrue);
+      final again = planReminders([haul.first, _view('late', DateTime.utc(2026, 10, 16), today)], today);
+      final ids = {for (final r in again.where((r) => r.itemId == 'airfryer' && !r.grouped)) r.id};
+      expect(ids, containsAll([for (final r in one.where((r) => r.kind == ProtectionKind.returnWindow)) r.id]));
+    });
+
+    test('Turkish text: count in the title, three names then a count, return asks the right question', () {
+      final tr = lookupAppLocalizations(const Locale('tr'));
+      final r = planReminders(haul, today).firstWhere((r) => r.kind == ProtectionKind.returnWindow);
+      expect(reminderTitle(tr, r), '4 ürün: İade süresi 3 gün sonra bitiyor');
+      expect(reminderBody(tr, r), 'airfryer, kindle, sony ve 1 ürün daha. Vazgeçtiysen iadeyi son güne bırakma.');
+      final single = planReminders([haul.first], today).firstWhere((r) => r.kind == ProtectionKind.returnWindow);
+      expect(reminderTitle(tr, single), 'airfryer');
+      expect(reminderBody(tr, single), 'İade süresi 3 gün sonra bitiyor. Vazgeçtiysen iadeyi son güne bırakma.');
+    });
+
+    test('guarantees keep the fault sentence', () {
+      final en = lookupAppLocalizations(const Locale('en'));
+      final g = planReminders(haul, DateTime(2028, 9, 1, 9)).firstWhere((r) => r.kind != ProtectionKind.returnWindow && r.reason == ReminderReason.ends);
+      expect(reminderBody(en, g), endsWith('If something is wrong, report it before the last day.'));
+    });
   });
 }

@@ -452,6 +452,12 @@ abstract class AppLocalizations {
   /// **'Privacy policy'**
   String get privacyPolicy;
 
+  /// No description provided for @appVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version} ({build})'**
+  String appVersion(String version, String build);
+
   /// No description provided for @disclaimer.
   ///
   /// In en, this message translates to:
@@ -1277,8 +1283,50 @@ abstract class AppLocalizations {
   /// No description provided for @reminderEndsBody.
   ///
   /// In en, this message translates to:
-  /// **'{what}. If something is wrong, report it before the last day.'**
-  String reminderEndsBody(String what);
+  /// **'{what}. {act}'**
+  String reminderEndsBody(String what, String act);
+
+  /// No description provided for @reminderActReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed your mind? Don\'t leave the return to the last day.'**
+  String get reminderActReturn;
+
+  /// No description provided for @reminderActIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'If something is wrong, report it before the last day.'**
+  String get reminderActIssue;
+
+  /// No description provided for @reminderActProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Report any problem now.'**
+  String get reminderActProof;
+
+  /// No description provided for @reminderGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items: {what}'**
+  String reminderGroupTitle(int count, String what);
+
+  /// No description provided for @reminderGroupProofTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items: proving a fault moves to you in {days, plural, =1{1 day} other{{days} days}}'**
+  String reminderGroupProofTitle(int count, int days);
+
+  /// No description provided for @reminderGroupBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{names}. {act}'**
+  String reminderGroupBody(String names, String act);
+
+  /// No description provided for @reminderNamesMore.
+  ///
+  /// In en, this message translates to:
+  /// **'{names} and {more, plural, =1{1 more} other{{more} more}}'**
+  String reminderNamesMore(String names, int more);
 
   /// No description provided for @reminderProofBody.
   ///

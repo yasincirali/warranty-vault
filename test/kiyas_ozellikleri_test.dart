@@ -247,7 +247,7 @@ void main() {
       expect(fake.asked, 0);
       expect(fake.replaced, hasLength(1));
       expect(fake.replaced.single, isNotEmpty);
-      expect(fake.bodies.first, contains('report it before the last day'));
+      expect(fake.bodies.first, contains('the last day'));
       expect(settings.read('reminders_asked'), isNull);
 
       // A change that does not touch any deadline reaches the platform as nothing.
@@ -281,7 +281,7 @@ void main() {
       await _open(t, saved: {'language': 'tr'}, overrides: [reminderSchedulerProvider.overrideWithValue(fake)]);
       await t.pump(ReminderSync.debounce);
       await t.pumpAndSettle();
-      expect(fake.bodies.first, contains('şimdi bildir'));
+      expect(fake.bodies.first, contains('son gün'));
     });
 
     testWidgets('tapping a reminder opens that product', (t) async {
