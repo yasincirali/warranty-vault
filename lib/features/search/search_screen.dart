@@ -16,7 +16,11 @@ import 'search.dart';
 /// arrival, results update with every letter, each row says the status in
 /// a sentence. The cabinet is the browsing view; this is the finding view.
 class SearchScreen extends ConsumerStatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({super.key, this.autofocus = true});
+
+  /// Off when a grouped reminder opens the soonest list: the user came to
+  /// read it, not to type, and a keyboard would cover it.
+  final bool autofocus;
 
   @override
   ConsumerState<SearchScreen> createState() => _SearchScreenState();
@@ -48,7 +52,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           padding: const EdgeInsets.only(right: VSpace.lg),
           child: TextField(
             controller: _query,
-            autofocus: true,
+            autofocus: widget.autofocus,
             textInputAction: TextInputAction.search,
             onTapOutside: dismissKeyboard,
             onChanged: (_) => setState(() {}),

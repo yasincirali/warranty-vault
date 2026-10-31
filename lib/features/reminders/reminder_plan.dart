@@ -17,6 +17,7 @@ class PlannedReminder {
     required this.reason,
     required this.daysBefore,
     required this.fireAt,
+    this.itemNames = const [],
   });
 
   /// Stable across runs (same item, kind, reason, lead time → same id), so
@@ -30,7 +31,22 @@ class PlannedReminder {
 
   /// Local wall-clock time.
   final DateTime fireAt;
+
+  /// Every product this notification speaks for, [itemName] first. More
+  /// than one when several products hit the same deadline on the same day
+  /// (a Black Friday haul): one notification says it once instead of four
+  /// buzzing at 10:00 (Rafım Ar-Ge 31 Oct, yasin "Gereklilikleri ekle").
+  final List<String> itemNames;
+
+  bool get grouped => itemNames.length > 1;
+
+  /// What a tap opens: the product's page, or for a group the list of
+  /// soonest deadlines, which is where those products stand together.
+  String get payload => grouped ? soonestPayload : itemId;
 }
+
+/// Payload of a grouped reminder; never a product id (those are UUIDs).
+const soonestPayload = 'soonest';
 
 /// iOS keeps at most 64 pending local notifications per app and silently
 /// drops the rest. 48 leaves room and still covers months ahead: the plan
@@ -84,16 +100,31 @@ List<PlannedReminder> planReminders(Iterable<ItemView> views, DateTime now) {
     }
   }
   out.sort(_Candidate.compare);
+  // Same day, reason, protection and lead time → one notification. The
+  // candidates are sorted, so equal keys are neighbours.
+  final groups = <List<_Candidate>>[];
+  for (final c in out) {
+    final last = groups.isEmpty ? null : groups.last.first;
+    if (last != null && last.day == c.day && last.reason == c.reason && last.kind == c.kind && last.lead == c.lead) {
+      groups.last.add(c);
+    } else {
+      groups.add([c]);
+    }
+  }
   return [
-    for (final c in out.take(maxPendingReminders))
+    for (final g in groups.take(maxPendingReminders))
       PlannedReminder(
-        id: _stableId('${c.item.id}|${c.kind.name}|${c.reason.name}|${c.lead}'),
-        itemId: c.item.id,
-        itemName: c.item.name,
-        kind: c.kind,
-        reason: c.reason,
-        daysBefore: c.lead,
-        fireAt: DateTime(c.day.year, c.day.month, c.day.day, reminderHour),
+        // A lone reminder keeps the id it always had; a group's id names
+        // its members, so a fourth product joining replaces it.
+        id: _stableId('${[for (final c in g) c.item.id].join('+')}|${g.first.kind.name}|${g.first.reason.name}|${g.first.lead}'
+            '${g.length > 1 ? '|${g.first.day.millisecondsSinceEpoch}' : ''}'),
+        itemId: g.first.item.id,
+        itemName: g.first.item.name,
+        itemNames: [for (final c in g) c.item.name],
+        kind: g.first.kind,
+        reason: g.first.reason,
+        daysBefore: g.first.lead,
+        fireAt: DateTime(g.first.day.year, g.first.day.month, g.first.day.day, reminderHour),
       ),
   ];
 }
@@ -107,16 +138,17 @@ class _Candidate {
   final DateTime day;
 
   /// Day first; ties in a fixed order so the same cabinet always keeps the
-  /// same 48 when the cap cuts through one day.
+  /// same 48 when the cap cuts through one day. Product last, so the ones
+  /// that share a notification (same reason, protection, lead) sit together.
   static int compare(_Candidate a, _Candidate b) {
     var c = a.day.compareTo(b.day);
     if (c != 0) return c;
-    c = a.item.id.compareTo(b.item.id);
+    c = a.reason.index.compareTo(b.reason.index);
     if (c != 0) return c;
     c = a.kind.index.compareTo(b.kind.index);
     if (c != 0) return c;
-    c = a.reason.index.compareTo(b.reason.index);
-    return c != 0 ? c : a.lead.compareTo(b.lead);
+    c = a.lead.compareTo(b.lead);
+    return c != 0 ? c : a.item.id.compareTo(b.item.id);
   }
 }
 

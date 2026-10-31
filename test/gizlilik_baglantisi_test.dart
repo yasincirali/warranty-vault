@@ -29,7 +29,7 @@ void main() {
     expect(File('store_listing/en/text.md').readAsStringSync(), contains(privacyPolicyUrl('en')));
   });
 
-  testWidgets('Settings › About shows the link as a 44 pt link row', (t) async {
+  testWidgets('Settings › About shows the link as a 44 pt link row, and the version', (t) async {
     t.view.physicalSize = const Size(1179, 2556);
     t.view.devicePixelRatio = 3;
     addTearDown(t.view.reset);
@@ -40,6 +40,7 @@ void main() {
         vaultStoreProvider.overrideWithValue(MemoryVaultStore(demoVault())),
         settingsStoreProvider.overrideWithValue(MemorySettingsStore({'language': 'tr'})),
         ruleSetProvider.overrideWith((_) async => rules),
+        appVersionProvider.overrideWith((_) async => (version: '1.0.4', build: '31')),
       ],
       child: const WarrantyVaultApp(),
     ));
@@ -52,5 +53,8 @@ void main() {
     final tap = find.ancestor(of: row, matching: find.byType(InkWell));
     expect(t.getSize(tap).height, greaterThanOrEqualTo(44));
     expect(t.getSemantics(row).flagsCollection.isLink, isTrue);
+    // The version line under it, for support and testers.
+    await t.scrollUntilVisible(find.text('Sürüm 1.0.4 (31)'), 200, scrollable: find.byType(Scrollable).first);
+    expect(find.text('Sürüm 1.0.4 (31)'), findsOneWidget);
   });
 }

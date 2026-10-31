@@ -156,6 +156,17 @@
   "close": "Close",
   "edit": "Edit",
   "privacyPolicy": "Privacy policy",
+  "appVersion": "Version {version} ({build})",
+  "@appVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
   "disclaimer": "For information only, not legal advice.",
   "left": "left",
   "ruleSemantics": "{p}% of the period has passed",
@@ -462,11 +473,61 @@
     }
   },
   "hideKeyboard": "Hide keyboard",
-  "reminderEndsBody": "{what}. If something is wrong, report it before the last day.",
+  "reminderEndsBody": "{what}. {act}",
   "@reminderEndsBody": {
     "placeholders": {
       "what": {
         "type": "String"
+      },
+      "act": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderActReturn": "Changed your mind? Don't leave the return to the last day.",
+  "reminderActIssue": "If something is wrong, report it before the last day.",
+  "reminderActProof": "Report any problem now.",
+  "reminderGroupTitle": "{count} items: {what}",
+  "@reminderGroupTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderGroupProofTitle": "{count} items: proving a fault moves to you in {days, plural, =1{1 day} other{{days} days}}",
+  "@reminderGroupProofTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderGroupBody": "{names}. {act}",
+  "@reminderGroupBody": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      },
+      "act": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderNamesMore": "{names} and {more, plural, =1{1 more} other{{more} more}}",
+  "@reminderNamesMore": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      },
+      "more": {
+        "type": "int"
       }
     }
   },

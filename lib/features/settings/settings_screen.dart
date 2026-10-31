@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/format.dart';
@@ -187,6 +188,12 @@ class SettingsScreen extends ConsumerWidget {
                 const _PrivacyLink(),
                 const SizedBox(height: VSpace.sm),
                 Text(l.disclaimer, style: context.t.small.copyWith(color: context.c.textSecondary)),
+                // Support asks "which version?" first; TestFlight testers
+                // too. Selectable so it can be pasted into a message.
+                if (ref.watch(appVersionProvider).value case final v?) ...[
+                  const SizedBox(height: VSpace.xs),
+                  SelectableText(l.appVersion(v.version, v.build), style: context.t.small.copyWith(color: context.c.textSecondary)),
+                ],
               ],
             ),
           ),
@@ -195,6 +202,13 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 }
+
+/// The installed version and build number, read once from the platform.
+/// Tests and previews override it; a failure just hides the line.
+final appVersionProvider = FutureProvider<({String version, String build})>((_) async {
+  final i = await PackageInfo.fromPlatform();
+  return (version: i.version, build: i.buildNumber);
+});
 
 /// The policy the store listing points to, in the app's language. App
 /// Store 5.1.1(i) wants it reachable inside the app too, not only in App

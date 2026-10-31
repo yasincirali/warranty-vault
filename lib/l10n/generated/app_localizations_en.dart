@@ -252,6 +252,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyPolicy => 'Privacy policy';
 
   @override
+  String appVersion(String version, String build) {
+    return 'Version $version ($build)';
+  }
+
+  @override
   String get disclaimer => 'For information only, not legal advice.';
 
   @override
@@ -742,8 +747,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hideKeyboard => 'Hide keyboard';
 
   @override
-  String reminderEndsBody(String what) {
-    return '$what. If something is wrong, report it before the last day.';
+  String reminderEndsBody(String what, String act) {
+    return '$what. $act';
+  }
+
+  @override
+  String get reminderActReturn =>
+      'Changed your mind? Don\'t leave the return to the last day.';
+
+  @override
+  String get reminderActIssue =>
+      'If something is wrong, report it before the last day.';
+
+  @override
+  String get reminderActProof => 'Report any problem now.';
+
+  @override
+  String reminderGroupTitle(int count, String what) {
+    return '$count items: $what';
+  }
+
+  @override
+  String reminderGroupProofTitle(int count, int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days',
+      one: '1 day',
+    );
+    return '$count items: proving a fault moves to you in $_temp0';
+  }
+
+  @override
+  String reminderGroupBody(String names, String act) {
+    return '$names. $act';
+  }
+
+  @override
+  String reminderNamesMore(String names, int more) {
+    String _temp0 = intl.Intl.pluralLogic(
+      more,
+      locale: localeName,
+      other: '$more more',
+      one: '1 more',
+    );
+    return '$names and $_temp0';
   }
 
   @override
