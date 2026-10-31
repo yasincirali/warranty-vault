@@ -241,6 +241,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get edit => 'Düzenle';
 
   @override
+  String get privacyPolicy => 'Gizlilik politikası';
+
+  @override
   String get disclaimer => 'Bilgi amaçlıdır, hukuki tavsiye değildir.';
 
   @override

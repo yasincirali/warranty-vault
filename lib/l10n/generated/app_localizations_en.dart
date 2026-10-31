@@ -249,6 +249,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get edit => 'Edit';
 
   @override
+  String get privacyPolicy => 'Privacy policy';
+
+  @override
   String get disclaimer => 'For information only, not legal advice.';
 
   @override

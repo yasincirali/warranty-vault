@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/format.dart';
 import '../../core/theme/tokens.dart';
@@ -183,11 +184,46 @@ class SettingsScreen extends ConsumerWidget {
                   style: context.t.body,
                 ),
                 const SizedBox(height: VSpace.sm),
+                const _PrivacyLink(),
+                const SizedBox(height: VSpace.sm),
                 Text(l.disclaimer, style: context.t.small.copyWith(color: context.c.textSecondary)),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// The policy the store listing points to, in the app's language. App
+/// Store 5.1.1(i) wants it reachable inside the app too, not only in App
+/// Store Connect (Rafım Ar-Ge 31 Oct: a missing link is a rejection risk).
+/// One source: the Markdown files in `legal/`, never a copy in the app.
+String privacyPolicyUrl(String languageCode) =>
+    'https://github.com/yasincirali/warranty-vault/blob/main/legal/${languageCode == 'tr' ? 'gizlilik' : 'privacy'}.md';
+
+class _PrivacyLink extends StatelessWidget {
+  const _PrivacyLink();
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    return Semantics(
+      link: true,
+      child: InkWell(
+        onTap: () async {
+          final ok = await launchUrl(Uri.parse(privacyPolicyUrl(l.localeName)), mode: LaunchMode.externalApplication);
+          if (!ok) messenger.showSnackBar(SnackBar(content: Text(l.sourceOpenFailed)));
+        },
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: VSize.minTap),
+          child: Row(children: [
+            Expanded(child: Text(l.privacyPolicy, style: context.t.label)),
+            ExcludeSemantics(child: Icon(Icons.open_in_new, size: 18, color: context.c.textSecondary)),
+          ]),
+        ),
       ),
     );
   }
