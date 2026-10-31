@@ -3,5 +3,5 @@ Bu sürümde:
 - İade süresi hatırlatması artık "Vazgeçtiysen iadeyi son güne bırakma" diyor; garanti hatırlatmaları "bir sorun varsa bildir" demeye devam ediyor.
 - Ayarlar > Hakkında'nın altında uygulamanın sürüm numarası yazıyor.
 
-Denemen için: Aynı gün, aynı mağazadan (online) iki ürün ekle; alış tarihini 11 gün önce seç. Ertesi sabah 10:00'da iki ayrı bildirim yerine "2 ürün: İade süresi 3 gün sonra bitiyor" diye tek bildirim gelmeli. Ona dokununca bitişi en yakın ürünler listesi açılmalı, klavye açılmamalı. Ayarlar'ın en altında "Sürüm …" satırı görünmeli.
+Denemen için: Aynı gün, aynı mağazadan (online) iki ürün ekle; alış tarihini 10 gün önce seç. Ertesi sabah 10:00'da iki ayrı bildirim yerine "2 ürün: İade süresi 3 gün sonra bitiyor" diye tek bildirim gelmeli. Ona dokununca bitişi en yakın ürünler listesi açılmalı, klavye açılmamalı. Ayarlar'ın en altında "Sürüm …" satırı görünmeli.
 Geri bildirimini TestFlight'tan gönder.
