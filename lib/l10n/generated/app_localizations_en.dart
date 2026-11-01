@@ -1070,4 +1070,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String storeSuggestion(String store) {
     return 'Store suggestion: $store';
   }
+
+  @override
+  String get bandToday => 'today';
+
+  @override
+  String get bandProof => 'proof on you';
 }

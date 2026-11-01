@@ -129,6 +129,8 @@ class TimeBand extends StatelessWidget {
     required this.axisEnd,
     this.urgent = false,
     this.label,
+    this.todayLabel,
+    this.proofLabel,
   });
 
   final Protection protection;
@@ -141,6 +143,15 @@ class TimeBand extends StatelessWidget {
   /// short window on a long axis is a few points wide, and the number in
   /// words is what says it is the urgent one, not only the colour.
   final String? label;
+
+  /// Words under the ticks (Rafım design review, 1 Nov 2026): two bare
+  /// lines on a bar meant nothing until someone explained them. Given only
+  /// to one row each, so the card says it once: "today" on the top band,
+  /// "proof on you" on the band that has the proof tick. The proof word is
+  /// dropped when it would touch the today word; the month sentence under
+  /// the primary row still says it.
+  final String? todayLabel;
+  final String? proofLabel;
 
   /// The shortest band drawn (Rafım Ar-Ge 28 Oct). A 14-day return window
   /// on a six-year axis was 3 px: the most urgent protection was the least
@@ -155,6 +166,40 @@ class TimeBand extends StatelessWidget {
     final start = drawn.map((p) => p.start).reduce((a, b) => a.isBefore(b) ? a : b);
     final end = drawn.map((p) => p.end!).reduce((a, b) => a.isAfter(b) ? a : b);
     return end.difference(start).inDays <= 0 ? null : (start, end);
+  }
+
+  /// The row of words under the ticks, each centred on its tick and kept
+  /// inside the band's width; null when there is nothing to say.
+  Widget? _tickWords(BuildContext context, double w, {double? now, double? proof}) {
+    final style = context.t.caption.copyWith(color: context.c.textSecondary);
+    final scaler = MediaQuery.textScalerOf(context);
+    final dir = Directionality.of(context);
+    (double, double, String)? place(String? text, double? at) {
+      if (text == null || at == null) return null;
+      final tw = (TextPainter(text: TextSpan(text: text, style: style), textDirection: dir, textScaler: scaler, maxLines: 1)..layout()).width;
+      if (tw > w) return null;
+      final left = (at * w - tw / 2).clamp(0.0, w - tw).toDouble();
+      return (left, tw, text);
+    }
+
+    final today = place(todayLabel, now);
+    var proofWord = place(proofLabel, proof);
+    if (today != null && proofWord != null) {
+      final (a, aw, _) = today;
+      final (b, bw, _) = proofWord;
+      final apart = a < b ? b - (a + aw) : a - (b + bw);
+      if (apart < VSpace.sm) proofWord = null;
+    }
+    final shown = [?today, ?proofWord];
+    if (shown.isEmpty) return null;
+    final lineH = style.fontSize! * scaler.scale(1) * 1.35;
+    return SizedBox(
+      height: lineH + 2,
+      child: Stack(clipBehavior: Clip.none, children: [
+        for (final (left, tw, text) in shown)
+          Positioned(left: left, top: 2, width: tw + 1, child: Text(text, style: style, maxLines: 1, softWrap: false)),
+      ]),
+    );
   }
 
   @override
@@ -192,7 +237,7 @@ class TimeBand extends StatelessWidget {
                   )..layout())
                     .width;
             final showTag = tag != null && left + spanW + VSpace.sm + tagW <= w;
-            return SizedBox(
+            final band = SizedBox(
               height: showTag ? math.max(14.0, tagStyle.fontSize! * MediaQuery.textScalerOf(context).scale(1) * 1.35) : 14,
               child: Stack(
                 clipBehavior: Clip.none,
@@ -249,6 +294,8 @@ class TimeBand extends StatelessWidget {
                 ],
               ),
             );
+            final words = _tickWords(context, w, now: now > 0 && now < 1 ? now : null, proof: proof != null && proof > from && proof < to ? proof : null);
+            return words == null ? band : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [band, words]);
           },
         ),
       ),

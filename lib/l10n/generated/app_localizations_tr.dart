@@ -1020,4 +1020,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String storeSuggestion(String store) {
     return 'Mağaza önerisi: $store';
   }
+
+  @override
+  String get bandToday => 'bugün';
+
+  @override
+  String get bandProof => 'ispat sende';
 }

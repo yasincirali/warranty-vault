@@ -176,7 +176,9 @@ class HomeScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.lg, VSpace.xl, 0),
               sliver: SliverToBoxAdapter(child: _DisposedRow(items: disposed)),
             ),
-          const SliverToBoxAdapter(child: SizedBox(height: 120)),
+          // The cabinet ends on its plinth (CabinetBase); a short breath below it
+          // instead of 120 pt of empty page that made the scroll feel endless.
+          const SliverToBoxAdapter(child: SizedBox(height: VSpace.xl)),
         ]),
       ),
       bottomNavigationBar: SafeArea(

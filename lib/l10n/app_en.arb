@@ -684,5 +684,13 @@
         "type": "String"
       }
     }
+  },
+  "bandToday": "today",
+  "@bandToday": {
+    "description": "Word under the today tick on the time band"
+  },
+  "bandProof": "proof on you",
+  "@bandProof": {
+    "description": "Word under the tick where the burden of proof moves to the buyer"
   }
 }

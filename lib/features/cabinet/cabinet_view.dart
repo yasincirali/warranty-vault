@@ -67,6 +67,10 @@ Feel feelOf(ItemCategory c) => switch (c) {
 /// Gap between the cabinet's sides and the screen edge.
 const _wallInset = 4.0;
 
+/// How far the deadline tag's tap area reaches above the tag, so the area is
+/// 44 pt tall without moving the tag down the plank.
+const _tagHitLead = 12.0;
+
 /// How deep into the plank's lit top a product stands. Its base covers the
 /// back of the board and leaves the front strip visible: that overlap is
 /// what makes the product read as standing *on* the shelf, not in front of it.
@@ -381,6 +385,13 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
     final l = AppLocalizations.of(context);
     final store = ref.watch(vaultStoreProvider);
 
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      _shelfWall(context, geo, l, store),
+      CabinetBase(width: widget.width),
+    ]);
+  }
+
+  Widget _shelfWall(BuildContext context, CabinetGeometry geo, AppLocalizations l, VaultStore store) {
     return SizedBox(
       key: _canvasKey,
       width: widget.width,
@@ -569,12 +580,28 @@ class _CabinetViewState extends ConsumerState<CabinetView> with SingleTickerProv
         ),
       // Deadline tag hangs on the plank under the product: amber and a
       // number, so it reads without colour too. Only for < 30 days.
+      // Tapping it opens the product: the orange number is the most
+      // tempting thing on the shelf and people tapped it and got nothing
+      // (Rafım design review, 31 Oct 2026). The hit box is 44 pt tall and
+      // starts above the tag; the tag itself sits where it always did. No
+      // semantics of its own: the product's label already says the days.
       if (days != null && !b.flying && !b.held && b.grounded)
         Positioned(
           left: (b.x - 34).clamp(2.0, widget.width - 70),
-          top: plankTop + _Plank.top + 1,
+          top: plankTop + _Plank.top + 1 - _tagHitLead,
           width: 68,
-          child: ExcludeSemantics(child: _DeadlineTag(text: l.durDays(days))),
+          height: VSize.minTap,
+          child: ExcludeSemantics(
+            child: GestureDetector(
+              key: ValueKey('tag-${b.id}'),
+              behavior: HitTestBehavior.opaque,
+              onTap: () => widget.onOpen(b.id),
+              child: Column(children: [
+                const SizedBox(height: _tagHitLead),
+                _DeadlineTag(text: l.durDays(days)),
+              ]),
+            ),
+          ),
         ),
       Positioned(
         left: b.left,
@@ -743,6 +770,42 @@ class _Drawn extends StatelessWidget {
       ),
     ],
   );
+}
+
+/// The foot of the cabinet: the last plank sits on a plinth a shade darker
+/// than the boards, rounded at the bottom like the top of the wall, with a
+/// soft shadow on the page. Without it the bottom shelf ran into the page
+/// and the furniture had no end (Rafım design review, 31 Oct 2026). The
+/// page scrolls to here and stops; there is nothing under the cabinet.
+class CabinetBase extends StatelessWidget {
+  const CabinetBase({super.key, required this.width});
+  final double width;
+
+  static const height = 18.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return SizedBox(
+      width: width,
+      height: height + VSpace.md,
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          width: width - 2 * _wallInset,
+          height: height,
+          decoration: BoxDecoration(
+            color: Color.alphaBlend(c.shade.withValues(alpha: .16), c.plankFront),
+            border: Border(top: BorderSide(color: c.shade.withValues(alpha: .14))),
+            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(VRadius.md)),
+            boxShadow: [
+              BoxShadow(color: c.shade.withValues(alpha: .18), blurRadius: 10, offset: const Offset(0, 4)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /// A board seen slightly from above: its lit top (the depth a product stands
@@ -1043,6 +1106,13 @@ class EmptyCabinet extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final geo = CabinetGeometry(width: width, shelves: shelves);
     final slotW = geo.slotWidth - 8;
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      _shelves(context, l, geo, slotW),
+      CabinetBase(width: width),
+    ]);
+  }
+
+  Widget _shelves(BuildContext context, AppLocalizations l, CabinetGeometry geo, double slotW) {
     return SizedBox(
       width: width,
       height: geo.height,

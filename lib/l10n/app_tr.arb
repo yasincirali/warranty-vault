@@ -274,5 +274,7 @@
   "counterTitleNoProof": "Alış bilgisi",
   "counterAddProof": "Fişi ya da faturayı ekle",
   "counterProofHint": "Fiş yoksa banka ekstresi ya da sipariş e-postası da alış kanıtıdır.",
-  "storeSuggestion": "Mağaza önerisi: {store}"
+  "storeSuggestion": "Mağaza önerisi: {store}",
+  "bandToday": "bugün",
+  "bandProof": "ispat sende"
 }
