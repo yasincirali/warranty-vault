@@ -139,12 +139,26 @@ void main() {
     expect(find.descendant(of: returns, matching: find.text('3 days')), findsOneWidget);
   });
 
-  testWidgets('whose rules apply is a line, not a pill that looks tappable', (t) async {
+  // 30 Oct: a line, not a pill. 1 Nov (Rafım design review, yasin "yap"):
+  // the line is now the way to the sources, so it is tappable, 44 pt tall,
+  // with a chevron, and still has no pill border.
+  testWidgets('whose rules apply is a link line to the sources, not a pill', (t) async {
     await _open(t);
     await _openSony(t);
     final note = find.text('Worked out with Germany rules');
     expect(note, findsOneWidget);
-    expect(find.ancestor(of: note, matching: find.byType(InkWell)), findsNothing);
+    final ink = find.ancestor(of: note, matching: find.byType(InkWell));
+    expect(ink, findsOneWidget);
+    expect(t.getSize(ink).height, greaterThanOrEqualTo(44));
+    expect(find.descendant(of: ink, matching: find.byIcon(Icons.chevron_right)), findsOneWidget);
+    expect(find.ancestor(of: note, matching: find.byType(DecoratedBox)).evaluate().where((e) {
+      final d = (e.widget as DecoratedBox).decoration;
+      return d is BoxDecoration && d.border != null;
+    }), isEmpty);
+    expect(find.text('Where does this period come from?'), findsNothing);
+    await t.tap(note);
+    await t.pumpAndSettle();
+    expect(find.text('Where does this period come from?'), findsOneWidget);
   });
 
   test('sheets sit on the app paper, not a tinted surface', () {

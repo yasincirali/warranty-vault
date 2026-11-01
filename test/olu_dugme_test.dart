@@ -120,7 +120,7 @@ void main() {
   testWidgets('"Where does this period come from?" shows the official source', (t) async {
     await _open(t);
     await _openMac(t);
-    await t.tap(find.text('Where does this period come from?'));
+    await t.tap(find.textContaining('Worked out with'));
     await t.pumpAndSettle();
     expect(find.textContaining('This period comes from the consumer rules of'), findsOneWidget);
     final hosts = _rules.regions['DE']!.sources.map((u) => Uri.parse(u).host);

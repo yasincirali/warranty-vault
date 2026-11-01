@@ -20,12 +20,36 @@ import 'item_photo.dart';
 
 /// Answer first: the top card says where the user stands today in one
 /// number and one sentence. The list below is the evidence for it.
-class ItemDetailScreen extends ConsumerWidget {
+class ItemDetailScreen extends ConsumerStatefulWidget {
   const ItemDetailScreen({super.key, required this.itemId});
   final String itemId;
 
+  /// Scroll offset after which the photo and name row has left the screen
+  /// and the name moves into the bar.
+  static const titleAfter = 88.0;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ItemDetailScreen> createState() => _ItemDetailScreenState();
+}
+
+class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen> {
+  /// Scrolled past the name: the bar shows it small, with a hairline under
+  /// it. Before, a long page scrolled up under an empty bar and the user
+  /// lost which product they were reading about (Rafım design review,
+  /// 1 Nov 2026). The standard iOS large-title pattern, without the large
+  /// title: the name already sits big next to the photo.
+  bool _scrolled = false;
+
+  bool _onScroll(ScrollNotification n) {
+    if (n.depth != 0) return false;
+    final past = n.metrics.pixels > ItemDetailScreen.titleAfter;
+    if (past != _scrolled) setState(() => _scrolled = past);
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final itemId = widget.itemId;
     final l = AppLocalizations.of(context);
     final view = ref.watch(itemViewProvider(itemId)).value;
     final today = ref.watch(clockProvider)();
@@ -44,6 +68,25 @@ class ItemDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: context.c.background,
         surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        // Fades in; with reduce motion it just appears (VMotion.of).
+        title: AnimatedOpacity(
+          opacity: _scrolled ? 1 : 0,
+          duration: VMotion.of(context, VMotion.quick),
+          child: ExcludeSemantics(
+            // The header below is still the page's heading for screen readers.
+            excluding: !_scrolled,
+            child: Text(item.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: context.t.label),
+          ),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: AnimatedOpacity(
+            opacity: _scrolled ? 1 : 0,
+            duration: VMotion.of(context, VMotion.quick),
+            child: Divider(height: 1, thickness: 1, color: context.c.divider),
+          ),
+        ),
         actions: [
           VIconButton(
             icon: Icons.edit_outlined,
@@ -56,7 +99,9 @@ class ItemDetailScreen extends ConsumerWidget {
           const SizedBox(width: VSpace.md),
         ],
       ),
-      body: ListView(
+      body: NotificationListener<ScrollNotification>(
+        onNotification: _onScroll,
+        child: ListView(
         padding: const EdgeInsets.fromLTRB(VSpace.xl, 0, VSpace.xl, VSpace.xxl),
         children: [
           Row(children: [
@@ -70,7 +115,18 @@ class ItemDetailScreen extends ConsumerWidget {
                 // A line, not a bordered pill (Rafım Ar-Ge 30 Oct): pills are
                 // tappable everywhere else in the app and this one was not.
                 const SizedBox(height: VSpace.xs),
-                _Note(Icons.public, l.rulesOf(regionName(l, item.purchase.region))),
+                // Tappable since 1 Nov 2026 (Rafım design review): "which
+                // rules" and "where do they come from" are one question, so
+                // the country line opens the sources sheet and the separate
+                // "Where does this period come from?" button under the answer
+                // is gone. A link with a chevron, still not a pill.
+                if (view.primary case final p? when p.sources.isNotEmpty)
+                  _RulesLink(
+                    text: l.rulesOf(regionName(l, item.purchase.region)),
+                    onTap: () => _showSources(context, p, regionName(l, item.purchase.region)),
+                  )
+                else
+                  _Note(Icons.public, l.rulesOf(regionName(l, item.purchase.region))),
                 // Said in words, not only by a colour: why no reminder comes.
                 if (item.sample) _Note(Icons.science_outlined, l.sampleTag),
               ]),
@@ -90,6 +146,10 @@ class ItemDetailScreen extends ConsumerWidget {
                   urgent: identical(view.protections[i], view.next),
                   primary: identical(view.protections[i], view.primary),
                   last: i == view.protections.length - 1,
+                  // Tick words once per card: "today" on the top band,
+                  // "proof on you" on the first band with a proof tick.
+                  todayLabel: i == 0 ? l.bandToday : null,
+                  proofLabel: i == _proofRow(view.protections) ? l.bandProof : null,
                 ),
             ]),
           ),
@@ -118,6 +178,7 @@ class ItemDetailScreen extends ConsumerWidget {
           const SizedBox(height: VSpace.lg),
           Text(l.disclaimer, style: context.t.small.copyWith(color: context.c.textSecondary)),
         ],
+      ),
       ),
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(VSpace.xl, VSpace.md, VSpace.xl, VSpace.md),
@@ -196,16 +257,7 @@ class _AnswerCard extends StatelessWidget {
         ],
         const SizedBox(height: VSpace.sm),
         Text(body, style: context.t.body),
-        if (p != null && p.sources.isNotEmpty)
-          TextButton(
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              minimumSize: const Size(0, VSize.minTap),
-              alignment: Alignment.centerLeft,
-            ),
-            onPressed: () => _showSources(context, p, regionName(l, view.item.purchase.region)),
-            child: Text(l.whereFrom),
-          ),
+        // The sources sheet opens from the country line under the name.
       ]),
     );
   }
@@ -221,6 +273,8 @@ class _ProtectionRow extends StatelessWidget {
     required this.urgent,
     required this.primary,
     required this.last,
+    this.todayLabel,
+    this.proofLabel,
   });
   final Protection p;
   final DateTime today;
@@ -233,6 +287,8 @@ class _ProtectionRow extends StatelessWidget {
   /// readers, how much of the period has passed.
   final bool primary;
   final bool last;
+  final String? todayLabel;
+  final String? proofLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -297,6 +353,8 @@ class _ProtectionRow extends StatelessWidget {
                 axisStart: from,
                 axisEnd: to,
                 urgent: urgent,
+                todayLabel: todayLabel,
+                proofLabel: proofLabel,
                 label: p.end == null ? null : l.durDays(dateOnly(p.end!).difference(dateOnly(today)).inDays.clamp(0, 99999)),
               ),
             ),
@@ -310,6 +368,17 @@ class _ProtectionRow extends StatelessWidget {
     );
   }
 }
+
+/// The first protection whose band draws a proof tick (the tick sits
+/// strictly inside its period), or -1.
+int _proofRow(List<Protection> ps) => ps.indexWhere((p) {
+      final pe = p.presumptionEnd;
+      return pe != null &&
+          p.end != null &&
+          p.status != ProtectionStatus.unverified &&
+          pe.isAfter(p.start) &&
+          pe.isBefore(p.end!);
+    });
 
 int _passedPercent(Protection p, DateTime today) {
   if (p.status == ProtectionStatus.ended) return 100;
@@ -335,6 +404,38 @@ class _Note extends StatelessWidget {
           Expanded(child: Text(text, style: context.t.caption.copyWith(color: context.c.textSecondary))),
         ]),
       );
+}
+
+/// The "worked out with X rules" line as a link to the sources sheet: same
+/// icon and caption as [_Note], plus a chevron and a 44 pt tap height.
+class _RulesLink extends StatelessWidget {
+  const _RulesLink({required this.text, required this.onTap});
+  final String text;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final muted = context.c.textSecondary;
+    return Semantics(
+      button: true,
+      label: text,
+      hint: AppLocalizations.of(context).whereFrom,
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(VRadius.sm),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: VSize.minTap),
+          child: Row(children: [
+            Icon(Icons.public, size: 14, color: muted),
+            const SizedBox(width: VSpace.xs + 2),
+            Flexible(child: Text(text, style: context.t.caption.copyWith(color: context.c.text))),
+            Icon(Icons.chevron_right, size: 16, color: muted),
+          ]),
+        ),
+      ),
+    );
+  }
 }
 
 /// Where a legal period comes from: the page the rule was verified against

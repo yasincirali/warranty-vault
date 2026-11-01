@@ -1747,6 +1747,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Store suggestion: {store}'**
   String storeSuggestion(String store);
+
+  /// Word under the today tick on the time band
+  ///
+  /// In en, this message translates to:
+  /// **'today'**
+  String get bandToday;
+
+  /// Word under the tick where the burden of proof moves to the buyer
+  ///
+  /// In en, this message translates to:
+  /// **'proof on you'**
+  String get bandProof;
 }
 
 class _AppLocalizationsDelegate
