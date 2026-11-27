@@ -25,7 +25,7 @@ dokunulmaz.
    burada Riverpod + `Navigator`; ham `Colors.*`/`fontSize:` üretir, burada token.
 
 ### Push saatleri (kullanıcı kuralı, tüm repolar)
-Hafta içi 09:00–18:30 TR arası **push, PR açma/güncelleme, merge yok**. Gündüz
+Hafta içi 08:00–18:30 TR arası **push, PR açma/güncelleme, merge yok**. Gündüz
 yerel commit + `git format-patch` yedeği; akşam push. `main`'e doğrudan push yok,
 iş dalda ve PR'da.
 
